@@ -1,4 +1,4 @@
-package com.example.carto.home.data.network
+package com.example.carto.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

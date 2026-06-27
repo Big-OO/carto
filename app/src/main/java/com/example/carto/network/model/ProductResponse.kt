@@ -1,4 +1,4 @@
-package com.example.carto.home.data.network.dtos
+package com.example.carto.network.model
 
 import com.google.gson.annotations.SerializedName
 
