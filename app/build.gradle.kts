@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt.android)
     id("com.google.gms.google-services")
 }
 
@@ -83,5 +84,10 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test:core-ktx:1.5.0")
     androidTestImplementation("androidx.test:runner:1.5.2")
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
 }
