@@ -85,6 +85,7 @@ dependencies {
     androidTestImplementation("androidx.test:core-ktx:1.5.0")
     androidTestImplementation("androidx.test:runner:1.5.2")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation(libs.androidx.lifecycle.runtime.ktx.v2110)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
