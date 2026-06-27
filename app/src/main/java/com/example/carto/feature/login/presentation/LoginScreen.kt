@@ -21,18 +21,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.carto.R
+import com.example.carto.feature.login.data.datasource.LoginRemoteDataSourceImpl
+import com.example.carto.feature.login.data.repository.LoginRepositoryImpl
 import com.example.carto.feature.login.presentation.components.PrimaryButton
 import com.example.carto.feature.login.presentation.components.TextField
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier) {
     var email by remember { mutableStateOf("abdallah.elsobky@gmail.com") }
     var password by remember { mutableStateOf("1q2w3e4r") }
+    val repository = LoginRepositoryImpl(
+        remoteDataSource = LoginRemoteDataSourceImpl(
+            firebaseAuth = FirebaseAuth.getInstance()
+        )
+    )
 
     Column(
         modifier = Modifier
-            .fillMaxSize()              .padding(horizontal = 24.dp, vertical = 32.dp),
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.Start
     ) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -78,13 +92,17 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                 append(stringResource(R.string.reset_your_password))
             }
         }
-        Text(text = forgotPasswordText,modifier = Modifier.clickable {
+        Text(text = forgotPasswordText, modifier = Modifier.clickable {
             // navigate to reset password
         })
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        PrimaryButton(stringResource(R.string.login))
+        PrimaryButton(stringResource(R.string.login)){
+            CoroutineScope(Dispatchers.IO).launch {
+                repository.login(email, password)
+            }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 

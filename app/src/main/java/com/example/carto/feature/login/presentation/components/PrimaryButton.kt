@@ -13,9 +13,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun PrimaryButton(text: String){
+fun PrimaryButton(text: String,onCLick: () -> Unit){
     Button(
-        onClick = {  },
+        onClick = { onCLick.invoke() },
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp),

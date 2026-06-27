@@ -1,8 +1,10 @@
 package com.example.carto.feature.login.domain.datasource
 
+import com.example.carto.feature.login.data.dto.UserDto
+
 interface LoginRemoteDataSource {
-    fun login(
+    suspend fun login(
         email: String,
         password: String
-    )
-}
+    ): UserDto
+}
