@@ -67,6 +67,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
     implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.junit)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
