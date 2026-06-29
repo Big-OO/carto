@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen() {
-    val viewModel: RegisterViewModel = hiltViewModel()
+    val viewModel: RegisterViewModel = RegisterViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val lifecycleOwner = rememberLifecycleOwner()

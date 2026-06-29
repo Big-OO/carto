@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 
-@HiltViewModel
 class RegisterViewModel : ViewModel(), RegisterInteractionListener {
     private val _state = MutableStateFlow(RegisterFormUiState())
     val state = _state.asStateFlow()
