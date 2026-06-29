@@ -1,5 +1,9 @@
 package com.example.carto.registration.domain.repository
 
+import com.example.carto.registration.domain.model.RegisterRequest
+import com.example.carto.registration.domain.model.RegisterResult
+import com.example.carto.registration.domain.model.RegisteredUser
+
 interface RegisterRepository {
-    suspend fun register(fullName: String, email: String, password: String)
+    suspend fun register(request: RegisterRequest): RegisterResult<RegisteredUser>
 }
