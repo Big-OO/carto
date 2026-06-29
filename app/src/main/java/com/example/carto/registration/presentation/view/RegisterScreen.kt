@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,29 +25,30 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.rememberLifecycleOwner
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.carto.registration.presentation.state.RegisterFormUiState
 import com.example.carto.registration.presentation.view.components.AuthInputField
 import com.example.carto.registration.presentation.view.components.AuthPrimaryButton
 import com.example.carto.registration.presentation.viewmodel.RegisterInteractionListener
 import com.example.carto.registration.presentation.viewmodel.RegisterSideEffects
 import com.example.carto.registration.presentation.viewmodel.RegisterViewModel
-import kotlinx.coroutines.launch
-
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    onNavigateToLogin: () -> Unit = {},
+) {
     val viewModel: RegisterViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val lifecycleOwner = rememberLifecycleOwner()
     LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycleScope.launch {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.effects.collect { effect ->
                 when (effect) {
-                    RegisterSideEffects.NavigateToLogin -> TODO()
+                    RegisterSideEffects.NavigateToLogin -> onNavigateToLogin()
                 }
             }
         }
@@ -54,7 +56,7 @@ fun RegisterScreen() {
 
     RegisterScreenContent(
         state = state,
-        interactionListener = viewModel
+        interactionListener = viewModel,
     )
 }
 
@@ -62,15 +64,14 @@ fun RegisterScreen() {
 private fun RegisterScreenContent(
     modifier: Modifier = Modifier,
     state: RegisterFormUiState,
-    interactionListener: RegisterInteractionListener
+    interactionListener: RegisterInteractionListener,
 ) {
-
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(vertical = 58.dp, horizontal = 24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.Start
+        horizontalAlignment = Alignment.Start,
     ) {
         Text(
             "Create an account", style = TextStyle(
@@ -127,21 +128,27 @@ private fun RegisterScreenContent(
             errorMessage = state.password.errorMessage,
         )
 
+        if (state.generalErrorMessage.isNotBlank()) {
+            Text(
+                text = state.generalErrorMessage,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+
         Spacer(Modifier.height(20.dp))
 
         AuthPrimaryButton(
-            onClick = {
-                interactionListener.onRegister()
-            },
-            label = "Create an Account",
-            enabled = true,
+            onClick = interactionListener::onRegister,
+            label = if (state.isLoading) "Creating account..." else "Create an Account",
+            enabled = !state.isLoading,
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             Text(
                 "Already have an account? ",
@@ -154,7 +161,7 @@ private fun RegisterScreenContent(
             Spacer(Modifier.width(2.dp))
 
             Text(
-                modifier = Modifier.clickable(true) {
+                modifier = Modifier.clickable(enabled = !state.isLoading) {
                     interactionListener.onNavigateToLogin()
                 },
                 text = "Log In",
@@ -162,7 +169,7 @@ private fun RegisterScreenContent(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     color = Color.Black,
-                    textDecoration = TextDecoration.Underline
+                    textDecoration = TextDecoration.Underline,
                 )
             )
         }

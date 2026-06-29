@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.carto.R
 
-
 @Composable
 fun AuthInputField(
     value: String,
@@ -40,7 +39,7 @@ fun AuthInputField(
     isPassword: Boolean = false,
     isError: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
-    errorMessage: String = ""
+    errorMessage: String = "",
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
