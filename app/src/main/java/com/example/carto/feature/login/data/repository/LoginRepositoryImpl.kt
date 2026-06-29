@@ -5,9 +5,9 @@ import com.example.carto.feature.login.data.mapper.toDomain
 import com.example.carto.feature.login.domain.datasource.LoginRemoteDataSource
 import com.example.carto.feature.login.domain.model.User
 import com.example.carto.feature.login.domain.repository.LoginRepository
-import kotlin.math.log
+import javax.inject.Inject
 
-class LoginRepositoryImpl(
+class LoginRepositoryImpl @Inject constructor(
     private val remoteDataSource: LoginRemoteDataSource
 ) : LoginRepository {
 
@@ -19,9 +19,10 @@ class LoginRepositoryImpl(
             val user = remoteDataSource
                 .login(email, password)
                 .toDomain()
-            Log.d("Testo", "login: $user")
+            Log.d("Carto", "login success: $user")
             Result.success(user)
         } catch (e: Exception) {
+            Log.e("Carto", "login failed: ${e.message}")
             Result.failure(e)
         }
     }
