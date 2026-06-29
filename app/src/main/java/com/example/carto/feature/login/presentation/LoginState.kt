@@ -1,5 +1,8 @@
 package com.example.carto.feature.login.presentation
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class LoginState(
     val email: String = "",
     val password: String = "",
