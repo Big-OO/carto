@@ -1,6 +1,5 @@
 package com.example.carto.network
 
-
 import com.example.carto.network.model.ProductsResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -16,5 +15,4 @@ interface ShopifyApi {
         @Query("fields") fields: String =
             "id,title,handle,vendor,product_type,status,variants,images,tags,created_at,updated_at"
     ): Response<ProductsResponse>
-
 }
