@@ -74,7 +74,7 @@ class ShopifyCustomerRemoteDataSource @Inject constructor(
                 ?: return RegisterDataResult.Failure(
                     RegisterFailure(
                         type = RegisterFailureType.ShopifySyncFailed,
-                        developerMessage = "Shopify create customer succeeded but response body/customer/id was null.",
+                        message = "Shopify create customer succeeded but response body/customer/id was null.",
                     )
                 )
 
@@ -88,7 +88,7 @@ class ShopifyCustomerRemoteDataSource @Inject constructor(
         val errorBody = runCatching { errorBody()?.string() }.getOrNull().orEmpty()
         return RegisterFailure(
             type = RegisterFailureType.ShopifySyncFailed,
-            developerMessage = "Shopify $operation failed. statusCode=${code()}, errorBody=${errorBody.ifBlank { "No error body." }}",
+            message = "Shopify $operation failed. statusCode=${code()}, errorBody=${errorBody.ifBlank { "No error body." }}",
         )
     }
 
@@ -101,7 +101,7 @@ class ShopifyCustomerRemoteDataSource @Inject constructor(
 
         return RegisterFailure(
             type = type,
-            developerMessage = "Shopify $operation failed with ${this::class.java.name}: ${message.orEmpty().ifBlank { "No message provided." }}",
+            message = "Shopify $operation failed with ${this::class.java.name}: ${message.orEmpty().ifBlank { "No message provided." }}",
         )
     }
 

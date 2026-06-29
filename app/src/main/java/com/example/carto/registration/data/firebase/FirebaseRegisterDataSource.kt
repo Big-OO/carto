@@ -34,7 +34,7 @@ class FirebaseRegisterDataSource @Inject constructor(
                 ?: return RegisterDataResult.Failure(
                     RegisterFailure(
                         type = RegisterFailureType.FirebaseSyncFailed,
-                        developerMessage = "Firebase returned a successful auth result without a FirebaseUser.",
+                        message = "Firebase returned a successful auth result without a FirebaseUser.",
                     )
                 )
 
@@ -91,37 +91,37 @@ class FirebaseRegisterDataSource @Inject constructor(
         return when (this) {
             is FirebaseAuthUserCollisionException -> RegisterFailure(
                 type = RegisterFailureType.EmailAlreadyUsed,
-                developerMessage = "Firebase Auth rejected registration because this email already exists. $safeMessage",
+                message = "Firebase Auth rejected registration because this email already exists. $safeMessage",
             )
 
             is FirebaseAuthWeakPasswordException -> RegisterFailure(
                 type = RegisterFailureType.WeakPassword,
-                developerMessage = "Firebase Auth rejected registration because the password is weak. $safeMessage",
+                message = "Firebase Auth rejected registration because the password is weak. $safeMessage",
             )
 
             is FirebaseAuthInvalidCredentialsException -> RegisterFailure(
                 type = RegisterFailureType.InvalidEmail,
-                developerMessage = "Firebase Auth rejected registration because the email/password credentials are invalid. $safeMessage",
+                message = "Firebase Auth rejected registration because the email/password credentials are invalid. $safeMessage",
             )
 
             is FirebaseNetworkException -> RegisterFailure(
                 type = RegisterFailureType.Network,
-                developerMessage = "Firebase Auth/Firestore network failure. $safeMessage",
+                message = "Firebase Auth/Firestore network failure. $safeMessage",
             )
 
             is IOException -> RegisterFailure(
                 type = RegisterFailureType.Network,
-                developerMessage = "Firebase IO/network failure. $safeMessage",
+                message = "Firebase IO/network failure. $safeMessage",
             )
 
             is FirebaseException -> RegisterFailure(
                 type = RegisterFailureType.FirebaseSyncFailed,
-                developerMessage = "Firebase operation failed. $safeMessage",
+                message = "Firebase operation failed. $safeMessage",
             )
 
             else -> RegisterFailure(
                 type = RegisterFailureType.Unknown,
-                developerMessage = "Unexpected Firebase registration error: ${this::class.java.name}. $safeMessage",
+                message = "Unexpected Firebase registration error: ${this::class.java.name}. $safeMessage",
             )
         }
     }
