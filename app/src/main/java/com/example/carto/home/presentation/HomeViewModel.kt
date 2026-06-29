@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.carto.home.data.repository.HomeRepositoryImp
 import com.example.carto.home.domain.mappers.Product
+import com.example.carto.home.domain.mappers.VendorUi
+import com.example.carto.home.domain.mappers.toVendorUiList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +14,7 @@ import kotlinx.coroutines.launch
 
 sealed interface HomeUiState {
     data object Loading : HomeUiState
-    data class Success(val products: List<Product>) : HomeUiState
+    data class Success(val products: List<Product>, val vendors: List<VendorUi>) : HomeUiState
     data class Error(val message: String) : HomeUiState
 }
 
@@ -24,15 +26,22 @@ class HomeViewModel(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        fetchProducts()
+        fetchHomeData()
     }
 
-    fun fetchProducts() {
+    fun fetchHomeData() {
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
             repository.getProducts()
-                .onSuccess { _uiState.value = HomeUiState.Success(it) }
-                .onFailure { _uiState.value = HomeUiState.Error(it.message ?: "Unknown error") }
+                .onSuccess { products ->
+                    _uiState.value = HomeUiState.Success(
+                        products = products,
+                        vendors = products.toVendorUiList()
+                    )
+                }
+                .onFailure {
+                    _uiState.value = HomeUiState.Error(it.message ?: "Unknown error")
+                }
         }
     }
 }

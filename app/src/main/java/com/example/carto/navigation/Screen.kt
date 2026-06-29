@@ -1,0 +1,29 @@
+package com.example.carto.navigation
+
+sealed class Screen(val route: String) {
+    data object Home : Screen("home")
+    data object Search : Screen("search")
+    data object Saved : Screen("saved")
+    data object Cart : Screen("cart")
+    data object Account : Screen("account")
+    data object AllProducts : Screen("all_products")
+    data object AllVendors : Screen("all_vendors")
+    data object Login : Screen("login")
+    data object Register : Screen("register")
+    data object ProductDetail : Screen("product_detail/{productId}") {
+        fun createRoute(productId: Long) = "product_detail/$productId"
+    }
+}
+
+val bottomBarRoutes = setOf(
+    Screen.Home.route,
+    Screen.Search.route,
+    Screen.Saved.route,
+    Screen.Cart.route,
+    Screen.Account.route
+)
+
+val authRequiredRoutes = setOf(
+    Screen.Saved.route,
+    Screen.Cart.route
+)
