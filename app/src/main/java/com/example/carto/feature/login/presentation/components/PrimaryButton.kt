@@ -1,5 +1,9 @@
 package com.example.carto.feature.login.presentation.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,21 +11,57 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun PrimaryButton(text: String,onCLick: () -> Unit){
+fun PrimaryButton(
+    text: String,
+    enabled: Boolean,
+    onCLick: () -> Unit
+) {
+    val scale by animateFloatAsState(
+        targetValue = if (enabled) 1f else 0.97f,
+        animationSpec = tween(durationMillis = 200),
+        label = "buttonScale"
+    )
+
+    val buttonColor = if (enabled) Color.Black else Color(0xFFF5F5F5)
+    val textColor = if (enabled) Color.White else Color(0xFFBDBDBD)
+
     Button(
         onClick = { onCLick.invoke() },
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E1E1E)),
-        shape = RoundedCornerShape(8.dp)
+            .height(52.dp)
+            .scale(scale),
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = buttonColor,
+            disabledContainerColor = buttonColor
+        ),
+        shape = RoundedCornerShape(10.dp),
+        contentPadding = PaddingValues(0.dp)
     ) {
-        Text(text = text, color = Color.White, fontSize = 16.sp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                color = textColor,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.8.sp
+            )
+        }
     }
 }
