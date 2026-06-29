@@ -1,6 +1,9 @@
 package com.example.carto.registration.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.carto.registration.domain.usecases.ValidateEmailUseCase
+import com.example.carto.registration.domain.usecases.ValidateFullNameUseCase
+import com.example.carto.registration.domain.usecases.ValidatePasswordUseCase
 import com.example.carto.registration.presentation.state.RegisterFormUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -8,9 +11,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 
-class RegisterViewModel : ViewModel(), RegisterInteractionListener {
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
+    private val validateEmailUseCase: ValidateEmailUseCase,
+    private val validateFullNameUseCase: ValidateFullNameUseCase,
+    private val validatePasswordUseCase: ValidatePasswordUseCase
+) : ViewModel(), RegisterInteractionListener {
     private val _state = MutableStateFlow(RegisterFormUiState())
     val state = _state.asStateFlow()
 
@@ -28,7 +37,7 @@ class RegisterViewModel : ViewModel(), RegisterInteractionListener {
     override fun onPasswordValueChanged(newValue: String) {
         _state.update {
             it.copy(
-                email = it.password.copy(value = newValue)
+                password = it.password.copy(value = newValue)
             )
         }
     }
@@ -36,7 +45,7 @@ class RegisterViewModel : ViewModel(), RegisterInteractionListener {
     override fun onFullNameValueChanged(newValue: String) {
         _state.update {
             it.copy(
-                email = it.fullName.copy(value = newValue)
+                fullName = it.fullName.copy(value = newValue)
             )
         }
     }

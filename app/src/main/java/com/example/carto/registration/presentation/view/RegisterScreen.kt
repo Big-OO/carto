@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.rememberLifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen() {
-    val viewModel: RegisterViewModel = RegisterViewModel()
+    val viewModel: RegisterViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val lifecycleOwner = rememberLifecycleOwner()
