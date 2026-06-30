@@ -49,6 +49,9 @@ archCoreTesting = "2.2.0"
 # Material 3
 material3 = "1.11.0-alpha07"
 
+# Extended Icons
+extendedIcons = "1.7.8"
+
 
 [libraries]
 # Core
@@ -131,6 +134,10 @@ androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "
 
 # Material 3
 material3 = {group = "org.jetbrains.compose.material3", name = "material3", version.ref = "material3"}
+
+# Extended Icons
+extended-icons = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "extendedIcons" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -116,10 +116,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // Material 3
-    implementation(libs.material3)
-
-
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
@@ -155,6 +151,12 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+
+    // Material3
+    implementation(libs.material3)
+
+    // Extended Icons
+    implementation(libs.extended.icons)
 
     // Hilt
     implementation(libs.hilt.android)
