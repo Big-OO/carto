@@ -22,7 +22,9 @@ data class ProductDto(
 
 data class VariantDto(
     @SerializedName("id") val id: Long,
-    @SerializedName("price") val price: String
+    @SerializedName("price") val price: String,
+    @SerializedName("compare_at_price") val compareAtPrice: String?,
+    @SerializedName("inventory_quantity") val inventoryQuantity: Int?
 )
 
 data class ImageDto(
