@@ -1,5 +1,6 @@
 package com.example.carto.network
 
+import com.example.carto.home.data.HomeApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -8,11 +9,11 @@ import kotlin.jvm.java
 
 object RetrofitProvider {
 
-    fun create(hostName: String , accessToken: String ): ShopifyApi {
+    fun create(hostName: String , accessToken: String ): HomeApiService {
 
         val client = OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.HEADERS
+                level = HttpLoggingInterceptor.Level.BODY
             })
             .addInterceptor { chain ->
                 val request = chain.request()
@@ -29,6 +30,6 @@ object RetrofitProvider {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ShopifyApi::class.java)
+            .create(HomeApiService::class.java)
     }
 }
