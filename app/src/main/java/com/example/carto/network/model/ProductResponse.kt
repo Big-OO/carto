@@ -13,8 +13,13 @@ data class ProductDto(
     @SerializedName("vendor") val vendor: String,
     @SerializedName("product_type") val productType: String,
     @SerializedName("status") val status: String,
-    @SerializedName("variants") val variants: List<VariantDto>,
-    @SerializedName("images") val images: List<ImageDto>,
+//    @SerializedName("variants") val variants: List<VariantDto>,
+//    @SerializedName("images") val images: List<ImageDto>,
+    @SerializedName("variants")
+    val variants: List<VariantDto>? = null,
+
+    @SerializedName("images")
+    val images: List<ImageDto> = emptyList(),
     @SerializedName("tags") val tags: String,
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("updated_at") val updatedAt: String

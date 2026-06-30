@@ -1,5 +1,6 @@
 package com.example.carto.home.presentation.screens.components
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -9,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import com.example.carto.home.presentation.screens.model.AdUi
 import kotlinx.coroutines.delay
@@ -49,19 +51,23 @@ fun AdsCarousel(
 
         Spacer(Modifier.height(10.dp))
 
+        // Indicator Row
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-
             repeat(ads.size) { index ->
-
                 val selected = pagerState.currentPage == index
+                val dotWidth by animateDpAsState(
+                    targetValue = if (selected) 18.dp else 6.dp,
+                    label = "dot_width"
+                )
 
                 Box(
                     modifier = Modifier
-                        .padding(3.dp)
-                        .size(if (selected) 9.dp else 6.dp)
+                        .padding(horizontal = 4.dp, vertical = 3.dp)
+                        .width(dotWidth)
+                        .height(6.dp)
                         .background(
                             color = if (selected)
                                 MaterialTheme.colorScheme.primary

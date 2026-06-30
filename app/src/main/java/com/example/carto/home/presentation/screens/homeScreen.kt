@@ -10,40 +10,113 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.carto.home.data.HomeAdsFakeData.ads
-import com.example.carto.home.domain.mappers.Product
+import com.example.carto.home.domain.model.Category
+import com.example.carto.home.domain.model.Product
+import com.example.carto.home.presentation.HomeContent
+import com.example.carto.home.presentation.HomeUiState
 import com.example.carto.home.presentation.HomeViewModel
 import com.example.carto.home.presentation.screens.components.AdsCarousel
+import com.example.carto.home.presentation.screens.components.ErrorBox
+import com.example.carto.home.presentation.screens.components.LoadingBox
 import com.example.carto.home.presentation.screens.sections.HomeHeader
 import com.example.carto.home.presentation.screens.sections.ProductsSection
 import com.example.carto.home.presentation.screens.sections.BrandsSection
+import com.example.carto.home.presentation.screens.sections.CategoriesSection
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
     onSeeAllProducts: () -> Unit,
     onSeeAllVendors: () -> Unit,
-    onProductClick: (Product) -> Unit
+    onProductClick: (Product) -> Unit,
+    onCategoryClick: (Category) -> Unit
 ) {
+
     val uiState by viewModel.uiState.collectAsState()
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().background(Color(0xFFFFFFFF)),
-        contentPadding = PaddingValues(16.dp),
-       verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item { HomeHeader() }
+    when (val state = uiState) {
 
-        item {
-            AdsCarousel(ads = ads, onAdClick = { /* future navigation */ })
+        HomeUiState.Loading -> {
+            LoadingBox()
         }
 
-        item {
-            ProductsSection(uiState = uiState, onSeeAll = onSeeAllProducts
-                , onProductClick = onProductClick)
+        is HomeUiState.Error -> {
+            ErrorBox(
+                message = state.message,
+                onRetry = viewModel::fetchHomeData
+            )
         }
 
-        item {
-            BrandsSection(uiState = uiState, onSeeAll = onSeeAllVendors)
+        is HomeUiState.Success -> {
+
+            HomeContent(
+                content = state.content,
+                onSeeAllProducts = onSeeAllProducts,
+                onSeeAllVendors = onSeeAllVendors,
+                onProductClick = onProductClick,
+                onCategoryClick = onCategoryClick
+            )
+
         }
     }
+}
+
+@Composable
+private fun HomeContent(
+    content: HomeContent,
+    onSeeAllProducts: () -> Unit,
+    onSeeAllVendors: () -> Unit,
+    onProductClick: (Product) -> Unit,
+    onCategoryClick: (Category) -> Unit
+) {
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+
+        item {
+            HomeHeader()
+        }
+
+        item {
+            AdsCarousel(
+                ads = ads,
+                onAdClick = {}
+            )
+        }
+
+        item {
+
+            CategoriesSection(
+                categories = content.categories,
+                onCategoryClick = onCategoryClick
+            )
+
+        }
+
+        item {
+
+            ProductsSection(
+                products = content.products,
+                onSeeAll = onSeeAllProducts,
+                onProductClick = onProductClick
+            )
+
+        }
+
+        item {
+
+            BrandsSection(
+                vendors = content.vendors,
+                onSeeAll = onSeeAllVendors
+            )
+
+        }
+
+    }
+
 }

@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.carto.home.domain.mappers.Product
+import com.example.carto.home.domain.model.Product
 import com.example.carto.home.presentation.HomeUiState
 import com.example.carto.home.presentation.screens.components.ErrorBox
 import com.example.carto.home.presentation.screens.components.LoadingBox
@@ -16,7 +16,7 @@ import com.example.carto.home.presentation.screens.components.SectionHeader
 
 @Composable
 fun ProductsSection(
-    uiState: HomeUiState,
+    products: List<Product>,
     onSeeAll: () -> Unit,
     onProductClick: (Product) -> Unit
 ) {
@@ -28,41 +28,24 @@ fun ProductsSection(
         )
 
         Spacer(Modifier.height(8.dp))
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
 
-        when (uiState) {
+            items(products) { product ->
 
-            is HomeUiState.Loading ->
-                LoadingBox()
-
-            is HomeUiState.Error ->
-                ErrorBox(
-                    message = uiState.message,
-                    onRetry = {}
-                )
-
-            is HomeUiState.Success -> {
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-
-                    items(uiState.products) { product ->
-
-                        ProductCard(
-                            product = product,
-                            modifier = Modifier.width(180.dp),
-                            onClick = { onProductClick(product) },
-                            onFavoriteClick = { favProduct->
-
-                            }
-                        )
+                ProductCard(
+                    product = product,
+                    modifier = Modifier.width(180.dp),
+                    onClick = { onProductClick(product) },
+                    onFavoriteClick = { favProduct->
 
                     }
-
-                }
+                )
 
             }
 
         }
+
     }
 }

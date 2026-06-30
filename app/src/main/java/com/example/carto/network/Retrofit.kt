@@ -12,7 +12,7 @@ object RetrofitProvider {
 
         val client = OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.HEADERS
+                level = HttpLoggingInterceptor.Level.BODY
             })
             .addInterceptor { chain ->
                 val request = chain.request()

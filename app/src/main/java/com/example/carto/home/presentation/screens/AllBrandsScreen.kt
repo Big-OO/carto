@@ -31,7 +31,7 @@ fun AllBrandsScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Vendors") },
+                title = { Text("Brands") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -51,7 +51,7 @@ fun AllBrandsScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxSize().padding(padding)
                 ) {
-                    items(state.vendors) { vendor -> BrandCard(vendor = vendor, compact = false) }
+                    items(state.content.vendors) { vendor -> BrandCard(vendor = vendor, compact = false) }
                 }
             }
         }
