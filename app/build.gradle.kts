@@ -3,8 +3,8 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.services)
 }
@@ -94,90 +94,124 @@ android {
 }
 
 dependencies {
+
+    // =========================================================================
     // Core
+    // =========================================================================
     implementation(libs.androidx.core.ktx)
 
-    // Activity Compose
+    // =========================================================================
+    // Activity & Lifecycle
+    // =========================================================================
     implementation(libs.androidx.activity.compose)
 
-    // Lifecycle
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // Compose BOM
+    // =========================================================================
+    // Compose
+    // =========================================================================
     implementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
-    // Compose
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
+    implementation(libs.material.icons.extended)
+
+    // Material3
+    implementation(libs.material3)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
-    // Navigation Compose
+    // =========================================================================
+    // Navigation
+    // =========================================================================
     implementation(libs.androidx.navigation.compose)
 
-    // Coroutines
+    // =========================================================================
+    // Coroutines & Serialization
+    // =========================================================================
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
 
-    // Serialization
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.datetime)
 
-    // Retrofit
+    // =========================================================================
+    // Networking
+    // =========================================================================
+    implementation(platform(libs.okhttp.bom))
+
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.retrofit.converter.scalars)
 
-    // OkHttp
-    implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
 
-    // Room
+    // =========================================================================
+    // Database
+    // =========================================================================
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+
     ksp(libs.room.compiler)
 
+    // =========================================================================
     // Firebase
+    // =========================================================================
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
 
-    // Material3
-    implementation(libs.material3)
-
-    // Extended Icons
-    implementation(libs.extended.icons)
-
-    // Hilt
+    // =========================================================================
+    // Dependency Injection
+    // =========================================================================
     implementation(libs.hilt.android)
-    implementation(libs.hilt.lifecycle.viewmodel.compose)
+    implementation(libs.hilt.navigation.compose)
+
     ksp(libs.hilt.compiler)
 
-    // coil
+    // =========================================================================
+    // Image Loading
+    // =========================================================================
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
+    // =========================================================================
+    // Utilities
+    // =========================================================================
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.work.runtime.ktx)
+
+    // Optional (remove if not used)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+
+    // =========================================================================
     // Unit Testing
+    // =========================================================================
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.room.testing)
-    testImplementation(libs.hilt.android.testing)
     testImplementation(libs.mockwebserver3)
+    testImplementation(libs.hilt.android.testing)
 
     kspTest(libs.hilt.compiler)
 
-    // Android Instrumented Testing
+    // =========================================================================
+    // Instrumentation Testing
+    // =========================================================================
     androidTestImplementation(libs.androidx.test.core.ktx)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.junit.ktx)
@@ -185,9 +219,13 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
 
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
     androidTestImplementation(libs.room.testing)
-    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockwebserver3)
+    androidTestImplementation(libs.turbine)
+    androidTestImplementation(libs.hilt.android.testing)
 
     kspAndroidTest(libs.hilt.compiler)
 }
