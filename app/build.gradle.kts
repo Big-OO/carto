@@ -164,8 +164,9 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     // coil
-    implementation("io.coil-kt.coil3:coil-compose:3.5.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.5.0")
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
     // Unit Testing
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

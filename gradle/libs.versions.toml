@@ -1,6 +1,8 @@
 [versions]
 # Build
 agp = "9.2.1"
+coilCompose = "3.5.0"
+coilNetworkOkhttp = "3.5.0"
 kotlin = "2.4.0"
 ksp = "2.3.9"
 googleServices = "4.5.0"
@@ -137,6 +139,10 @@ material3 = {group = "org.jetbrains.compose.material3", name = "material3", vers
 
 # Extended Icons
 extended-icons = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "extendedIcons" }
+
+# Coil
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 
 
 [plugins]
