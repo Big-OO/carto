@@ -155,6 +155,9 @@ dependencies {
     // Material3
     implementation(libs.material3)
 
+    // Extended Icons
+    implementation(libs.extended.icons)
+
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.lifecycle.viewmodel.compose)
