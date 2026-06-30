@@ -10,6 +10,7 @@ sealed class Screen(val route: String) {
     data object AllVendors : Screen("all_vendors")
     data object Login : Screen("login")
     data object Register : Screen("register")
+    data object ForgotPassword : Screen("forgot_password")
     data object ProductDetail : Screen("product_detail/{productId}") {
         fun createRoute(productId: Long) = "product_detail/$productId"
     }
@@ -17,7 +18,6 @@ sealed class Screen(val route: String) {
 
 val bottomBarRoutes = setOf(
     Screen.Home.route,
-    Screen.Search.route,
     Screen.Saved.route,
     Screen.Cart.route,
     Screen.Account.route

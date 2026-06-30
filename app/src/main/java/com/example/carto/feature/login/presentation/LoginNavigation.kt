@@ -7,7 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.carto.feature.forgetpassword.presentation.ForgotPasswordScreen
-import com.example.carto.feature.register.presentation.RegisterScreen
+import com.example.carto.feature.register.presentation.view.RegisterScreen
 
 fun NavGraphBuilder.loginGraph(
     navController: NavController,
@@ -18,23 +18,17 @@ fun NavGraphBuilder.loginGraph(
             LoginScreen(
                 modifier = Modifier.fillMaxSize(),
                 onNavigateToHome = onNavigateToHome,
-                onNavigateToRegister = {
-                    navController.navigate("register")
-                },
-                onNavigateToForgotPassword = {
-                    navController.navigate("forgot_password")
-                }
+                onNavigateToRegister = { navController.navigate("register") },
+                onNavigateToForgotPassword = { navController.navigate("forgot_password") }
             )
         }
         composable("register") {
-            RegisterScreen(onBack = {
-                navController.popBackStack()
-            })
+            RegisterScreen(
+                onNavigateToLogin = { navController.popBackStack() }
+            )
         }
         composable("forgot_password") {
-            ForgotPasswordScreen(onBack = {
-                navController.popBackStack()
-            })
+            ForgotPasswordScreen(onBack = { navController.popBackStack() })
         }
     }
 }

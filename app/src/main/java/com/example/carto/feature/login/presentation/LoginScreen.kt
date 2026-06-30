@@ -19,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -27,14 +26,13 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.carto.R
-import com.example.carto.feature.login.presentation.components.PrimaryButton
-import com.example.carto.feature.login.presentation.components.TextField
+import com.example.carto.core.components.PrimaryButton
+import com.example.carto.core.components.TextField
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,13 +86,13 @@ fun LoginScreen(
                 )
             }
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
 
         Box(
             modifier = modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Column(
                 modifier = Modifier
@@ -148,7 +146,7 @@ fun LoginScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.Transparent)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0f))
                     ) {
                         Column(
                             modifier = Modifier
@@ -275,7 +273,7 @@ fun LoginScreen(
                         shape = RoundedCornerShape(12.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = Color.Transparent
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0f)
                         )
                     ) {
                         Image(
@@ -289,6 +287,29 @@ fun LoginScreen(
                             color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 15.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                AnimatedVisibility(
+                    visible = visible,
+                    enter = fadeIn(tween(750, delayMillis = 320))
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.login_as_guest),
+                            modifier = Modifier.clickable {
+                                viewModel.onEvent(LoginEvent.GuestLoginClicked)
+                            },
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            textDecoration = TextDecoration.Underline
                         )
                     }
                 }
@@ -336,15 +357,4 @@ fun LoginScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen(
-        modifier = Modifier,
-        onNavigateToHome = {},
-        onNavigateToRegister = {},
-        onNavigateToForgotPassword = {}
-    )
 }

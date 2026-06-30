@@ -2,6 +2,8 @@ package com.example.carto.feature.login.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carto.core.session.domain.usecase.SaveAuthenticatedSessionUseCase
+import com.example.carto.core.session.domain.usecase.SaveGuestSessionUseCase
 import com.example.carto.feature.login.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -14,7 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val saveAuthenticatedSessionUseCase: SaveAuthenticatedSessionUseCase,
+    private val saveGuestSessionUseCase: SaveGuestSessionUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -67,6 +71,10 @@ class LoginViewModel @Inject constructor(
                     LoginEffect.NavigateToRegister
                 )
             }
+
+            LoginEvent.GuestLoginClicked -> {
+                loginAsGuest()
+            }
         }
     }
 
@@ -100,7 +108,9 @@ class LoginViewModel @Inject constructor(
                 _state.value.email,
                 _state.value.password
             )
-                .onSuccess {
+                .onSuccess { user ->
+                    saveAuthenticatedSessionUseCase(user.customerId)
+
                     _state.update {
                         it.copy(isLoading = false)
                     }
@@ -121,6 +131,14 @@ class LoginViewModel @Inject constructor(
                         )
                     )
                 }
+        }
+    }
+
+
+    private fun loginAsGuest() {
+        viewModelScope.launch {
+            saveGuestSessionUseCase()
+            sendEffect(LoginEffect.NavigateToHome)
         }
     }
 

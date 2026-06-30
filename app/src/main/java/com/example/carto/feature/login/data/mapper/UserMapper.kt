@@ -4,16 +4,18 @@ import com.example.carto.feature.login.data.dto.UserDto
 import com.example.carto.feature.login.domain.model.User
 import com.google.firebase.auth.FirebaseUser
 
-fun FirebaseUser.toDto() = UserDto(
+fun FirebaseUser.toDto(customerId: String?) = UserDto(
     id = uid,
     email = email.orEmpty(),
-    name = displayName
+    name = displayName,
+    customerId = customerId,
 )
 
 fun UserDto.toDomain(): User {
     return User(
         id = id,
         email = email,
-        name = name
+        name = name,
+        customerId = customerId,
     )
 }

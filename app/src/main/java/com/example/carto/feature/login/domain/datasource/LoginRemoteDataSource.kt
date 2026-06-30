@@ -7,4 +7,4 @@ interface LoginRemoteDataSource {
         email: String,
         password: String
     ): UserDto
-}
+}

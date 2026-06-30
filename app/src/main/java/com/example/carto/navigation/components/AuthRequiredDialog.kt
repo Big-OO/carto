@@ -1,17 +1,22 @@
 package com.example.carto.navigation.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun AuthRequiredDialog(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onLoginClick: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -32,13 +37,10 @@ fun AuthRequiredDialog(
         },
         confirmButton = {
             Button(
-                onClick = onDismiss,
+                onClick = onLoginClick,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF0E0C0C)
-                )
-
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text("Log in")
             }

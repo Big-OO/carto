@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -18,8 +17,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.carto.feature.login.presentation.components.PrimaryButton
-import com.example.carto.feature.login.presentation.components.TextField
+import com.example.carto.core.components.PrimaryButton
+import com.example.carto.core.components.TextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,12 +28,12 @@ fun ForgotPasswordScreen(
     var email by remember { mutableStateOf("") }
 
     Scaffold(
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Column(
                 modifier = Modifier

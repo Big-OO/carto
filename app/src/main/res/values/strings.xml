@@ -10,4 +10,5 @@
     <string name="it_s_great_to_see_you_again">It\'s great to see you again.</string>
     <string name="login_to_your_account">Login to your account</string>
     <string name="email">Email</string>
+    <string name="login_as_guest">Continue as guest</string>
 </resources>
