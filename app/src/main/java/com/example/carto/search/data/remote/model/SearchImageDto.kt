@@ -1,0 +1,10 @@
+package com.example.carto.search.data.remote.model
+
+import com.google.gson.annotations.SerializedName
+
+data class SearchImageDto(
+    @SerializedName("id")
+    val id: Long?,
+    @SerializedName("src")
+    val src: String?,
+)
