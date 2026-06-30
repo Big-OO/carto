@@ -10,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.carto.home.navigation.homeGraph
 import com.example.carto.navigation.PlaceholderScreens.AccountPlaceholderScreen
 import com.example.carto.navigation.PlaceholderScreens.CartPlaceholderScreen
 import com.example.carto.navigation.PlaceholderScreens.HomePlaceholderScreen
@@ -37,10 +36,10 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             modifier = Modifier
                 .padding(innerPadding)
         ) {
-           homeGraph(navController)
-//            composable(Screen.Home.route) {
-//                HomePlaceholderScreen()
-//            }
+           // homeGraph(navController)
+            composable(Screen.Home.route) {
+                HomePlaceholderScreen()
+            }
 
             composable(Screen.Search.route) {
                 SearchPlaceholderScreen()
