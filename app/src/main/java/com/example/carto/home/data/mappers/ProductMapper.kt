@@ -1,10 +1,10 @@
-package com.example.carto.home.domain.mappers
+package com.example.carto.home.data.mappers
 
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.carto.home.domain.model.Product
-import com.example.carto.network.model.ProductDto
+import com.example.carto.home.data.model.ProductDto
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 

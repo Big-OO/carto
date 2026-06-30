@@ -1,16 +1,15 @@
 package com.example.carto.home.data.repository
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.carto.home.domain.model.Product
-import com.example.carto.home.domain.mappers.toCategory
-import com.example.carto.home.domain.mappers.toProduct
+import com.example.carto.home.data.mappers.toCategory
+import com.example.carto.home.data.mappers.toProduct
 import com.example.carto.home.domain.model.Category
 import com.example.carto.home.domain.repository.HomeRepository
-import com.example.carto.network.ShopifyApi
+import com.example.carto.home.data.HomeApiService
 
-class HomeRepositoryImp(private val api: ShopifyApi) : HomeRepository {
+class HomeRepositoryImp(private val api: HomeApiService) : HomeRepository {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getProducts(): Result<List<Product>> {
@@ -57,26 +56,16 @@ class HomeRepositoryImp(private val api: ShopifyApi) : HomeRepository {
             val response = api.getProductsByCollection(collectionId = collectionId)
 
 
-            Log.d("RAW", response.errorBody()?.string() ?: "No error")
+
 
             if (response.isSuccessful) {
 
                 val dtoProducts = response.body()?.products.orEmpty()
 
-                dtoProducts.forEach { dto ->
-                    android.util.Log.d(
-                        "DTO_DEBUG",
-                        """
-        Product: ${dto.title}
-        variants = ${dto.variants}
-        images = ${dto.images}
-        """.trimIndent()
-                    )
-                }
+
 
                 val products = dtoProducts.map { it.toProduct() }
 
-                println("Mapped ${products.size} products")
 
                 Result.success(products)
 

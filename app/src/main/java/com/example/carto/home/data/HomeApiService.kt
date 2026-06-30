@@ -1,13 +1,14 @@
-package com.example.carto.network
+package com.example.carto.home.data
 
 
-import com.example.carto.network.model.ProductsResponse
+import com.example.carto.home.data.model.CollectionsResponse
+import com.example.carto.home.data.model.ProductsResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface ShopifyApi {
+interface HomeApiService {
 
     @GET("admin/api/{version}/products.json")
     suspend fun getProducts(

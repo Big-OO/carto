@@ -1,7 +1,7 @@
-package com.example.carto.home.domain.mappers
+package com.example.carto.home.data.mappers
 
 import com.example.carto.home.domain.model.Category
-import com.example.carto.network.model.CollectionDto
+import com.example.carto.home.data.model.CollectionDto
 
 fun CollectionDto.toCategory() = Category(
     id = id,
