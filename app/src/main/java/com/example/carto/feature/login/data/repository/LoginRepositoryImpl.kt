@@ -19,10 +19,8 @@ class LoginRepositoryImpl @Inject constructor(
             val user = remoteDataSource
                 .login(email, password)
                 .toDomain()
-            Log.d("Carto", "login success: $user")
             Result.success(user)
         } catch (e: Exception) {
-            Log.e("Carto", "login failed: ${e.message}")
             Result.failure(e)
         }
     }
