@@ -152,6 +152,9 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
 
+    // Material3
+    implementation(libs.material3)
+
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.lifecycle.viewmodel.compose)

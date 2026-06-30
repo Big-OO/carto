@@ -46,6 +46,10 @@ androidxTestRunner = "1.7.0"
 androidxTestRules = "1.7.0"
 archCoreTesting = "2.2.0"
 
+# Material 3
+material3 = "1.11.0-alpha07"
+
+
 [libraries]
 # Core
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -124,6 +128,9 @@ androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
 androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
+
+# Material3
+material3 = {group = "org.jetbrains.compose.material3", name = "material3", version.ref = "material3"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
