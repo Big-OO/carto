@@ -5,8 +5,8 @@
 
 
     <application
-        android:name=".CartoApplication"
         android:allowBackup="true"
+        android:name=".app.CartoApplication"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"

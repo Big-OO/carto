@@ -94,119 +94,138 @@ android {
 }
 
 dependencies {
+
+    // =========================================================================
     // Core
+    // =========================================================================
     implementation(libs.androidx.core.ktx)
 
-    // Activity Compose
+    // =========================================================================
+    // Activity & Lifecycle
+    // =========================================================================
     implementation(libs.androidx.activity.compose)
 
-    // Lifecycle
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // Compose BOM
+    // =========================================================================
+    // Compose
+    // =========================================================================
     implementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
-    // Compose UI & Material 3
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
     implementation(libs.material.icons.extended)
-
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-
-    // Navigation Compose
-    implementation(libs.androidx.navigation.compose)
-
-    // Coroutines
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.play.services)
-
-    // Serialization
-    implementation(libs.kotlinx.serialization.json)
-
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.retrofit.converter.scalars)
-
-    // OkHttp
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging.interceptor)
-
-    // Room
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
-
-    // Firebase
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.firestore)
 
     // Material3
     implementation(libs.material3)
 
-    // Hilt
-    implementation(libs.hilt.android)
-    implementation(libs.hilt.navigation.compose)
-    implementation(libs.hilt.lifecycle.viewmodel.compose)
-    ksp(libs.hilt.compiler)
-
-    // Unit Testing
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
-    implementation(libs.kotlinx.datetime)
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.work.runtime.ktx)
-    implementation(libs.firebase.auth)
-    testImplementation(libs.junit)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    testImplementation(libs.kotlinx.coroutines.test)
+
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
+    // =========================================================================
+    // Navigation
+    // =========================================================================
+    implementation(libs.androidx.navigation.compose)
+
+    // =========================================================================
+    // Coroutines & Serialization
+    // =========================================================================
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.datetime)
+
+    // =========================================================================
+    // Networking
+    // =========================================================================
+    implementation(platform(libs.okhttp.bom))
+
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.retrofit.converter.scalars)
+
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+
+    // =========================================================================
+    // Database
+    // =========================================================================
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+
+    ksp(libs.room.compiler)
+
+    // =========================================================================
+    // Firebase
+    // =========================================================================
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+
+    // =========================================================================
+    // Dependency Injection
+    // =========================================================================
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+
+    ksp(libs.hilt.compiler)
+
+    // =========================================================================
+    // Image Loading
+    // =========================================================================
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    // =========================================================================
+    // Utilities
+    // =========================================================================
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.work.runtime.ktx)
+
+    // Optional (remove if not used)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+
+    // =========================================================================
+    // Unit Testing
+    // =========================================================================
+    testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.room.testing)
-    testImplementation(libs.hilt.android.testing)
     testImplementation(libs.mockwebserver3)
+    testImplementation(libs.hilt.android.testing)
 
     kspTest(libs.hilt.compiler)
 
-    // Android Instrumented Testing
+    // =========================================================================
+    // Instrumentation Testing
+    // =========================================================================
     androidTestImplementation(libs.androidx.test.core.ktx)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.junit.ktx)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.room.testing)
-    androidTestImplementation(libs.turbine)
-    androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.androidx.junit.v115)
-    androidTestImplementation(libs.androidx.core.ktx.v150)
-    androidTestImplementation(libs.androidx.runner)
-    implementation(libs.coil.compose)
-    implementation(libs.material.icons.extended)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
 
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
     androidTestImplementation(libs.room.testing)
-    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockwebserver3)
+    androidTestImplementation(libs.turbine)
+    androidTestImplementation(libs.hilt.android.testing)
 
     kspAndroidTest(libs.hilt.compiler)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
-    implementation(libs.kotlinx.coroutines.play.services)
 }
