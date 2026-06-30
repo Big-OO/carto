@@ -5,43 +5,47 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.carto.feature.home.presentation.HomeScreen
+import com.example.carto.feature.login.presentation.loginGraph
 import com.example.carto.ui.theme.CartoTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CartoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+            CartoTheme(darkTheme = false) {
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = "login_graph",
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    loginGraph(
+                        navController = navController,
+                        onNavigateToHome = {
+                            navController.navigate("home") {
+                                popUpTo("login_graph") { inclusive = true }
+                            }
+                        }
                     )
+                    composable("home") {
+                        HomeScreen(
+                            onBackToLogin = {
+                                navController.navigate("login_graph") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CartoTheme {
-        Greeting("Android")
     }
 }
