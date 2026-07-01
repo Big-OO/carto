@@ -16,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.carto.feature.home.data.HomeAdsFakeData.ads
@@ -39,6 +38,7 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onSeeAllProducts: () -> Unit,
     onSeeAllVendors: () -> Unit,
+    onSeeAllCategories: () -> Unit,
     onProductClick: (Product) -> Unit,
     onCategoryClick: (Category) -> Unit,
     onSearchClick: () -> Unit,
@@ -66,6 +66,7 @@ fun HomeScreen(
                 isGuest = session.isGuest,
                 onSeeAllProducts = onSeeAllProducts,
                 onSeeAllVendors = onSeeAllVendors,
+                onSeeAllCategories = onSeeAllCategories,
                 onProductClick = onProductClick,
                 onCategoryClick = onCategoryClick,
                 onSearchClick = onSearchClick,
@@ -85,6 +86,7 @@ private fun HomeContent(
     isGuest: Boolean,
     onSeeAllProducts: () -> Unit,
     onSeeAllVendors: () -> Unit,
+    onSeeAllCategories: () -> Unit,
     onProductClick: (Product) -> Unit,
     onCategoryClick: (Category) -> Unit,
     onSearchClick: () -> Unit,
@@ -111,14 +113,15 @@ private fun HomeContent(
 
         item {
             CategoriesSection(
-                categories = content.categories,
+                categories = content.categories.take(6),
                 onCategoryClick = onCategoryClick,
+                onSeeAll = onSeeAllCategories,
             )
         }
 
         item {
             ProductsSection(
-                products = content.products,
+                products = content.products.take(6),
                 isGuest = isGuest,
                 onSeeAll = onSeeAllProducts,
                 onProductClick = onProductClick,
@@ -128,7 +131,7 @@ private fun HomeContent(
 
         item {
             BrandsSection(
-                brands = content.brands,
+                brands = content.brands.take(6),
                 onSeeAll = onSeeAllVendors,
             )
         }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrandingWatermark
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.clip
@@ -53,7 +54,7 @@ fun BrandCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Image,
+                    imageVector = Icons.Default.BrandingWatermark,
                     contentDescription = brand.name,
                     modifier = Modifier.size(if (compact) 28.dp else 40.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant

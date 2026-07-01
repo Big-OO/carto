@@ -44,6 +44,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.offset
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,7 +106,11 @@ fun CategoryProductsScreen(
                 Spacer(Modifier.height(12.dp))
                 if (uiState.products.isEmpty()) {
 
-                    EmptyCategoryView()
+                    EmptyCategoryView(
+                        mainMesg = "No products found",
+                        subMesg = "This category doesn't contain any products yet.",
+                        image = Icons.Default.Category
+                    )
 
                 } else {
 
@@ -134,7 +140,7 @@ fun CategoryProductsScreen(
 }
 
 @Composable
-fun EmptyCategoryView() {
+fun EmptyCategoryView(mainMesg:String,subMesg:String,image: ImageVector?) {
 
     val infiniteTransition = rememberInfiniteTransition(label = "floating")
 
@@ -171,7 +177,7 @@ fun EmptyCategoryView() {
             ) {
 
                 Icon(
-                    imageVector = Icons.Default.Inventory2,
+                    imageVector = image?: Icons.Default.Inventory2,
                     contentDescription = null,
                     modifier = Modifier
                         .size(72.dp)
@@ -182,7 +188,7 @@ fun EmptyCategoryView() {
                 Spacer(Modifier.height(20.dp))
 
                 Text(
-                    text = "No products found",
+                    text = mainMesg,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -190,7 +196,7 @@ fun EmptyCategoryView() {
                 Spacer(Modifier.height(6.dp))
 
                 Text(
-                    text = "This category doesn't contain any products yet.",
+                    text = subMesg,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
