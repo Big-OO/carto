@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.carto.feature.home.data.HomeAdsFakeData.ads
@@ -95,7 +96,7 @@ private fun HomeContent(
             .fillMaxSize()
             .padding(horizontal = 12.dp)
             .background(MaterialTheme.colorScheme.background),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
             HomeHeader(onSearchClick = onSearchClick)

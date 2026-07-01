@@ -1,5 +1,6 @@
 package com.example.carto.feature.home.presentation.screens.sections
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.carto.feature.home.domain.model.Product
 import com.example.carto.feature.home.presentation.screens.components.ProductCard

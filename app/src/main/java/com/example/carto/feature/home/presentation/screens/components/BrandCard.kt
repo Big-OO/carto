@@ -41,13 +41,25 @@ fun BrandCard(
                 .padding(if (compact) 8.dp else 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-        if (brand.imageUrl == null) {
-            Icon(
-                imageVector = Icons.Default.Image,
-                contentDescription = brand.name,
-                modifier = Modifier.size(if (compact) 64.dp else 96.dp)
-            )
+        if (brand.imageUrl.isNullOrBlank()) {
+
+            Box(
+                modifier = Modifier
+                    .size(if (compact) 64.dp else 96.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Image,
+                    contentDescription = brand.name,
+                    modifier = Modifier.size(if (compact) 28.dp else 40.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
         } else {
+
             AsyncImage(
                 model = brand.imageUrl,
                 contentDescription = brand.name,
@@ -56,6 +68,7 @@ fun BrandCard(
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
+
         }
 
             Spacer(Modifier.height(10.dp))

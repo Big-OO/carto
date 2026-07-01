@@ -22,7 +22,6 @@ import javax.inject.Inject
 
 data class HomeContent(
     val products: List<Product> = emptyList(),
-  //  val vendors: List<VendorUi> = emptyList(),
     val categories: List<Category> = emptyList(),
     val brands: List<Brand> = emptyList()
 )
@@ -94,7 +93,6 @@ class HomeViewModel @Inject constructor(
             _uiState.value = HomeUiState.Success(
                 content = HomeContent(
                     products = products,
-                   // vendors = products.toVendorUiList(),
                     categories = categories,
                     brands = brandsResult.getOrThrow()
                 )

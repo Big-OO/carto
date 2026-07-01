@@ -5,15 +5,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,7 +29,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.carto.feature.home.presentation.CategoryProductsUiState
 import com.example.carto.feature.home.presentation.CategoryProductsViewModel
@@ -94,8 +97,13 @@ fun CategoryProductsScreen(
                 )
 
                 Spacer(Modifier.height(12.dp))
+                if (uiState.products.isEmpty()) {
 
-                LazyVerticalGrid(
+                    EmptyCategoryView()
+
+                } else {
+
+                  LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(12.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -114,7 +122,46 @@ fun CategoryProductsScreen(
                         )
                     }
                 }
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun EmptyCategoryView() {
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Icon(
+                imageVector = Icons.Default.Inventory2,
+                contentDescription = null,
+                modifier = Modifier.size(70.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Text(
+                text = "No products found",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            Text(
+                text = "This category doesn't contain any products yet.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
