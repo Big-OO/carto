@@ -39,6 +39,11 @@ import com.example.carto.feature.home.presentation.screens.components.CategoryCh
 import com.example.carto.feature.home.presentation.screens.components.LoadingBox
 import com.example.carto.feature.home.presentation.screens.components.ProductCard
 import kotlinx.coroutines.launch
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.layout.offset
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,37 +136,65 @@ fun CategoryProductsScreen(
 @Composable
 fun EmptyCategoryView() {
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    val infiniteTransition = rememberInfiniteTransition(label = "floating")
+
+    val offsetY by infiniteTransition.animateFloat(
+        initialValue = -6f,
+        targetValue = 6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 1800,
+                easing = EaseInOut
+            ),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "iconOffset"
+    )
+
+    AnimatedVisibility(
+        visible = true,
+        enter = fadeIn(
+            animationSpec = tween(500)
+        ) + slideInVertically(
+            initialOffsetY = { it / 3 },
+            animationSpec = tween(500)
+        )
     ) {
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
 
-            Icon(
-                imageVector = Icons.Default.Inventory2,
-                contentDescription = null,
-                modifier = Modifier.size(70.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-            Spacer(Modifier.height(16.dp))
+                Icon(
+                    imageVector = Icons.Default.Inventory2,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(72.dp)
+                        .offset(y = offsetY.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
 
-            Text(
-                text = "No products found",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+                Spacer(Modifier.height(20.dp))
 
-            Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "No products found",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
 
-            Text(
-                text = "This category doesn't contain any products yet.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+                Spacer(Modifier.height(6.dp))
+
+                Text(
+                    text = "This category doesn't contain any products yet.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

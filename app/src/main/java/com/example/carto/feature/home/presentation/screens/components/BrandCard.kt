@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,13 +33,14 @@ import com.example.carto.feature.home.domain.model.Brand
 @Composable
 fun BrandCard(
     brand: Brand,
-    compact: Boolean = true
+    compact: Boolean = true,
+    onBrandClick: (Brand) -> Unit = {}
 ) {
 
     Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(if (compact) 8.dp else 12.dp),
+                .padding(if (compact) 8.dp else 12.dp).clickable { onBrandClick(brand) },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
         if (brand.imageUrl.isNullOrBlank()) {

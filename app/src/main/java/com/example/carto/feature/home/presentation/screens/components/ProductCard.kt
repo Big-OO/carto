@@ -200,11 +200,13 @@ fun ProductCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Text(
-                            "$${"%.2f".format(product.price)}",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold
-                        )
+                        if (product.price > 0.0) {
+                            Text(
+                                text = "$${"%.2f".format(product.price)}",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
 
                         if (product.isOnSale &&
                             product.compareAtPrice != null

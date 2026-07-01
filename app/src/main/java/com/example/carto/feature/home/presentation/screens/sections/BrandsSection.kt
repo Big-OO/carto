@@ -20,7 +20,10 @@ fun BrandsSection(
         Spacer(Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             items(brands) { brand ->
-                BrandCard(brand = brand, compact = true)
+                BrandCard(brand = brand,
+                    compact = true,
+                    onBrandClick = {// Handle brand click here
+                })
             }
         }
     }
