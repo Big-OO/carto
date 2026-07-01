@@ -41,6 +41,9 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
             },
             onSearchClick = {
                 navController.navigate(HomeRoutes.Search)
+            },
+            onBrandClick = { brandName ->
+                navController.navigate(Screen.BrandProducts.createRoute(brandName))
             }
         )
     }
@@ -66,7 +69,26 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
 
         AllBrandsScreen(
             viewModel = viewModel,
-            onBackClick = { navController.popBackStack() }
+            onBackClick = { navController.popBackStack() },
+            onBrandClick = { brandName ->
+                navController.navigate(Screen.BrandProducts.createRoute(brandName))
+            }
+        )
+    }
+
+    composable(
+        route = Screen.BrandProducts.route,
+        arguments = listOf(
+            navArgument("brandName") { type = NavType.StringType }
+        )
+    ) { backStackEntry ->
+        val brandName = backStackEntry.arguments?.getString("brandName").orEmpty()
+        com.example.carto.feature.brand.presentation.BrandScreen(
+            brandId = brandName,
+            onBackClick = { navController.popBackStack() },
+            onProductClick = { productId ->
+                navController.navigate(Screen.ProductDetail.createRoute(productId))
+            }
         )
     }
 

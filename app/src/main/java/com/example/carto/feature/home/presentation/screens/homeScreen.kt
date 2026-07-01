@@ -42,6 +42,7 @@ fun HomeScreen(
     onProductClick: (Product) -> Unit,
     onCategoryClick: (Category) -> Unit,
     onSearchClick: () -> Unit,
+    onBrandClick: (String) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val session by viewModel.session.collectAsStateWithLifecycle()
@@ -69,6 +70,7 @@ fun HomeScreen(
                 onProductClick = onProductClick,
                 onCategoryClick = onCategoryClick,
                 onSearchClick = onSearchClick,
+                onBrandClick = onBrandClick,
                 onGuestFavoriteClick = {
                     scope.launch {
                         snackbarHostState.showSnackbar("Please login to add favorites.")
@@ -88,6 +90,7 @@ private fun HomeContent(
     onProductClick: (Product) -> Unit,
     onCategoryClick: (Category) -> Unit,
     onSearchClick: () -> Unit,
+    onBrandClick: (String) -> Unit,
     onGuestFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -130,6 +133,9 @@ private fun HomeContent(
             BrandsSection(
                 vendors = content.vendors,
                 onSeeAll = onSeeAllVendors,
+                onBrandClick = { vendor ->
+                    onBrandClick(vendor.name)
+                }
             )
         }
 

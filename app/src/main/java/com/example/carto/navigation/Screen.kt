@@ -14,6 +14,9 @@ sealed class Screen(val route: String) {
     data object ProductDetail : Screen("product_detail/{productId}") {
         fun createRoute(productId: Long) = "product_detail/$productId"
     }
+    data object BrandProducts : Screen("brand_products/{brandName}") {
+        fun createRoute(brandName: String) = "brand_products/${android.net.Uri.encode(brandName)}"
+    }
 }
 
 val bottomBarRoutes = setOf(
