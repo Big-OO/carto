@@ -22,7 +22,8 @@ import com.example.carto.feature.home.presentation.screens.components.BrandCard
 @Composable
 fun AllBrandsScreen(
     viewModel: HomeViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onBrandClick: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -49,7 +50,13 @@ fun AllBrandsScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxSize().padding(padding)
                 ) {
-                    items(state.content.vendors) { vendor -> BrandCard(vendor = vendor, compact = false) }
+                    items(state.content.vendors) { vendor -> 
+                        BrandCard(
+                            vendor = vendor,
+                            compact = false,
+                            onClick = { onBrandClick(vendor.name) }
+                        ) 
+                    }
                 }
             }
         }
