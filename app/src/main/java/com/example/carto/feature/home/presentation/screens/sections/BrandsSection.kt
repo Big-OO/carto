@@ -13,14 +13,19 @@ import com.example.carto.feature.home.domain.model.VendorUi
 @Composable
 fun BrandsSection(
     vendors: List<VendorUi>,
-    onSeeAll: () -> Unit
+    onSeeAll: () -> Unit,
+    onBrandClick: (VendorUi) -> Unit
 ) {
     Column {
         SectionHeader(title = "All Brands", onSeeAll = onSeeAll)
         Spacer(Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             items(vendors) { vendor ->
-                BrandCard(vendor = vendor, compact = true)
+                BrandCard(
+                    vendor = vendor,
+                    compact = true,
+                    onClick = { onBrandClick(vendor) }
+                )
             }
         }
     }

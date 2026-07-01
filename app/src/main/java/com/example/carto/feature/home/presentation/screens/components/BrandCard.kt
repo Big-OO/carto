@@ -20,13 +20,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun BrandCard(
     vendor: VendorUi,
     modifier: Modifier = Modifier,
-    compact: Boolean = true
+    compact: Boolean = true,
+    onClick: () -> Unit = {}
 ) {
     val avatarPalette = listOf(
         MaterialTheme.colorScheme.primary,
@@ -38,7 +40,9 @@ fun BrandCard(
     val accentColor = avatarPalette[vendor.name.hashCode().mod(avatarPalette.size)]
 
     Card(
-        modifier = modifier.width(if (compact) 100.dp else 160.dp),
+        modifier = modifier
+            .width(if (compact) 100.dp else 160.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
