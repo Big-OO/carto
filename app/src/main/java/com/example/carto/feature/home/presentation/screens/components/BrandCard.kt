@@ -12,77 +12,61 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.carto.feature.home.domain.model.VendorUi
 
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import coil3.compose.AsyncImage
+import com.example.carto.feature.home.domain.model.Brand
 
 @Composable
 fun BrandCard(
-    vendor: VendorUi,
-    modifier: Modifier = Modifier,
+    brand: Brand,
     compact: Boolean = true
 ) {
-    val avatarPalette = listOf(
-        MaterialTheme.colorScheme.primary,
-        MaterialTheme.colorScheme.secondary,
-        MaterialTheme.colorScheme.tertiary,
-        MaterialTheme.colorScheme.error,
-        MaterialTheme.colorScheme.outlineVariant,
-    )
-    val accentColor = avatarPalette[vendor.name.hashCode().mod(avatarPalette.size)]
 
-    Card(
-        modifier = modifier.width(if (compact) 100.dp else 160.dp),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
+    Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(if (compact) 8.dp else 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
+        if (brand.imageUrl == null) {
+            Icon(
+                imageVector = Icons.Default.Image,
+                contentDescription = brand.name,
+                modifier = Modifier.size(if (compact) 64.dp else 96.dp)
+            )
+        } else {
+            AsyncImage(
+                model = brand.imageUrl,
+                contentDescription = brand.name,
                 modifier = Modifier
-                    .size(if (compact) 48.dp else 64.dp)
-                    .background(accentColor.copy(alpha = 0.15f), shape = RoundedCornerShape(50)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = vendor.name.take(1).uppercase(),
-                    style = if (compact) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = accentColor
-                )
-            }
-
-            Spacer(Modifier.height(6.dp))
-
-            Text(
-                text = vendor.name,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1
+                    .size(if (compact) 64.dp else 96.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
-
-            Text(
-                text = "${vendor.productCount} items",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            if (!compact) {
-                Spacer(Modifier.height(4.dp))
-                AssistChip(
-                    onClick = {},
-                    label = { Text(vendor.mainCategory, style = MaterialTheme.typography.labelSmall) }
-                )
-            }
         }
-    }
+
+            Spacer(Modifier.height(10.dp))
+
+            Text(
+                text = brand.name,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium
+            )
+        }
+
 }

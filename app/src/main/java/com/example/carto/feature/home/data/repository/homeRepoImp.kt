@@ -1,8 +1,10 @@
 package com.example.carto.feature.home.data.repository
 
 import com.example.carto.feature.home.data.HomeApiService
+import com.example.carto.feature.home.data.mappers.toBrand
 import com.example.carto.feature.home.data.mappers.toCategory
 import com.example.carto.feature.home.data.mappers.toProduct
+import com.example.carto.feature.home.domain.model.Brand
 import com.example.carto.feature.home.domain.model.Category
 import com.example.carto.feature.home.domain.model.Product
 import com.example.carto.feature.home.domain.repository.HomeRepository
@@ -64,6 +66,20 @@ class HomeRepositoryImp @Inject constructor(
             if (response.isSuccessful) {
                 val products = response.body()?.products.orEmpty().map { it.toProduct() }
                 Result.success(products)
+            } else {
+                Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getBrands(): Result<List<Brand>> {
+        return try {
+            val response = api.getBrands()
+            if (response.isSuccessful) {
+                val brands = response.body()?.smartCollections.orEmpty().map { it.toBrand() }
+                Result.success(brands)
             } else {
                 Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
             }

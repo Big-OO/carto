@@ -52,11 +52,9 @@ fun CategoryProductsScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
-                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text(title) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {

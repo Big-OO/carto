@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import com.example.carto.core.session.domain.model.AppSession
 import com.example.carto.core.session.domain.usecase.ObserveAppSessionUseCase
+import com.example.carto.feature.home.domain.model.Brand
 import com.example.carto.feature.home.domain.model.Category
 import com.example.carto.feature.home.domain.model.Product
 import com.example.carto.feature.home.domain.model.VendorUi
@@ -21,8 +22,9 @@ import javax.inject.Inject
 
 data class HomeContent(
     val products: List<Product> = emptyList(),
-    val vendors: List<VendorUi> = emptyList(),
-    val categories: List<Category> = emptyList()
+  //  val vendors: List<VendorUi> = emptyList(),
+    val categories: List<Category> = emptyList(),
+    val brands: List<Brand> = emptyList()
 )
 
 sealed interface HomeUiState {
@@ -68,9 +70,13 @@ class HomeViewModel @Inject constructor(
             val categoriesDeferred = async {
                 repository.getCategories()
             }
+            val brandsDeferred = async {
+                repository.getBrands()
+            }
 
             val productsResult = productsDeferred.await()
             val categoriesResult = categoriesDeferred.await()
+            val brandsResult = brandsDeferred.await()
 
             productsResult.onFailure {
                 _uiState.value = HomeUiState.Error(it.message ?: "Unknown error")
@@ -88,8 +94,9 @@ class HomeViewModel @Inject constructor(
             _uiState.value = HomeUiState.Success(
                 content = HomeContent(
                     products = products,
-                    vendors = products.toVendorUiList(),
-                    categories = categories
+                   // vendors = products.toVendorUiList(),
+                    categories = categories,
+                    brands = brandsResult.getOrThrow()
                 )
             )
         }

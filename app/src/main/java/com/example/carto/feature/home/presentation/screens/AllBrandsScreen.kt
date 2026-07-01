@@ -43,13 +43,13 @@ fun AllBrandsScreen(
             is HomeUiState.Error -> ErrorBox(message = state.message, onRetry = viewModel::fetchHomeData)
             is HomeUiState.Success -> {
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    columns = GridCells.Adaptive(140.dp),
+                    contentPadding = PaddingValues(20.dp),
+                   horizontalArrangement = Arrangement.spacedBy(20.dp),
+                   verticalArrangement = Arrangement.spacedBy(24.dp),
                     modifier = Modifier.fillMaxSize().padding(padding)
                 ) {
-                    items(state.content.vendors) { vendor -> BrandCard(vendor = vendor, compact = false) }
+                    items(state.content.brands) { brand -> BrandCard(brand = brand, compact = false) }
                 }
             }
         }
