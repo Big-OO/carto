@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.example.carto.feature.home.domain.model.Brand
 import com.example.carto.feature.home.presentation.screens.components.SearchTextField
 
 
@@ -40,7 +41,8 @@ import com.example.carto.feature.home.presentation.screens.components.SearchText
 @Composable
 fun AllBrandsScreen(
     viewModel: HomeViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onBrandClick: (String) -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -140,7 +142,8 @@ fun AllBrandsScreen(
 
                                 BrandCard(
                                     brand = brand,
-                                    compact = false
+                                    compact = false,
+                                    onBrandClick = { onBrandClick(brand.name) }
                                 )
                             }
                         }

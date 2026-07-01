@@ -13,7 +13,8 @@ import com.example.carto.feature.home.domain.model.Brand
 @Composable
 fun BrandsSection(
     brands: List<Brand>,
-    onSeeAll: () -> Unit
+    onSeeAll: () -> Unit,
+    onBrandClick: (Brand) -> Unit
 ) {
     Column {
         SectionHeader(title = "All Brands", onSeeAll = onSeeAll)
@@ -22,8 +23,7 @@ fun BrandsSection(
             items(brands) { brand ->
                 BrandCard(brand = brand,
                     compact = true,
-                    onBrandClick = {// Handle brand click here
-                })
+                    onBrandClick = onBrandClick)
             }
         }
     }
