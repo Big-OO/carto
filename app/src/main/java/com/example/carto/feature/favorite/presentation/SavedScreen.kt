@@ -24,7 +24,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.carto.feature.favorite.presentation.components.FavoriteProductCard
 import com.example.carto.feature.favorite.presentation.components.FavoriteProductCardPlaceholder
 import com.example.carto.feature.home.presentation.screens.EmptyCategoryView
-import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,36 +43,47 @@ fun SavedScreen(
             CenterAlignedTopAppBar(title = { Text("Saved") })
         },
     ) { padding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+        val isLoading = favorites.isEmpty() && isInitialLoading
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentAlignment = Alignment.Center
         ) {
-            val isLoading = favorites.isEmpty() && isInitialLoading
-
             if (isLoading) {
-                items(6) {
-                    FavoriteProductCardPlaceholder()
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(6) {
+                        FavoriteProductCardPlaceholder()
+                    }
                 }
             } else if (favorites.isEmpty()) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    EmptyCategoryView(
-                        mainMsg = "No favorites yet",
-                        subMsg = "Tap the heart on any product to save it here.",
-                        image = Icons.Default.Favorite,
-                    )
-                }
+                EmptyCategoryView(
+                    mainMsg = "No favorites yet",
+                    subMsg = "Tap the heart on any product to save it here.",
+                    image = Icons.Default.Favorite,
+                )
             } else {
-                items(favorites, key = { it.productId }) { product ->
-                    FavoriteProductCard(
-                        product = product,
-                        onClick = { onProductClick(it.productId) },
-                        onRemoveClick = { viewModel.removeFavorite(it) },
-                    )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(favorites, key = { it.productId }) { product ->
+                        FavoriteProductCard(
+                            product = product,
+                            onClick = { onProductClick(it.productId) },
+                            onRemoveClick = { viewModel.removeFavorite(it) },
+                        )
+                    }
                 }
             }
         }
