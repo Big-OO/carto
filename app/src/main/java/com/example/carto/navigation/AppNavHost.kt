@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.carto.feature.forgetpassword.presentation.ForgotPasswordScreen
 import com.example.carto.feature.home.navigation.homeGraph
 import com.example.carto.feature.login.presentation.LoginScreen
+import com.example.carto.feature.profile.presentation.ProfileScreen
 import com.example.carto.feature.register.presentation.view.RegisterScreen
 import com.example.carto.feature.search.presentation.view.SearchScreen
 import com.example.carto.navigation.PlaceholderScreens.AccountPlaceholderScreen
@@ -123,7 +124,7 @@ fun AppNavHost(
             }
 
             composable(Screen.Account.route) {
-                AccountPlaceholderScreen()
+                ProfileScreen()
             }
         }
 
