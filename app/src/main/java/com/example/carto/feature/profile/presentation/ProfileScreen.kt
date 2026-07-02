@@ -26,18 +26,9 @@ import com.example.carto.core.components.SecondaryButton
 import com.example.carto.feature.profile.presentation.components.ProfileHeader
 import com.example.carto.feature.profile.presentation.components.ProfileInfoCard
 
-data class ProfileUiState(
-    val id: String,
-    val name: String,
-    val email: String,
-    val phone: String?,
-    val ordersCount: Int,
-    val totalSpent: String
-)
-
 @Composable
 fun ProfileScreen(
-    state: ProfileUiState = ProfileUiState(
+    state: ProfileState = ProfileState(
         id = "8780104335414",
         name = "Abdallah Elsobky",
         email = "sobky@gmail.com",
@@ -75,7 +66,7 @@ fun ProfileScreen(
             ) {
                 Spacer(Modifier.height(24.dp))
 
-                ProfileHeader(state)
+                ProfileHeader(state.name, state.id)
 
                 Spacer(Modifier.height(32.dp))
 
