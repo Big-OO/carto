@@ -12,6 +12,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.core.view.WindowCompat
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 
 class CartoColors(
     val primary: Color,
@@ -136,9 +139,51 @@ fun CartoTheme(
         }
     }
 
-    CompositionLocalProvider(
-        LocalCartoColors provides colorScheme,
-        LocalCartoTypography provides CartoTypographySetup,
-        content = content
-    )
+    val materialColorScheme = if (darkTheme) {
+        darkColorScheme(
+            primary = colorScheme.primary,
+            onPrimary = colorScheme.onPrimary,
+            primaryContainer = colorScheme.primaryContainer,
+            onPrimaryContainer = colorScheme.onPrimaryContainer,
+            secondary = colorScheme.secondary,
+            onSecondary = colorScheme.onSecondary,
+            background = colorScheme.background,
+            onBackground = colorScheme.onBackground,
+            surface = colorScheme.surface,
+            onSurface = colorScheme.onSurface,
+            surfaceVariant = colorScheme.surfaceVariant,
+            onSurfaceVariant = colorScheme.onSurfaceVariant,
+            outline = colorScheme.outline,
+            error = colorScheme.error,
+            onError = colorScheme.onError
+        )
+    } else {
+        lightColorScheme(
+            primary = colorScheme.primary,
+            onPrimary = colorScheme.onPrimary,
+            primaryContainer = colorScheme.primaryContainer,
+            onPrimaryContainer = colorScheme.onPrimaryContainer,
+            secondary = colorScheme.secondary,
+            onSecondary = colorScheme.onSecondary,
+            background = colorScheme.background,
+            onBackground = colorScheme.onBackground,
+            surface = colorScheme.surface,
+            onSurface = colorScheme.onSurface,
+            surfaceVariant = colorScheme.surfaceVariant,
+            onSurfaceVariant = colorScheme.onSurfaceVariant,
+            outline = colorScheme.outline,
+            error = colorScheme.error,
+            onError = colorScheme.onError
+        )
+    }
+
+    MaterialTheme(
+        colorScheme = materialColorScheme
+    ) {
+        CompositionLocalProvider(
+            LocalCartoColors provides colorScheme,
+            LocalCartoTypography provides CartoTypographySetup,
+            content = content
+        )
+    }
 }

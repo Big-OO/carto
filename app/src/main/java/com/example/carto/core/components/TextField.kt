@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.carto.ui.theme.CartoTheme
 
 @Composable
 fun TextField(
@@ -49,7 +50,7 @@ fun TextField(
     val primaryColor = MaterialTheme.colorScheme.primary
     val errorColor = MaterialTheme.colorScheme.error
     val outlineColor = MaterialTheme.colorScheme.outline
-    val successColor = MaterialTheme.colorScheme.tertiary
+    val successColor = CartoTheme.colors.tertiary
 
     val borderColor = when {
         hasError    -> errorColor
