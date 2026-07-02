@@ -1,6 +1,5 @@
 package com.example.carto.ui.theme
 
-import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -8,7 +7,7 @@ import androidx.compose.ui.unit.sp
 
 private val CartoFontFamily = FontFamily.Default
 
-val Typography = Typography(
+val CartoTypographySetup = CartoTypography(
     displayLarge = TextStyle(
         fontFamily = CartoFontFamily,
         fontWeight = FontWeight.ExtraBold,
