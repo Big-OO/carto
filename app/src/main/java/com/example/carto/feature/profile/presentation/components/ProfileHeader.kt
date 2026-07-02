@@ -1,17 +1,22 @@
 package com.example.carto.feature.profile.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -21,31 +26,38 @@ import androidx.compose.ui.unit.sp
 fun ProfileHeader(
     name: String,
     id: String,
+    modifier: Modifier = Modifier
 ) {
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val secondaryColor = MaterialTheme.colorScheme.secondary
+    val gradientBrush = Brush.linearGradient(
+        colors = listOf(primaryColor, secondaryColor)
+    )
+
     Column(
-        modifier = Modifier.padding(
-            horizontal = 40.dp,
-            vertical = 24.dp
-        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .size(90.dp)
-                .background(
-                    Color.Black,
-                    CircleShape
-                ),
+                .size(100.dp)
+                .border(3.dp, primaryColor.copy(alpha = 0.2f), CircleShape)
+                .padding(6.dp)
+                .background(gradientBrush, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = name
                     .split(" ")
+                    .filter { it.isNotEmpty() }
                     .take(2)
-                    .joinToString("") { it.first().toString() },
+                    .joinToString("") { it.firstOrNull()?.toString().orEmpty() }
+                    .uppercase(),
                 color = Color.White,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 32.sp,
+                fontWeight = FontWeight.ExtraBold
             )
         }
 
@@ -54,12 +66,23 @@ fun ProfileHeader(
         Text(
             text = name,
             fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
-        Text(
-            text = id,
-            color = Color.Gray
-        )
+        Spacer(Modifier.height(6.dp))
+
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        ) {
+            Text(
+                text = "Customer ID: $id",
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
+            )
+        }
     }
 }

@@ -20,10 +20,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.carto.feature.forgetpassword.presentation.ForgotPasswordScreen
 import com.example.carto.feature.home.navigation.homeGraph
 import com.example.carto.feature.login.presentation.LoginScreen
+import com.example.carto.feature.profile.presentation.ProfileEffect
 import com.example.carto.feature.profile.presentation.ProfileScreen
+import com.example.carto.feature.profile.presentation.ProfileViewModel
 import com.example.carto.feature.register.presentation.view.RegisterScreen
 import com.example.carto.feature.search.presentation.view.SearchScreen
-import com.example.carto.navigation.PlaceholderScreens.AccountPlaceholderScreen
 import com.example.carto.navigation.PlaceholderScreens.CartPlaceholderScreen
 import com.example.carto.navigation.PlaceholderScreens.SavedPlaceholderScreen
 import com.example.carto.navigation.components.AppBottomBar
@@ -124,7 +125,30 @@ fun AppNavHost(
             }
 
             composable(Screen.Account.route) {
-                ProfileScreen()
+                val profileViewModel: ProfileViewModel = hiltViewModel()
+                val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
+
+                LaunchedEffect(Unit) {
+                    profileViewModel.effect.collect { effect ->
+                        when (effect) {
+                            ProfileEffect.NavigateToLogin -> {
+                                navController.navigate(Screen.Login.route) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                            ProfileEffect.NavigateToSettings -> {
+                                // TODO: handle settings navigation
+                            }
+                            else -> {}
+                        }
+                    }
+                }
+
+                ProfileScreen(
+                    uiState = uiState,
+                    effectFlow = profileViewModel.effect,
+                    onEvent = { event -> profileViewModel.onEvent(event) }
+                )
             }
         }
 
