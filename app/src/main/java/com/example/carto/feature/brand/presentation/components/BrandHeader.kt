@@ -20,9 +20,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.example.carto.R
 import com.example.carto.feature.brand.presentation.Brand
 
 @Composable
@@ -47,6 +49,7 @@ fun BrandHeader(
                     .data(brand.imageUrl)
                     .crossfade(true)
                     .build(),
+                placeholder = painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription = "Brand Banner",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
