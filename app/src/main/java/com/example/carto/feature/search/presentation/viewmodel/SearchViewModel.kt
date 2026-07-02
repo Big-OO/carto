@@ -8,6 +8,7 @@ import com.example.carto.feature.search.domain.model.SearchFailureType
 import com.example.carto.feature.search.domain.model.SearchResult
 import com.example.carto.feature.search.domain.usecases.ClearSearchHistoryUseCase
 import com.example.carto.feature.search.domain.usecases.DeleteSearchHistoryItemUseCase
+import com.example.carto.feature.search.domain.usecases.GetInitialSearchProductsUseCase
 import com.example.carto.feature.search.domain.usecases.ObserveSearchHistoryUseCase
 import com.example.carto.feature.search.domain.usecases.SaveSearchQueryUseCase
 import com.example.carto.feature.search.domain.usecases.SearchProductsUseCase
@@ -30,6 +31,7 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    private val getInitialSearchProductsUseCase: GetInitialSearchProductsUseCase,
     private val searchProductsUseCase: SearchProductsUseCase,
     private val observeSearchHistoryUseCase: ObserveSearchHistoryUseCase,
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
@@ -44,25 +46,25 @@ class SearchViewModel @Inject constructor(
 
     init {
         observeHistory()
+        loadInitialProducts()
         observeQueryChanges()
     }
 
     override fun onSearchValueChanged(newValue: String) {
+        val cleanedValue = newValue.trimStart()
         _state.update {
             it.copy(
-                query = newValue,
-                errorMessage = "",
-                products = if (newValue.trim().length <= MINIMUM_SEARCH_LENGTH) emptyList() else it.products,
-                hasSearched = if (newValue.trim().length <= MINIMUM_SEARCH_LENGTH) false else it.hasSearched,
+                query = cleanedValue,
+                searchErrorMessage = "",
+                searchProducts = if (cleanedValue.isBlank()) emptyList() else it.searchProducts,
+                hasSearched = if (cleanedValue.isBlank()) false else it.hasSearched,
             )
         }
     }
 
     override fun onSearchSubmitted() {
         val query = _state.value.query.trim()
-        if (query.length <= MINIMUM_SEARCH_LENGTH) {
-            return
-        }
+        if (query.isBlank()) return
 
         viewModelScope.launch {
             saveQuery(query)
@@ -74,10 +76,14 @@ class SearchViewModel @Inject constructor(
         _state.update {
             it.copy(
                 query = query,
-                errorMessage = "",
-                products = emptyList(),
+                searchProducts = emptyList(),
+                searchErrorMessage = "",
                 hasSearched = false,
             )
+        }
+
+        viewModelScope.launch {
+            saveQuery(query)
         }
     }
 
@@ -102,14 +108,18 @@ class SearchViewModel @Inject constructor(
     override fun onProductClicked(productId: Long) {
         val query = _state.value.query.trim()
         viewModelScope.launch {
-            if (query.length > MINIMUM_SEARCH_LENGTH) {
+            if (query.isNotBlank()) {
                 saveQuery(query)
             }
             _effects.emit(SearchSideEffect.NavigateToProduct(productId))
         }
     }
 
-    override fun onBackClicked() = Unit
+    override fun onBackClicked() {
+        viewModelScope.launch {
+            _effects.emit(SearchSideEffect.NavigateBack)
+        }
+    }
 
     private fun observeHistory() {
         viewModelScope.launch {
@@ -119,16 +129,51 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun loadInitialProducts() {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    isInitialLoading = true,
+                    initialErrorMessage = "",
+                )
+            }
+
+            when (val result = getInitialSearchProductsUseCase()) {
+                is SearchResult.Success -> {
+                    _state.update {
+                        it.copy(
+                            isInitialLoading = false,
+                            initialProducts = result.data,
+                            initialErrorMessage = "",
+                            hasLoadedInitialProducts = true,
+                        )
+                    }
+                }
+
+                is SearchResult.Failure -> {
+                    result.failure.logForDeveloper()
+                    _state.update {
+                        it.copy(
+                            isInitialLoading = false,
+                            initialProducts = emptyList(),
+                            initialErrorMessage = result.failure.toUserMessage(),
+                            hasLoadedInitialProducts = true,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private fun observeQueryChanges() {
         viewModelScope.launch {
             state
                 .map { it.query.trim() }
-                .distinctUntilChanged()
                 .debounce(SEARCH_DEBOUNCE_MILLIS)
+                .distinctUntilChanged()
                 .collectLatest { query ->
-                    if (query.length > MINIMUM_SEARCH_LENGTH) {
-                        searchProducts(query)
-                    }
+                    if (query.isBlank()) return@collectLatest
+                    searchProducts(query)
                 }
         }
     }
@@ -136,8 +181,8 @@ class SearchViewModel @Inject constructor(
     private suspend fun searchProducts(query: String) {
         _state.update {
             it.copy(
-                isLoading = true,
-                errorMessage = "",
+                isSearchLoading = true,
+                searchErrorMessage = "",
                 hasSearched = true,
             )
         }
@@ -146,9 +191,9 @@ class SearchViewModel @Inject constructor(
             is SearchResult.Success -> {
                 _state.update {
                     it.copy(
-                        isLoading = false,
-                        products = result.data,
-                        errorMessage = "",
+                        isSearchLoading = false,
+                        searchProducts = result.data,
+                        searchErrorMessage = "",
                         hasSearched = true,
                     )
                 }
@@ -158,9 +203,9 @@ class SearchViewModel @Inject constructor(
                 result.failure.logForDeveloper()
                 _state.update {
                     it.copy(
-                        isLoading = false,
-                        products = emptyList(),
-                        errorMessage = result.failure.toUserMessage(),
+                        isSearchLoading = false,
+                        searchProducts = emptyList(),
+                        searchErrorMessage = result.failure.toUserMessage(),
                         hasSearched = true,
                     )
                 }
@@ -193,6 +238,5 @@ class SearchViewModel @Inject constructor(
     private companion object {
         const val TAG = "SearchViewModel"
         const val SEARCH_DEBOUNCE_MILLIS = 500L
-        const val MINIMUM_SEARCH_LENGTH = 3
     }
 }
