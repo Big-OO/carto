@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.services)
     alias(libs.plugins.apollo)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 apollo {
@@ -71,6 +72,16 @@ android {
             "SHOPIFY_ADMIN_ACCESS_TOKEN",
             localProperty("shopify.admin.access.token").asBuildConfigString()
         )
+        buildConfigField(
+            "String",
+            "MAPBOX_ACCESS_TOKEN",
+            localProperty("mapbox.access.token").asBuildConfigString()
+        )
+        buildConfigField(
+            "String",
+            "MAPBOX_DOWNLOADS_TOKEN",
+            localProperty("mapbox.downloads.token").asBuildConfigString()
+        )
     }
 
     buildTypes {
@@ -117,6 +128,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -186,4 +198,9 @@ dependencies {
     androidTestImplementation(libs.turbine)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
+    implementation(libs.mapbox.android.maps)
+    implementation(libs.mapbox.maps.compose)
+    implementation(libs.mapbox.search.android)
+    implementation(libs.play.services.location)
 }
