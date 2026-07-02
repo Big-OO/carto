@@ -1,4 +1,6 @@
 import java.util.Properties
+val packageName: String = "com.example.carto"
+
 
 plugins {
     alias(libs.plugins.android.application)
@@ -6,6 +8,16 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.apollo)
+}
+
+apollo {
+    service("shopify") {
+        packageName.set("$packageName.graphql.shopify")
+        srcDir("src/main/graphql/shopify")
+        schemaFiles.from("src/main/core/graphql/shopify/schema.graphqls")
+        packageNamesFromFilePaths()
+    }
 }
 
 val localProperties = Properties().apply {
@@ -32,11 +44,11 @@ hilt {
 }
 
 android {
-    namespace = "com.example.carto"
+    namespace = packageName
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.example.carto"
+        applicationId = packageName
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
@@ -136,6 +148,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.retrofit.converter.scalars)
+    implementation(libs.apollo.runtime)
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
