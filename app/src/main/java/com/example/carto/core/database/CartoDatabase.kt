@@ -12,7 +12,7 @@ import com.example.carto.feature.profile.data.local.CustomerProfileDao
         SearchHistoryEntity::class,
         CustomerProfileEntity::class
     ],
-    version = 2,
+    version = 1,
     exportSchema = true,
 )
 abstract class CartoDatabase : RoomDatabase() {
