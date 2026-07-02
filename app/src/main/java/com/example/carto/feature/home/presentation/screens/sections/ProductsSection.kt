@@ -35,10 +35,10 @@ fun ProductsSection(
             items(products) { product ->
                 ProductCard(
                     product = product,
-                    modifier = Modifier.width(180.dp),
+                    modifier = Modifier.width(190.dp),
                     isGuest = isGuest,
                     onClick = { onProductClick(product) },
-                    onGuestFavoriteClick = onGuestFavoriteClick,
+                    onGuestFavoriteClick = onGuestFavoriteClick
                 )
             }
         }

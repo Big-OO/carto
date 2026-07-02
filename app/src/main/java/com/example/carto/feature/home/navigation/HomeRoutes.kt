@@ -4,7 +4,8 @@ import android.net.Uri
 
 object HomeRoutes {
     const val AllProducts = "all_products"
-    const val AllVendors = "all_vendors"
+    const val AllBrands = "all_brands"
+    const val AllCategories = "all_categories"
     const val Search = "search"
     const val CategoryProducts = "category_products/{categoryId}/{categoryTitle}"
 

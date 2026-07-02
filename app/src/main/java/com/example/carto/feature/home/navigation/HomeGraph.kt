@@ -14,6 +14,7 @@ import com.example.carto.feature.home.presentation.CategoryProductsViewModel
 import com.example.carto.feature.home.presentation.HomeUiState
 import com.example.carto.feature.home.presentation.HomeViewModel
 import com.example.carto.feature.home.presentation.screens.AllBrandsScreen
+import com.example.carto.feature.home.presentation.screens.AllCategoriesScreen
 import com.example.carto.feature.home.presentation.screens.AllProductsScreen
 import com.example.carto.feature.home.presentation.screens.CategoryProductsScreen
 import com.example.carto.feature.home.presentation.screens.HomeScreen
@@ -31,7 +32,10 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
                 navController.navigate(HomeRoutes.AllProducts)
             },
             onSeeAllVendors = {
-                navController.navigate(HomeRoutes.AllVendors)
+                navController.navigate(HomeRoutes.AllBrands)
+            },
+            onSeeAllCategories = {
+                navController.navigate(HomeRoutes.AllCategories)
             },
             onProductClick = {
                 navController.navigate(Screen.ProductDetail.createRoute(it.id))
@@ -44,6 +48,34 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
             },
             onBrandClick = { brandName ->
                 navController.navigate(Screen.BrandProducts.createRoute(brandName))
+            }
+        )
+    }
+    composable(HomeRoutes.AllCategories) {
+
+        val viewModel: HomeViewModel = hiltViewModel()
+
+        val state by viewModel.uiState.collectAsState()
+
+        AllCategoriesScreen(
+            categories =
+                (state as? HomeUiState.Success)
+                    ?.content
+                    ?.categories
+                    ?: emptyList(),
+
+            onBackClick = {
+                navController.popBackStack()
+            },
+
+            onCategoryClick = {
+
+                navController.navigate(
+                    HomeRoutes.categoryProducts(
+                        it.id,
+                        it.title
+                    )
+                )
             }
         )
     }
@@ -64,7 +96,7 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         )
     }
 
-    composable(HomeRoutes.AllVendors) {
+    composable(HomeRoutes.AllBrands) {
         val viewModel: HomeViewModel = hiltViewModel()
 
         AllBrandsScreen(
