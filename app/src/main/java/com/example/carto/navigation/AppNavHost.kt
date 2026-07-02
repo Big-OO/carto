@@ -7,6 +7,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
@@ -29,6 +32,7 @@ import com.example.carto.navigation.PlaceholderScreens.CartPlaceholderScreen
 import com.example.carto.navigation.PlaceholderScreens.SavedPlaceholderScreen
 import com.example.carto.navigation.components.AppBottomBar
 import com.example.carto.navigation.viewmodel.AppSessionViewModel
+import com.example.carto.on_boarding.OnBoardingScreen
 
 
 @Composable
@@ -39,13 +43,13 @@ fun AppNavHost(
     val session by sessionViewModel.session.collectAsStateWithLifecycle()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
-    LaunchedEffect(session.isLoggedIn, session.isGuest, currentRoute) {
-        if (session.isLoggedIn && !session.isGuest && currentRoute == Screen.Login.route) {
-            navController.navigate(Screen.Home.route) {
-                popUpTo(Screen.Login.route) { inclusive = true }
-                launchSingleTop = true
-            }
+    val currentSession = session ?: return
+    var startRoute by rememberSaveable { mutableStateOf<String?>(null) }
+    if (startRoute == null) {
+        startRoute = when {
+            !currentSession.isOnboardingSeen -> Screen.onBoarding.route
+            currentSession.isLoggedIn -> Screen.Home.route
+            else -> Screen.Login.route
         }
     }
 
@@ -54,7 +58,7 @@ fun AppNavHost(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.Login.route,
+            startDestination = startRoute!!,
             modifier = Modifier.fillMaxSize()
         ) {
             composable(Screen.Login.route) {
@@ -74,6 +78,28 @@ fun AppNavHost(
                         navController.navigate(Screen.ForgotPassword.route)
                     }
                 )
+            }
+
+
+            composable(Screen.onBoarding.route){
+                OnBoardingScreen(
+                    onFinishOnboarding = {
+                        navController.navigate(Screen.Register.route){
+                            popUpTo(Screen.onBoarding.route){
+                                inclusive = true
+                            }
+                        }
+                        sessionViewModel.completeOnBoarding()
+                    }
+
+                ) {
+                    navController.navigate(Screen.Login.route){
+                        popUpTo(Screen.onBoarding.route){
+                            inclusive = true
+                        }
+                    }
+                    sessionViewModel.completeOnBoarding()
+                }
             }
 
             composable(Screen.Register.route) {
@@ -161,7 +187,7 @@ fun AppNavHost(
                         launchSingleTop = true
                     }
                 },
-                isGuest = session.isGuest,
+                isGuest = currentSession.isGuest,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .zIndex(1f)

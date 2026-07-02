@@ -1,5 +1,6 @@
 package com.example.carto.feature.home.domain.repository
 
+import com.example.carto.feature.home.domain.model.Brand
 import com.example.carto.feature.home.domain.model.Product
 import com.example.carto.feature.home.domain.model.Category
 
@@ -11,5 +12,7 @@ interface HomeRepository {
     suspend fun getProductsByCategory(
         collectionId: Long
     ): Result<List<Product>>
+
+    suspend fun getBrands(): Result<List<Brand>>
 }
 

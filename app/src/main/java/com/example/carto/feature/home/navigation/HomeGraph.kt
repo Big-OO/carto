@@ -14,6 +14,7 @@ import com.example.carto.feature.home.presentation.CategoryProductsViewModel
 import com.example.carto.feature.home.presentation.HomeUiState
 import com.example.carto.feature.home.presentation.HomeViewModel
 import com.example.carto.feature.home.presentation.screens.AllBrandsScreen
+import com.example.carto.feature.home.presentation.screens.AllCategoriesScreen
 import com.example.carto.feature.home.presentation.screens.AllProductsScreen
 import com.example.carto.feature.home.presentation.screens.CategoryProductsScreen
 import com.example.carto.feature.home.presentation.screens.HomeScreen
@@ -31,7 +32,10 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
                 navController.navigate(HomeRoutes.AllProducts)
             },
             onSeeAllVendors = {
-                navController.navigate(HomeRoutes.AllVendors)
+                navController.navigate(HomeRoutes.AllBrands)
+            },
+            onSeeAllCategories = {
+                navController.navigate(HomeRoutes.AllCategories)
             },
             onProductClick = {
                 navController.navigate(Screen.ProductDetail.createRoute(it.id))
@@ -47,16 +51,45 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
             }
         )
     }
+    composable(HomeRoutes.AllCategories) {
+
+        val viewModel: HomeViewModel = hiltViewModel()
+
+        val state by viewModel.uiState.collectAsState()
+
+        AllCategoriesScreen(
+            categories =
+                (state as? HomeUiState.Success)
+                    ?.content
+                    ?.categories
+                    ?: emptyList(),
+
+            onBackClick = {
+                navController.popBackStack()
+            },
+
+            onCategoryClick = {
+
+                navController.navigate(
+                    HomeRoutes.categoryProducts(
+                        it.id,
+                        it.title
+                    )
+                )
+            }
+        )
+    }
 
     composable(HomeRoutes.AllProducts) {
         val viewModel: HomeViewModel = hiltViewModel()
         val state by viewModel.uiState.collectAsState()
         val sessionViewModel: AppSessionViewModel = hiltViewModel()
         val session by sessionViewModel.session.collectAsStateWithLifecycle()
+        val currentSession = session ?: return@composable
 
         AllProductsScreen(
             products = (state as? HomeUiState.Success)?.content?.products ?: emptyList(),
-            isGuest = session.isGuest,
+            isGuest = currentSession.isGuest,
             onBackClick = { navController.popBackStack() },
             onProductClick = {
                 navController.navigate(Screen.ProductDetail.createRoute(it.id))
@@ -64,7 +97,7 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         )
     }
 
-    composable(HomeRoutes.AllVendors) {
+    composable(HomeRoutes.AllBrands) {
         val viewModel: HomeViewModel = hiltViewModel()
 
         AllBrandsScreen(
@@ -104,6 +137,7 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         val viewModel: CategoryProductsViewModel = hiltViewModel()
         val sessionViewModel: AppSessionViewModel = hiltViewModel()
         val session by sessionViewModel.session.collectAsStateWithLifecycle()
+        val currentSession = session ?: return@composable
 
         LaunchedEffect(categoryId) {
             viewModel.loadCategory(categoryId)
@@ -112,7 +146,7 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         CategoryProductsScreen(
             title = categoryTitle,
             viewModel = viewModel,
-            isGuest = session.isGuest,
+            isGuest = currentSession.isGuest,
             onBackClick = { navController.popBackStack() },
             onProductClick = {
                 navController.navigate(Screen.ProductDetail.createRoute(it))

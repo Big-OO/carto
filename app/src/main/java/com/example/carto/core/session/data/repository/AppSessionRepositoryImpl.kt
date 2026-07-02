@@ -10,6 +10,9 @@ class AppSessionRepositoryImpl @Inject constructor(
     private val localDataSource: AppSessionLocalDataSource,
 ) : AppSessionRepository {
     override val session: Flow<AppSession> = localDataSource.session
+    override suspend fun completeOnBoarding() {
+        localDataSource.completeOnBoarding()
+    }
 
     override suspend fun saveGuestSession() {
         localDataSource.saveGuestSession()

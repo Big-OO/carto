@@ -8,24 +8,22 @@ import androidx.compose.ui.unit.dp
 import com.example.carto.feature.home.presentation.screens.components.SectionHeader
 import com.example.carto.feature.home.presentation.screens.components.BrandCard
 import androidx.compose.runtime.Composable
-import com.example.carto.feature.home.domain.model.VendorUi
+import com.example.carto.feature.home.domain.model.Brand
 
 @Composable
 fun BrandsSection(
-    vendors: List<VendorUi>,
+    brands: List<Brand>,
     onSeeAll: () -> Unit,
-    onBrandClick: (VendorUi) -> Unit
+    onBrandClick: (Brand) -> Unit
 ) {
     Column {
         SectionHeader(title = "All Brands", onSeeAll = onSeeAll)
         Spacer(Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(vendors) { vendor ->
-                BrandCard(
-                    vendor = vendor,
+            items(brands) { brand ->
+                BrandCard(brand = brand,
                     compact = true,
-                    onClick = { onBrandClick(vendor) }
-                )
+                    onBrandClick = onBrandClick)
             }
         }
     }
