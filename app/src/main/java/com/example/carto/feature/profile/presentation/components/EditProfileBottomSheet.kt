@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +28,7 @@ import com.example.carto.core.components.PrimaryButton
 import com.example.carto.core.components.TextField
 import com.example.carto.feature.profile.presentation.ProfileEffect
 import com.example.carto.feature.profile.presentation.ProfileEvent
+import com.example.carto.ui.theme.CartoTheme
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -71,7 +71,7 @@ fun EditProfileBottomSheetContent(
             text = "Update Profile",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = CartoTheme.colors.onSurface
         )
 
         TextField(
@@ -93,7 +93,7 @@ fun EditProfileBottomSheetContent(
         if (updateError != null) {
             Text(
                 text = updateError ?: "",
-                color = MaterialTheme.colorScheme.error,
+                color = CartoTheme.colors.error,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -108,7 +108,7 @@ fun EditProfileBottomSheetContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                CircularProgressIndicator(color = CartoTheme.colors.primary)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Saving updates...", fontSize = 14.sp, color = Color.Gray)
             }

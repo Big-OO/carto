@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.carto.ui.theme.CartoTheme
 
 @Composable
 fun ProfileHeader(
@@ -28,8 +28,8 @@ fun ProfileHeader(
     id: String,
     modifier: Modifier = Modifier
 ) {
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val secondaryColor = MaterialTheme.colorScheme.secondary
+    val primaryColor = CartoTheme.colors.primary
+    val secondaryColor = CartoTheme.colors.secondary
     val gradientBrush = Brush.linearGradient(
         colors = listOf(primaryColor, secondaryColor)
     )
@@ -67,18 +67,18 @@ fun ProfileHeader(
             text = name,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            color = CartoTheme.colors.onBackground
         )
 
         Spacer(Modifier.height(6.dp))
 
         Surface(
             shape = CircleShape,
-            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            color = CartoTheme.colors.primaryContainer.copy(alpha = 0.3f)
         ) {
             Text(
                 text = "Customer ID: $id",
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = CartoTheme.colors.onPrimaryContainer,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)

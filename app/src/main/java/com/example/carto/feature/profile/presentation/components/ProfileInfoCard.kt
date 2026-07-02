@@ -11,16 +11,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.carto.ui.theme.CartoTheme
 
 @Composable
 fun ProfileInfoCard(
@@ -29,14 +28,14 @@ fun ProfileInfoCard(
     value: String,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
+    val borderColor = CartoTheme.colors.onSurface.copy(alpha = 0.06f)
     Card(
         modifier = modifier
             .fillMaxWidth()
             .border(1.dp, borderColor, RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
+            containerColor = CartoTheme.colors.surfaceVariant.copy(alpha = 0.2f)
         )
     ) {
         Row(
@@ -48,7 +47,7 @@ fun ProfileInfoCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = CartoTheme.colors.primary,
                 modifier = Modifier.padding(4.dp)
             )
 
@@ -57,14 +56,14 @@ fun ProfileInfoCard(
             Column {
                 Text(
                     text = title,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    color = CartoTheme.colors.onSurfaceVariant.copy(alpha = 0.7f),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )
 
                 Text(
                     text = value,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = CartoTheme.colors.onSurface,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold
                 )

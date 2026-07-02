@@ -21,7 +21,6 @@ import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -39,6 +38,7 @@ import com.example.carto.core.components.SecondaryButton
 import com.example.carto.feature.profile.presentation.ProfileEffect
 import com.example.carto.feature.profile.presentation.ProfileEvent
 import com.example.carto.feature.profile.presentation.model.ProfileData
+import com.example.carto.ui.theme.CartoTheme
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,7 +107,7 @@ fun ProfileSuccessContent(
                     text = "Settings",
                     icon = Icons.Outlined.Settings,
                     modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colorScheme.primary
+                    color = CartoTheme.colors.primary
                 ) { onEvent(ProfileEvent.SettingClicked) }
             }
 
@@ -153,7 +153,7 @@ fun ProfileSuccessContent(
             SecondaryButton(
                 text = "Logout",
                 icon = Icons.Outlined.Logout,
-                color = MaterialTheme.colorScheme.error
+                color = CartoTheme.colors.error
             ) { onEvent(ProfileEvent.LogoutClicked) }
         }
     }

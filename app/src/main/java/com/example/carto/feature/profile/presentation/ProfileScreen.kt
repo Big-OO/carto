@@ -2,7 +2,6 @@ package com.example.carto.feature.profile.presentation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -10,6 +9,7 @@ import com.example.carto.feature.profile.presentation.components.ProfileErrorCon
 import com.example.carto.feature.profile.presentation.components.ProfileGuestContent
 import com.example.carto.feature.profile.presentation.components.ProfileLoadingContent
 import com.example.carto.feature.profile.presentation.components.ProfileSuccessContent
+import com.example.carto.ui.theme.CartoTheme
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,7 +22,7 @@ fun ProfileScreen(
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = CartoTheme.colors.background
     ) {
         when (uiState) {
             is ProfileState.Loading -> {

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.carto.core.components.PrimaryButton
 import com.example.carto.feature.profile.presentation.ProfileEvent
+import com.example.carto.ui.theme.CartoTheme
 
 @Composable
 fun ProfileErrorContent(
@@ -39,21 +39,21 @@ fun ProfileErrorContent(
             imageVector = Icons.Outlined.ErrorOutline,
             contentDescription = "Error occurred",
             modifier = Modifier.size(80.dp),
-            tint = MaterialTheme.colorScheme.error
+            tint = CartoTheme.colors.error
         )
         Spacer(Modifier.height(24.dp))
         Text(
             text = "Something went wrong",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = CartoTheme.colors.onBackground,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(12.dp))
         Text(
             text = message,
             fontSize = 15.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = CartoTheme.colors.onSurfaceVariant,
             textAlign = TextAlign.Center,
             lineHeight = 22.sp
         )
