@@ -27,6 +27,7 @@ import com.example.carto.navigation.PlaceholderScreens.CartPlaceholderScreen
 import com.example.carto.navigation.PlaceholderScreens.SavedPlaceholderScreen
 import com.example.carto.navigation.components.AppBottomBar
 import com.example.carto.navigation.viewmodel.AppSessionViewModel
+import com.example.carto.on_boarding.OnBoardingScreen
 
 
 @Composable
@@ -52,7 +53,7 @@ fun AppNavHost(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.Login.route,
+            startDestination = if (session.isOnboardingSeen) Screen.Login.route else Screen.onBoarding.route,
             modifier = Modifier.fillMaxSize()
         ) {
             composable(Screen.Login.route) {
@@ -72,6 +73,26 @@ fun AppNavHost(
                         navController.navigate(Screen.ForgotPassword.route)
                     }
                 )
+            }
+
+
+            composable(Screen.onBoarding.route){
+                OnBoardingScreen(
+                    onFinishOnboarding = {
+                        navController.navigate(Screen.Home.route){
+                            popUpTo(Screen.onBoarding.route){
+                                inclusive = true
+                            }
+                        }
+                    }
+
+                ) {
+                    navController.navigate(Screen.Login.route){
+                        popUpTo(Screen.onBoarding.route){
+                            inclusive = true
+                        }
+                    }
+                }
             }
 
             composable(Screen.Register.route) {
