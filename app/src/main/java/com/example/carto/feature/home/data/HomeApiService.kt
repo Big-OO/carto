@@ -4,6 +4,7 @@ package com.example.carto.feature.home.data
 import com.example.carto.feature.home.data.model.CollectionsResponse
 import com.example.carto.feature.home.data.model.ProductDetailsResponse
 import com.example.carto.feature.home.data.model.ProductsResponse
+import com.example.carto.feature.home.data.model.SmartCollectionsResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -37,4 +38,9 @@ interface HomeApiService {
         @Path("version") version: String = "2026-01",
         @Path("collectionId") collectionId: Long
     ): Response<ProductsResponse>
+
+    @GET("admin/api/{version}/smart_collections.json")
+    suspend fun getBrands(
+        @Path("version") version: String = "2026-01"
+    ): Response<SmartCollectionsResponse>
 }

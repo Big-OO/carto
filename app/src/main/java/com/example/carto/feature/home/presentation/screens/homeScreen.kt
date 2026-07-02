@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -39,6 +38,7 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onSeeAllProducts: () -> Unit,
     onSeeAllVendors: () -> Unit,
+    onSeeAllCategories: () -> Unit,
     onProductClick: (Product) -> Unit,
     onCategoryClick: (Category) -> Unit,
     onSearchClick: () -> Unit,
@@ -67,6 +67,7 @@ fun HomeScreen(
                 isGuest = session.isGuest,
                 onSeeAllProducts = onSeeAllProducts,
                 onSeeAllVendors = onSeeAllVendors,
+                onSeeAllCategories = onSeeAllCategories,
                 onProductClick = onProductClick,
                 onCategoryClick = onCategoryClick,
                 onSearchClick = onSearchClick,
@@ -87,6 +88,7 @@ private fun HomeContent(
     isGuest: Boolean,
     onSeeAllProducts: () -> Unit,
     onSeeAllVendors: () -> Unit,
+    onSeeAllCategories: () -> Unit,
     onProductClick: (Product) -> Unit,
     onCategoryClick: (Category) -> Unit,
     onSearchClick: () -> Unit,
@@ -99,7 +101,7 @@ private fun HomeContent(
             .fillMaxSize()
             .padding(horizontal = 12.dp)
             .background(MaterialTheme.colorScheme.background),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
             HomeHeader(onSearchClick = onSearchClick)
@@ -114,14 +116,15 @@ private fun HomeContent(
 
         item {
             CategoriesSection(
-                categories = content.categories,
+                categories = content.categories.take(6),
                 onCategoryClick = onCategoryClick,
+                onSeeAll = onSeeAllCategories,
             )
         }
 
         item {
             ProductsSection(
-                products = content.products,
+                products = content.products.take(6),
                 isGuest = isGuest,
                 onSeeAll = onSeeAllProducts,
                 onProductClick = onProductClick,
@@ -131,7 +134,7 @@ private fun HomeContent(
 
         item {
             BrandsSection(
-                vendors = content.vendors,
+                brands = content.brands.take(6),
                 onSeeAll = onSeeAllVendors,
                 onBrandClick = { vendor ->
                     onBrandClick(vendor.name)
