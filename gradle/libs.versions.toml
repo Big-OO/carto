@@ -13,9 +13,9 @@ activityCompose = "1.13.0"
 lifecycle = "2.11.0"
 navigationCompose = "2.9.8"
 dataStore = "1.2.1"
-hiltLifecycleViewModelCompose = "1.3.0"
+hiltLifecycleViewModelCompose = "1.4.0"
 
-composeBom = "2026.06.00"
+composeBom = "2026.06.01"
 
 coroutines = "1.11.0"
 retrofit = "3.0.0"
@@ -33,6 +33,7 @@ archCoreTesting = "2.2.0"
 mockk = "1.14.11"
 turbine = "1.2.1"
 material3 = "1.11.0-alpha07"
+apollo = "5.0.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -98,6 +99,7 @@ androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxT
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+apollo-runtime = { group = "com.apollographql.apollo", name = "apollo-runtime", version.ref = "apollo" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -105,3 +107,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
