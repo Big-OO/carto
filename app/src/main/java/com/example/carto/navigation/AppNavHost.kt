@@ -17,9 +17,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.carto.feature.addresses.presentation.view.AddressesScreen
+import com.example.carto.feature.addresses.presentation.view.NewAddressScreen
+import com.example.carto.feature.addresses.presentation.viewmodel.NewAddressViewModel
 import com.example.carto.feature.forgetpassword.presentation.ForgotPasswordScreen
 import com.example.carto.feature.home.navigation.homeGraph
 import com.example.carto.feature.login.presentation.LoginScreen
+import com.example.carto.feature.map.domain.model.MapAddress
+import com.example.carto.feature.map.domain.model.MapPoint
+import com.example.carto.feature.map.domain.model.SelectedMapAddress
+import com.example.carto.feature.map.presentation.view.MapPickerScreen
+import com.example.carto.feature.map.utils.MapResultKeys
 import com.example.carto.feature.register.presentation.view.RegisterScreen
 import com.example.carto.feature.search.presentation.view.SearchScreen
 import com.example.carto.navigation.PlaceholderScreens.AccountPlaceholderScreen
@@ -124,6 +132,106 @@ fun AppNavHost(
 
             composable(Screen.Account.route) {
                 AccountPlaceholderScreen()
+            }
+
+            composable(Screen.Search.route) {
+                SearchScreen(
+                    onBackClick = {
+                        if (!navController.popBackStack()) {
+                            navController.navigate(Screen.Home.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    },
+                    onProductClick = { productId ->
+                        navController.navigate(
+                            Screen.ProductDetail.createRoute(productId)
+                        )
+                    }
+                )
+            }
+
+            composable(Screen.Addresses.route) {
+                AddressesScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onAddNewAddressClick = { navController.navigate(Screen.NewAddress.route) },
+                )
+            }
+
+            composable(Screen.NewAddress.route) { backStackEntry ->
+                val viewModel: NewAddressViewModel = hiltViewModel(backStackEntry)
+
+                val savedStateHandle = backStackEntry.savedStateHandle
+                val latitude by savedStateHandle
+                    .getStateFlow<Double?>(MapResultKeys.LATITUDE, null)
+                    .collectAsStateWithLifecycle()
+                val longitude by savedStateHandle
+                    .getStateFlow<Double?>(MapResultKeys.LONGITUDE, null)
+                    .collectAsStateWithLifecycle()
+                val addressLine by savedStateHandle
+                    .getStateFlow(MapResultKeys.ADDRESS_LINE, "")
+                    .collectAsStateWithLifecycle()
+                val city by savedStateHandle
+                    .getStateFlow(MapResultKeys.CITY, "")
+                    .collectAsStateWithLifecycle()
+                val province by savedStateHandle
+                    .getStateFlow(MapResultKeys.PROVINCE, "")
+                    .collectAsStateWithLifecycle()
+                val country by savedStateHandle
+                    .getStateFlow(MapResultKeys.COUNTRY, "")
+                    .collectAsStateWithLifecycle()
+                val zip by savedStateHandle
+                    .getStateFlow(MapResultKeys.ZIP, "")
+                    .collectAsStateWithLifecycle()
+
+                val selectedMapAddress = latitude?.let { lat ->
+                    longitude?.let { lng ->
+                        SelectedMapAddress(
+                            point = MapPoint(latitude = lat, longitude = lng),
+                            address = MapAddress(
+                                addressLine = addressLine,
+                                city = city,
+                                province = province,
+                                country = country,
+                                zip = zip,
+                            ),
+                        )
+                    }
+                }
+
+                NewAddressScreen(
+                    viewModel = viewModel,
+                    onBackClick = { navController.popBackStack() },
+                    onSelectFromMapClick = { navController.navigate(Screen.MapPicker.route) },
+                    selectedMapAddress = selectedMapAddress,
+                    onMapAddressConsumed = {
+                        savedStateHandle.remove<Double>(MapResultKeys.LATITUDE)
+                        savedStateHandle.remove<Double>(MapResultKeys.LONGITUDE)
+                        savedStateHandle.remove<String>(MapResultKeys.ADDRESS_LINE)
+                        savedStateHandle.remove<String>(MapResultKeys.CITY)
+                        savedStateHandle.remove<String>(MapResultKeys.PROVINCE)
+                        savedStateHandle.remove<String>(MapResultKeys.COUNTRY)
+                        savedStateHandle.remove<String>(MapResultKeys.ZIP)
+                    },
+                )
+            }
+
+            composable(Screen.MapPicker.route) {
+                MapPickerScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onLocationSelected = { result ->
+                        navController.previousBackStackEntry?.savedStateHandle?.apply {
+                            set(MapResultKeys.LATITUDE, result.point.latitude)
+                            set(MapResultKeys.LONGITUDE, result.point.longitude)
+                            set(MapResultKeys.ADDRESS_LINE, result.address.addressLine)
+                            set(MapResultKeys.CITY, result.address.city)
+                            set(MapResultKeys.PROVINCE, result.address.province)
+                            set(MapResultKeys.COUNTRY, result.address.country)
+                            set(MapResultKeys.ZIP, result.address.zip)
+                        }
+                        navController.popBackStack()
+                    },
+                )
             }
         }
 
