@@ -2,16 +2,77 @@ package com.example.carto.ui.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.TextStyle
 import androidx.core.view.WindowCompat
 
-private val LightColorScheme = lightColorScheme(
+class CartoColors(
+    val primary: Color,
+    val onPrimary: Color,
+    val primaryContainer: Color,
+    val onPrimaryContainer: Color,
+    val secondary: Color,
+    val tertiary: Color,
+    val onTertiary: Color,
+    val onSecondary: Color,
+    val secondaryContainer: Color,
+    val onSecondaryContainer: Color,
+    val background: Color,
+    val onBackground: Color,
+    val surface: Color,
+    val onSurface: Color,
+    val surfaceVariant: Color,
+    val onSurfaceVariant: Color,
+    val outline: Color,
+    val outlineVariant: Color,
+    val error: Color,
+    val onError: Color,
+)
+
+class CartoTypography(
+    val displayLarge: TextStyle,
+    val headlineLarge: TextStyle,
+    val headlineMedium: TextStyle,
+    val headlineSmall: TextStyle,
+    val titleLarge: TextStyle,
+    val titleMedium: TextStyle,
+    val titleSmall: TextStyle,
+    val bodyLarge: TextStyle,
+    val bodyMedium: TextStyle,
+    val bodySmall: TextStyle,
+    val labelLarge: TextStyle,
+    val labelMedium: TextStyle,
+    val labelSmall: TextStyle,
+)
+
+val LocalCartoColors = staticCompositionLocalOf<CartoColors> {
+    error("No CartoColors provided")
+}
+
+val LocalCartoTypography = staticCompositionLocalOf<CartoTypography> {
+    error("No CartoTypography provided")
+}
+
+object CartoTheme {
+    val colors: CartoColors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalCartoColors.current
+
+    val typography: CartoTypography
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalCartoTypography.current
+}
+
+private val LightColorScheme = CartoColors(
     primary = CartoBlack,
     onPrimary = CartoWhite,
     primaryContainer = CartoSurfaceSoft,
@@ -34,7 +95,7 @@ private val LightColorScheme = lightColorScheme(
     onError = CartoWhite,
 )
 
-private val DarkColorScheme = darkColorScheme(
+private val DarkColorScheme = CartoColors(
     primary = CartoWhite,
     onPrimary = CartoBlack,
     primaryContainer = CartoDarkSurfaceSoft,
@@ -75,9 +136,9 @@ fun CartoTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content,
+    CompositionLocalProvider(
+        LocalCartoColors provides colorScheme,
+        LocalCartoTypography provides CartoTypographySetup,
+        content = content
     )
 }

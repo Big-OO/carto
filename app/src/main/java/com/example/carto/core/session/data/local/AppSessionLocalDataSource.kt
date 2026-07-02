@@ -25,6 +25,7 @@ class AppSessionLocalDataSource @Inject constructor(
         }
         .map { preferences ->
             AppSession(
+                isOnboardingSeen = preferences[IS_ONBOARDING_COMPLETED] ?: false,
                 isLoggedIn = preferences[IS_LOGGED_IN] ?: false,
                 isGuest = preferences[IS_GUEST] ?: false,
                 customerId = preferences[CUSTOMER_ID],
@@ -51,6 +52,12 @@ class AppSessionLocalDataSource @Inject constructor(
         }
     }
 
+    suspend fun completeOnBoarding(){
+        dataStore.edit {preferences ->
+            preferences[IS_ONBOARDING_COMPLETED] = true
+        }
+    }
+
     suspend fun clearSession() {
         dataStore.edit { preferences ->
             preferences.clear()
@@ -58,6 +65,8 @@ class AppSessionLocalDataSource @Inject constructor(
     }
 
     private companion object {
+
+        val IS_ONBOARDING_COMPLETED = booleanPreferencesKey("is_onboarding_completed")
         val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
         val IS_GUEST = booleanPreferencesKey("is_guest")
         val CUSTOMER_ID = stringPreferencesKey("customer_id")

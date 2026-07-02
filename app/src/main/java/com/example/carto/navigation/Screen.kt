@@ -1,6 +1,8 @@
 package com.example.carto.navigation
 
 sealed class Screen(val route: String) {
+
+    data object onBoarding : Screen("onboarding")
     data object Home : Screen("home")
     data object Search : Screen("search")
     data object Saved : Screen("saved")

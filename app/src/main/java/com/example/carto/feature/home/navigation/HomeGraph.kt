@@ -85,10 +85,11 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         val state by viewModel.uiState.collectAsState()
         val sessionViewModel: AppSessionViewModel = hiltViewModel()
         val session by sessionViewModel.session.collectAsStateWithLifecycle()
+        val currentSession = session ?: return@composable
 
         AllProductsScreen(
             products = (state as? HomeUiState.Success)?.content?.products ?: emptyList(),
-            isGuest = session.isGuest,
+            isGuest = currentSession.isGuest,
             onBackClick = { navController.popBackStack() },
             onProductClick = {
                 navController.navigate(Screen.ProductDetail.createRoute(it.id))
@@ -136,6 +137,7 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         val viewModel: CategoryProductsViewModel = hiltViewModel()
         val sessionViewModel: AppSessionViewModel = hiltViewModel()
         val session by sessionViewModel.session.collectAsStateWithLifecycle()
+        val currentSession = session ?: return@composable
 
         LaunchedEffect(categoryId) {
             viewModel.loadCategory(categoryId)
@@ -144,7 +146,7 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         CategoryProductsScreen(
             title = categoryTitle,
             viewModel = viewModel,
-            isGuest = session.isGuest,
+            isGuest = currentSession.isGuest,
             onBackClick = { navController.popBackStack() },
             onProductClick = {
                 navController.navigate(Screen.ProductDetail.createRoute(it))
