@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface AppSessionRepository {
     val session: Flow<AppSession>
 
+    suspend fun completeOnBoarding()
+
     suspend fun saveGuestSession()
 
     suspend fun saveAuthenticatedSession(customerId: String?)
