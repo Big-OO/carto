@@ -28,6 +28,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
+import com.example.carto.feature.profile.data.local.CustomerProfileDao
+
 @Module
 @InstallIn(SingletonComponent::class)
 object SharedDIModule {
@@ -105,7 +107,15 @@ object SharedDIModule {
             context,
             CartoDatabase::class.java,
             CartoDatabase.DATABASE_NAME,
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCustomerProfileDao(database: CartoDatabase): CustomerProfileDao {
+        return database.customerProfileDao()
     }
 
     @Provides

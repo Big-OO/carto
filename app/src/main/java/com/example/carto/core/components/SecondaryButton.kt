@@ -23,11 +23,12 @@ fun SecondaryButton(
     text: String,
     icon: ImageVector,
     color: Color = Color.Black,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp),
         shape = RoundedCornerShape(10.dp),

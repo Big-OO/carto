@@ -1,5 +1,6 @@
 package com.example.carto.feature.profile.presentation.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,25 +26,30 @@ import androidx.compose.ui.unit.sp
 fun ProfileInfoCard(
     icon: ImageVector,
     title: String,
-    value: String
+    value: String,
+    modifier: Modifier = Modifier
 ) {
+    val borderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .border(1.dp, borderColor, RoundedCornerShape(16.dp)),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF8F8F8)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(18.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Color.Black
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(4.dp)
             )
 
             Spacer(Modifier.width(16.dp))
@@ -50,12 +57,15 @@ fun ProfileInfoCard(
             Column {
                 Text(
                     text = title,
-                    color = Color.Gray,
-                    fontSize = 12.sp
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
                 )
 
                 Text(
                     text = value,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold
                 )
             }

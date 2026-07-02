@@ -1,10 +1,11 @@
 package com.example.carto.feature.profile.presentation
 
-data class ProfileState(
-    val id: String,
-    val name: String,
-    val email: String,
-    val phone: String?,
-    val ordersCount: Int,
-    val totalSpent: String
-)
+import com.example.carto.feature.profile.presentation.model.ProfileData
+
+
+sealed interface ProfileState {
+    object Loading : ProfileState
+    data class Success(val profile: ProfileData) : ProfileState
+    object Guest : ProfileState
+    data class Error(val message: String) : ProfileState
+}
