@@ -1,0 +1,57 @@
+package com.example.carto.feature.map.data.repository
+
+import com.example.carto.feature.map.data.datasource.AndroidGeocodingDataSource
+import com.example.carto.feature.map.data.datasource.LocationDataSource
+import com.example.carto.feature.map.data.datasource.MapboxSearchDataSource
+import com.example.carto.feature.map.data.result.MapDataResult
+import com.example.carto.feature.map.domain.model.MapAddress
+import com.example.carto.feature.map.domain.model.MapFailure
+import com.example.carto.feature.map.domain.model.MapFailureType
+import com.example.carto.feature.map.domain.model.MapPoint
+import com.example.carto.feature.map.domain.model.MapResult
+import com.example.carto.feature.map.domain.model.MapSearchSuggestion
+import com.example.carto.feature.map.domain.repository.MapRepository
+import javax.inject.Inject
+
+class MapRepositoryImpl @Inject constructor(
+    private val locationDataSource: LocationDataSource,
+    private val searchDataSource: MapboxSearchDataSource,
+    private val geocodingDataSource: AndroidGeocodingDataSource,
+) : MapRepository {
+
+    override suspend fun getCurrentLocation(): MapResult<MapPoint> {
+        return when (val result = locationDataSource.getCurrentLocation()) {
+            is MapDataResult.Success -> MapResult.Success(result.data)
+            is MapDataResult.Failure -> MapResult.Failure(
+                MapFailure(
+                    type = MapFailureType.LocationUnavailable,
+                    developerMessage = result.developerMessage,
+                )
+            )
+        }
+    }
+
+    override suspend fun searchPlaces(query: String): MapResult<List<MapSearchSuggestion>> {
+        return when (val result = searchDataSource.search(query)) {
+            is MapDataResult.Success -> MapResult.Success(result.data)
+            is MapDataResult.Failure -> MapResult.Failure(
+                MapFailure(
+                    type = MapFailureType.SearchFailed,
+                    developerMessage = result.developerMessage,
+                )
+            )
+        }
+    }
+
+    override suspend fun reverseGeocode(point: MapPoint): MapResult<MapAddress> {
+        return when (val result = geocodingDataSource.reverseGeocode(point)) {
+            is MapDataResult.Success -> MapResult.Success(result.data)
+            is MapDataResult.Failure -> MapResult.Failure(
+                MapFailure(
+                    type = MapFailureType.GeocodingFailed,
+                    developerMessage = result.developerMessage,
+                )
+            )
+        }
+    }
+}
