@@ -12,21 +12,26 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.carto.R
 import com.example.carto.feature.settings.presentation.components.ExpandableSelectionItem
 import com.example.carto.feature.settings.presentation.components.SettingsCard
 import com.example.carto.feature.settings.presentation.components.SettingsItem
 import com.example.carto.feature.settings.presentation.components.SettingsSection
-import com.example.carto.feature.settings.presentation.model.AppLanguage
-import com.example.carto.feature.settings.presentation.model.AppTheme
-import com.example.carto.feature.settings.presentation.model.Currency
+import com.example.carto.feature.settings.domain.model.AppLanguage
+import com.example.carto.feature.settings.domain.model.AppTheme
+import com.example.carto.feature.settings.domain.model.Currency
 import com.example.carto.ui.theme.CartoTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    viewModel: SettingsViewModel = hiltViewModel()
+) {
     var isScreenVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -34,16 +39,16 @@ fun SettingsScreen() {
         isScreenVisible = true
     }
 
-    var selectedCurrency by remember { mutableStateOf(Currency.USD) }
-    var selectedTheme by remember { mutableStateOf(AppTheme.LIGHT) }
-    var selectedLanguage by remember { mutableStateOf(AppLanguage.ENGLISH) }
+    val selectedCurrency by viewModel.currency.collectAsState()
+    val selectedTheme by viewModel.theme.collectAsState()
+    val selectedLanguage by viewModel.language.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Settings",
+                        text = stringResource(R.string.settings),
                         style = CartoTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = CartoTheme.colors.primary
@@ -106,7 +111,7 @@ fun SettingsScreen() {
                                 icon = Icons.Outlined.CurrencyExchange,
                                 options = Currency.entries,
                                 selectedOption = selectedCurrency,
-                                onOptionSelected = { selectedCurrency = it },
+                                onOptionSelected = { viewModel.setCurrency(it) },
                                 optionLabel = { it.displayName }
                             )
                         }
@@ -121,7 +126,7 @@ fun SettingsScreen() {
                                 icon = Icons.Outlined.DarkMode,
                                 options = AppTheme.entries,
                                 selectedOption = selectedTheme,
-                                onOptionSelected = { selectedTheme = it },
+                                onOptionSelected = { viewModel.setTheme(it) },
                                 optionLabel = { it.displayName }
                             )
                             HorizontalDivider(color = CartoTheme.colors.outline)
@@ -130,7 +135,7 @@ fun SettingsScreen() {
                                 icon = Icons.Outlined.Language,
                                 options = AppLanguage.entries,
                                 selectedOption = selectedLanguage,
-                                onOptionSelected = { selectedLanguage = it },
+                                onOptionSelected = { viewModel.setLanguage(it) },
                                 optionLabel = { it.displayName }
                             )
                         }
