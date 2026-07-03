@@ -1,9 +1,9 @@
 package com.example.carto.feature.map.data.datasource
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import com.example.carto.feature.map.data.result.MapDataResult
 import com.example.carto.feature.map.domain.model.MapPoint
@@ -24,7 +24,7 @@ class LocationDataSource @Inject constructor(
         LocationServices.getFusedLocationProviderClient(context)
     }
 
-    @SuppressLint("MissingPermission")
+    @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     suspend fun getCurrentLocation(timeoutMillis: Long = 10_000L): MapDataResult<MapPoint> {
         if (!hasLocationPermission()) {
             return MapDataResult.Failure("Location permission is not granted")
@@ -40,7 +40,7 @@ class LocationDataSource @Inject constructor(
                         cancellationTokenSource.token,
                     ).addOnSuccessListener { location ->
                         continuation.resume(location)
-                    }.addOnFailureListener { error ->
+                    }.addOnFailureListener { _ ->
                         continuation.resume(null)
                     }
 
