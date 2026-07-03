@@ -9,5 +9,5 @@ data class NewAddressUiState(
     val errorMessage: String? = null,
 ) {
     val canSave: Boolean
-        get() = form.address1.isNotBlank() && form.phone.isNotBlank()
+        get() = form.address1.isNotBlank()
 }

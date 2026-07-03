@@ -26,7 +26,6 @@ class NewAddressViewModel @Inject constructor(
 
     fun onNameChanged(value: String) = updateForm { it.copy(name = value) }
     fun onAddressChanged(value: String) = updateForm { it.copy(address1 = value) }
-    fun onPhoneChanged(value: String) = updateForm { it.copy(phone = value) }
     fun onCityChanged(value: String) = updateForm { it.copy(city = value) }
     fun onProvinceChanged(value: String) = updateForm { it.copy(province = value) }
     fun onCountryChanged(value: String) = updateForm { it.copy(country = value) }

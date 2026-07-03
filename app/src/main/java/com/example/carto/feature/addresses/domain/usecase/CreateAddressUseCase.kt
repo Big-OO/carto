@@ -11,7 +11,7 @@ class CreateAddressUseCase @Inject constructor(
     private val repository: AddressesRepository,
 ) {
     suspend operator fun invoke(form: AddressForm): AddressResult<com.example.carto.feature.addresses.domain.model.CustomerAddress> {
-        if (form.address1.isBlank() || form.phone.isBlank() || form.name.split(" ").size < 2) {
+        if (form.address1.isBlank() || form.name.split(" ").size < 2) {
             return AddressResult.Failure(
                 AddressFailure(
                     type = AddressFailureType.Validation,

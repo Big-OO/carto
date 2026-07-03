@@ -35,7 +35,6 @@ class AddressesRemoteDataSource @Inject constructor(
                     province = form.province,
                     country = form.country,
                     zip = form.zip,
-                    phone = form.phone,
                     firstName = form.firstName,
                     lastName = form.lastName,
                 )

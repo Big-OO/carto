@@ -8,7 +8,6 @@ data class CreateAddressDto(
     @SerializedName("province") val province: String,
     @SerializedName("country") val country: String,
     @SerializedName("zip") val zip: String,
-    @SerializedName("phone") val phone: String,
     @SerializedName("first_name") val firstName: String,
     @SerializedName("last_name") val lastName: String,
 )

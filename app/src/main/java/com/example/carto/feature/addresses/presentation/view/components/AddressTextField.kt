@@ -39,6 +39,7 @@ fun AddressTextField(
                 )
             },
             singleLine = singleLine,
+            maxLines = 2,
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.outline,

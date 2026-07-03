@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -101,6 +102,7 @@ fun NewAddressScreen(
                 shape = RoundedCornerShape(10.dp),
             ) {
                 Icon(imageVector = Icons.Outlined.Map, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
                 Text(text = "Select from map")
             }
 
@@ -126,19 +128,10 @@ fun NewAddressScreen(
             Spacer(modifier = Modifier.height(14.dp))
 
             AddressTextField(
-                title = "Phone Number",
-                value = state.form.phone,
-                onValueChange = viewModel::onPhoneChanged,
-                placeholder = "+200000000000",
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            AddressTextField(
                 title = "City",
                 value = state.form.city,
                 onValueChange = viewModel::onCityChanged,
-                placeholder = "Cairo",
+                placeholder = "Giza",
             )
 
             Spacer(modifier = Modifier.height(14.dp))
