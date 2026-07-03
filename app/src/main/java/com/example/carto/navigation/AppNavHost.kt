@@ -151,7 +151,11 @@ fun AppNavHost(
 
             composable(Screen.Account.route) {
 //                AccountPlaceholderScreen()
-                SettingsScreen()
+                SettingsScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
 
