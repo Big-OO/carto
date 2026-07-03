@@ -25,6 +25,7 @@ import com.example.carto.feature.home.navigation.homeGraph
 import com.example.carto.feature.login.presentation.LoginScreen
 import com.example.carto.feature.register.presentation.view.RegisterScreen
 import com.example.carto.feature.search.presentation.view.SearchScreen
+import com.example.carto.feature.settings.presentation.SettingsScreen
 import com.example.carto.navigation.PlaceholderScreens.AccountPlaceholderScreen
 import com.example.carto.navigation.PlaceholderScreens.CartPlaceholderScreen
 import com.example.carto.navigation.PlaceholderScreens.SavedPlaceholderScreen
@@ -149,7 +150,8 @@ fun AppNavHost(
             }
 
             composable(Screen.Account.route) {
-                AccountPlaceholderScreen()
+//                AccountPlaceholderScreen()
+                SettingsScreen()
             }
         }
 
