@@ -1,4 +1,4 @@
-package com.example.carto.feature.settings.presentation.model
+package com.example.carto.feature.settings.domain.model
 
 enum class Currency(val displayName: String) {
     USD("USD"),
