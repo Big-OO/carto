@@ -64,8 +64,9 @@ fun MapPickerScreen(
     onBackClick: () -> Unit,
     onLocationSelected: (SelectedMapAddress) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MapPickerViewModel = hiltViewModel(),
 ) {
+    val viewModel: MapPickerViewModel = hiltViewModel()
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val mapViewportState = rememberMapViewportState {}

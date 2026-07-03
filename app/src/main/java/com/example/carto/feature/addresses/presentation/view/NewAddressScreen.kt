@@ -52,8 +52,9 @@ fun NewAddressScreen(
     selectedMapAddress: SelectedMapAddress?,
     onMapAddressConsumed: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: NewAddressViewModel = hiltViewModel(),
 ) {
+    val viewModel: NewAddressViewModel = hiltViewModel()
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
