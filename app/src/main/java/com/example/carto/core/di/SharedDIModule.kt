@@ -11,6 +11,7 @@ import androidx.room.Room
 import com.example.carto.BuildConfig
 import com.example.carto.core.config.ShopifyConfig
 import com.example.carto.core.database.CartoDatabase
+import com.example.carto.core.database.MIGRATION_2_3
 import com.example.carto.feature.favorite.data.local.FavoriteProductDao
 import com.example.carto.feature.search.data.local.SearchHistoryDao
 import com.google.firebase.auth.FirebaseAuth
@@ -97,19 +98,20 @@ object SharedDIModule {
             .build()
     }
 
-@Provides
-@Singleton
-fun provideCartoDatabase(
-    @ApplicationContext context: Context,
-): CartoDatabase {
-    return Room.databaseBuilder(
-        context,
-        CartoDatabase::class.java,
-        CartoDatabase.DATABASE_NAME,
-    )
-        .fallbackToDestructiveMigration()
-        .build()
-}
+    @Provides
+    @Singleton
+    fun provideCartoDatabase(
+        @ApplicationContext context: Context,
+    ): CartoDatabase {
+        return Room.databaseBuilder(
+            context,
+            CartoDatabase::class.java,
+            CartoDatabase.DATABASE_NAME,
+        )
+            .addMigrations(MIGRATION_2_3)
+            .fallbackToDestructiveMigration()
+            .build()
+    }
 
     @Provides
     @Singleton

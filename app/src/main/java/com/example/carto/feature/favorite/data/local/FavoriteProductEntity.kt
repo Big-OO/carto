@@ -1,13 +1,17 @@
 package com.example.carto.feature.favorite.data.local
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "favorite_products")
+@Entity(tableName = "favorite_products", primaryKeys = ["productId", "userId"])
 data class FavoriteProductEntity(
-    @PrimaryKey val productId: Long,
+    val productId: Long,
+    val userId: String,
     val name: String,
     val imageUrl: String?,
     val price: Double,
     val addedAt: Long,
-)
+) {
+    companion object {
+        const val GUEST_USER_ID = "guest"
+    }
+}
