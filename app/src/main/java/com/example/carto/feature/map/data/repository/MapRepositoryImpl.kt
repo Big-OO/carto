@@ -25,7 +25,7 @@ class MapRepositoryImpl @Inject constructor(
             is MapDataResult.Failure -> MapResult.Failure(
                 MapFailure(
                     type = MapFailureType.LocationUnavailable,
-                    developerMessage = result.developerMessage,
+                    developerMessage = result.message,
                 )
             )
         }
@@ -37,7 +37,7 @@ class MapRepositoryImpl @Inject constructor(
             is MapDataResult.Failure -> MapResult.Failure(
                 MapFailure(
                     type = MapFailureType.SearchFailed,
-                    developerMessage = result.developerMessage,
+                    developerMessage = result.message,
                 )
             )
         }
@@ -49,7 +49,7 @@ class MapRepositoryImpl @Inject constructor(
             is MapDataResult.Failure -> MapResult.Failure(
                 MapFailure(
                     type = MapFailureType.GeocodingFailed,
-                    developerMessage = result.developerMessage,
+                    developerMessage = result.message,
                 )
             )
         }
