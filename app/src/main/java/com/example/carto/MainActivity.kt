@@ -15,9 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import com.example.carto.feature.settings.data.local.SettingsLocalDataSource
 import com.example.carto.feature.settings.domain.model.AppLanguage
 import com.example.carto.feature.settings.domain.model.AppTheme
+import com.example.carto.feature.settings.domain.repository.SettingsRepository
 import com.example.carto.navigation.AppNavHost
 import com.example.carto.ui.theme.CartoTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,14 +28,14 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var settingsLocalDataSource: SettingsLocalDataSource
+    lateinit var settingsRepository: SettingsRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val appTheme by settingsLocalDataSource.theme.collectAsState(initial = AppTheme.LIGHT)
-            val appLanguage by settingsLocalDataSource.language.collectAsState(initial = AppLanguage.ENGLISH)
+            val appTheme by settingsRepository.theme.collectAsState(initial = AppTheme.LIGHT)
+            val appLanguage by settingsRepository.language.collectAsState(initial = AppLanguage.ENGLISH)
             val context = LocalContext.current
             val currentConfig = LocalConfiguration.current
 
@@ -44,9 +44,9 @@ class MainActivity : ComponentActivity() {
                 AppLanguage.ARABIC -> "ar"
             }
 
-            // Define custom locale configuration
             val locale = Locale(localeCode)
             Locale.setDefault(locale)
+
             
             val configuration = Configuration(currentConfig).apply {
                 setLocale(locale)
@@ -54,9 +54,7 @@ class MainActivity : ComponentActivity() {
             }
             
             val configContext = context.createConfigurationContext(configuration)
-            
-            // Wrap the context ensuring Hilt can traverse back to the original MainActivity Activity context 
-            // via baseContext, while resources are dynamically loaded using the custom configuration context.
+
             val localizedContext = remember(appLanguage) {
                 LocalizedContext(context, configContext)
             }
