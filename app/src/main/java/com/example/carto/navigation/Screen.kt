@@ -1,8 +1,5 @@
 package com.example.carto.navigation
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 sealed class Screen(val route: String) {
     data object Home : Screen("home")
     data object Search : Screen("search")
@@ -20,11 +17,8 @@ sealed class Screen(val route: String) {
     data object BrandProducts : Screen("brand_products/{brandName}") {
         fun createRoute(brandName: String) = "brand_products/${android.net.Uri.encode(brandName)}"
     }
-    @Serializable
     data object Addresses : Screen("addresses")
-    @Serializable
     data object NewAddress : Screen("new_address")
-    @Serializable
     data object MapPicker : Screen("map_picker")
 }
 
