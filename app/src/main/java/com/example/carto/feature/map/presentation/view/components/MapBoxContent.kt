@@ -5,11 +5,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.example.carto.R
 import com.example.carto.feature.map.domain.model.MapPoint
 import com.mapbox.geojson.Point
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
+import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
+import com.mapbox.maps.extension.compose.annotation.rememberIconImage
+import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 
 @Composable
 fun MapBoxContent(
@@ -21,6 +27,11 @@ fun MapBoxContent(
 ) {
     val selectedColor = MaterialTheme.colorScheme.primary
     val currentColor = Color(0xFF2196F3)
+
+    val selectedMarker = rememberIconImage(
+        key = R.drawable.ic_location_point,
+        painter = painterResource(R.drawable.ic_location_point)
+    )
 
     MapboxMap(
         modifier = modifier.fillMaxSize(),
@@ -50,12 +61,11 @@ fun MapBoxContent(
         }
 
         selectedPoint?.let { point ->
-            CircleAnnotation(point = point.toMapboxPoint()) {
-                circleRadius = 11.0
-                circleColor = selectedColor
-                circleStrokeWidth = 4.0
-                circleStrokeColor = Color.White
-                circleOpacity = 1.0
+            PointAnnotation(point = point.toMapboxPoint()) {
+                iconImage = selectedMarker
+                iconAnchor = IconAnchor.BOTTOM
+                iconSize = 2.0
+                iconColor = selectedColor
             }
         }
     }

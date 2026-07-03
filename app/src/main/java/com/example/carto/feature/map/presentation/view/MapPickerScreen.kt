@@ -8,23 +8,31 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,14 +52,13 @@ import com.example.carto.feature.map.domain.model.MapPoint
 import com.example.carto.feature.map.domain.model.SelectedMapAddress
 import com.example.carto.feature.map.presentation.view.components.MapBoxContent
 import com.example.carto.feature.map.presentation.view.components.MapSearchField
-import com.example.carto.feature.map.presentation.view.components.MapTopBar
 import com.example.carto.feature.map.presentation.view.components.toMapboxPoint
 import com.example.carto.feature.map.presentation.viewmodel.MapPickerViewModel
-import com.mapbox.common.MapboxOptions
 import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MapPickerScreen(
     onBackClick: () -> Unit,
@@ -106,11 +113,13 @@ fun MapPickerScreen(
         state.selectedAddress?.point?.let { flyTo(it) }
     }
 
-    Box(
+    BoxWithConstraints(
         modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .fillMaxSize(),
     ) {
+        val screenHeight = maxHeight
+        val appBarHeight = screenHeight * 0.15f
+
         MapBoxContent(
             mapViewportState = mapViewportState,
             currentPoint = state.currentPoint,
@@ -119,25 +128,29 @@ fun MapPickerScreen(
             modifier = Modifier.fillMaxSize(),
         )
 
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(top = 36.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+                .safeContentPadding(),
+            verticalAlignment = Alignment.Top,
         ) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
+            IconButton(
+                onClick = onBackClick,
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
                 shape = RoundedCornerShape(10.dp),
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f),
-                shadowElevation = 4.dp,
+                modifier = Modifier.size(appBarHeight * 0.4f)
             ) {
-                MapTopBar(
-                    title = "Select Location",
-                    onBackClick = onBackClick,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp),
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(24.dp)
                 )
             }
+
+            Spacer(Modifier.weight(0.05f))
 
             MapSearchField(
                 query = state.query,
@@ -147,6 +160,7 @@ fun MapPickerScreen(
                 onQueryChange = viewModel::onQueryChanged,
                 onClearClick = viewModel::clearSearch,
                 onSuggestionClick = viewModel::onSuggestionSelected,
+                modifier = Modifier.weight(1f),
             )
         }
 
@@ -229,10 +243,11 @@ fun MapPickerScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .clickable(enabled = false, onClick = {})
                     .background(MaterialTheme.colorScheme.background.copy(alpha = 0.25f)),
                 contentAlignment = Alignment.Center,
             ) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                CircularWavyProgressIndicator()
             }
         }
     }
