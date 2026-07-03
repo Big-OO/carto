@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">كارتو</string>
+    <string name="login_with_google">تسجيل الدخول باستخدام Google</string>
+    <string name="don_t_have_an_account">"ليس لديك حساب؟ "</string>
+    <string name="join">انضمام</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="reset_your_password">إعادة تعيين كلمة المرور</string>
+    <string name="forgot_your_password">"هل نسيت كلمة المرور؟ "</string>
+    <string name="password">كلمة المرور</string>
+    <string name="it_s_great_to_see_you_again">من الرائع رؤيتك مرة أخرى.</string>
+    <string name="login_to_your_account">تسجيل الدخول إلى حسابك</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="login_as_guest">المتابعة كضيف</string>
+    <string name="settings">الإعدادات</string>
+</resources>
