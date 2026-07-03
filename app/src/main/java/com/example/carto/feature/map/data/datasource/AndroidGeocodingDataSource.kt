@@ -5,6 +5,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.example.carto.feature.map.data.error.GeocodingError
 import com.example.carto.feature.map.data.result.MapDataResult
 import com.example.carto.feature.map.domain.model.MapAddress
 import com.example.carto.feature.map.domain.model.MapPoint
@@ -18,7 +19,7 @@ import javax.inject.Inject
 class AndroidGeocodingDataSource @Inject constructor(
     @param:ApplicationContext private val context: Context,
 ) {
-    suspend fun reverseGeocode(point: MapPoint): MapDataResult<MapAddress> {
+    suspend fun reverseGeocode(point: MapPoint): MapDataResult<MapAddress, GeocodingError> {
         val geocoder = Geocoder(context, Locale.getDefault())
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -38,7 +39,7 @@ class AndroidGeocodingDataSource @Inject constructor(
     private suspend fun reverseGeocodeApi33(
         geocoder: Geocoder,
         point: MapPoint,
-    ): MapDataResult<MapAddress> {
+    ): MapDataResult<MapAddress, GeocodingError> {
         return suspendCancellableCoroutine { continuation ->
             try {
                 geocoder.getFromLocation(
@@ -60,7 +61,8 @@ class AndroidGeocodingDataSource @Inject constructor(
 
                             continuation.resume(
                                 MapDataResult.Failure(
-                                    errorMessage ?: "Failed to get address for selected point"
+                                    errorMessage ?: "Failed to get address for selected point",
+                                    GeocodingError.GeocodingFailed
                                 )
                             ) { _, _, _ -> }
                         }
@@ -70,7 +72,8 @@ class AndroidGeocodingDataSource @Inject constructor(
                 if (continuation.isActive) {
                     continuation.resume(
                         MapDataResult.Failure(
-                            throwable.message ?: "Failed to get address for selected point"
+                            throwable.message ?: "Failed to get address for selected point",
+                            GeocodingError.GeocodingFailed
                         )
                     ) { _, _, _ -> }
                 }
@@ -82,7 +85,7 @@ class AndroidGeocodingDataSource @Inject constructor(
     private suspend fun reverseGeocodeLegacy(
         geocoder: Geocoder,
         point: MapPoint,
-    ): MapDataResult<MapAddress> {
+    ): MapDataResult<MapAddress, GeocodingError> {
         return withContext(Dispatchers.IO) {
             try {
                 val addresses = geocoder.getFromLocation(
@@ -94,17 +97,21 @@ class AndroidGeocodingDataSource @Inject constructor(
                 addresses.toMapAddressResult()
             } catch (throwable: Throwable) {
                 MapDataResult.Failure(
-                    throwable.message ?: "Failed to get address for selected point"
+                    throwable.message ?: "Failed to get address for selected point",
+                    GeocodingError.GeocodingFailed
                 )
             }
         }
     }
 
-    private fun List<Address>.toMapAddressResult(): MapDataResult<MapAddress> {
+    private fun List<Address>.toMapAddressResult(): MapDataResult<MapAddress, GeocodingError> {
         val result = firstOrNull()
 
         return if (result == null) {
-            MapDataResult.Failure("No address found for selected point")
+            MapDataResult.Failure(
+                "No address found for selected point",
+                GeocodingError.GeocodingFailed
+            )
         } else {
             MapDataResult.Success(
                 MapAddress(

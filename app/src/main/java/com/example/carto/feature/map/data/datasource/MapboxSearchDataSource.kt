@@ -1,5 +1,6 @@
 package com.example.carto.feature.map.data.datasource
 
+import com.example.carto.feature.map.data.error.SearchError
 import com.example.carto.feature.map.data.result.MapDataResult
 import com.example.carto.feature.map.domain.model.MapPoint
 import com.example.carto.feature.map.domain.model.MapSearchSuggestion
@@ -24,7 +25,7 @@ class MapboxSearchDataSource @Inject constructor() {
     )
 
     @OptIn(RestrictedMapboxSearchAPI::class)
-    suspend fun search(query: String): MapDataResult<List<MapSearchSuggestion>> {
+    suspend fun search(query: String): MapDataResult<List<MapSearchSuggestion>, SearchError> {
         if (query.isBlank()) return MapDataResult.Success(emptyList())
 
         return suspendCancellableCoroutine { continuation ->
@@ -52,7 +53,7 @@ class MapboxSearchDataSource @Inject constructor() {
                     }
 
                     override fun onError(e: Exception) {
-                        continuation.resume(MapDataResult.Failure(e.message))
+                        continuation.resume(MapDataResult.Failure(e.message, SearchError.UnKnown))
                     }
                 },
             )

@@ -46,7 +46,7 @@ class MapPickerViewModel @Inject constructor(
                 }
 
                 is MapResult.Failure -> {
-                    Log.e(TAG, "Failed to load current location: ${result.failure.developerMessage}")
+                    Log.e(TAG, "Failed to load current location: ${result.failure.message}")
                     _state.update {
                         it.copy(
                             isLoadingCurrentLocation = false,
@@ -88,7 +88,7 @@ class MapPickerViewModel @Inject constructor(
                 }
 
                 is MapResult.Failure -> {
-                    Log.e(TAG, "Map search failed: ${result.failure.developerMessage}")
+                    Log.e(TAG, "Map search failed: ${result.failure.message}")
                     _state.update {
                         it.copy(
                             isSearching = false,
@@ -139,7 +139,7 @@ class MapPickerViewModel @Inject constructor(
                 }
 
                 is MapResult.Failure -> {
-                    Log.e(TAG, "Reverse geocoding failed: ${result.failure.developerMessage}")
+                    Log.e(TAG, "Reverse geocoding failed: ${result.failure.message}")
                     _state.update {
                         it.copy(
                             isResolvingAddress = false,

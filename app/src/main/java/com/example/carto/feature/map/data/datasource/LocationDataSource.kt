@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
+import com.example.carto.feature.map.data.error.LocationError
 import com.example.carto.feature.map.data.result.MapDataResult
 import com.example.carto.feature.map.domain.model.MapPoint
 import com.google.android.gms.location.LocationServices
@@ -25,9 +26,12 @@ class LocationDataSource @Inject constructor(
     }
 
     @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-    suspend fun getCurrentLocation(timeoutMillis: Long = 10_000L): MapDataResult<MapPoint> {
+    suspend fun getCurrentLocation(timeoutMillis: Long = 10_000L): MapDataResult<MapPoint, LocationError> {
         if (!hasLocationPermission()) {
-            return MapDataResult.Failure("Location permission is not granted")
+            return MapDataResult.Failure(
+                message = "Location permission is not granted",
+                errorType = LocationError.LocationPermissionDenied
+            )
         }
 
         val cancellationTokenSource = CancellationTokenSource()
@@ -58,13 +62,13 @@ class LocationDataSource @Inject constructor(
                     )
                 )
             } else {
-                MapDataResult.Failure("Current location returned null")
+                MapDataResult.Failure("Current location returned null", LocationError.Unknown)
             }
         } catch (_: TimeoutCancellationException) {
             cancellationTokenSource.cancel()
-            MapDataResult.Failure("Current location request timed out")
+            MapDataResult.Failure("Current location request timed out", LocationError.TimeOut)
         } catch (throwable: Throwable) {
-            MapDataResult.Failure(throwable.message)
+            MapDataResult.Failure(throwable.message, LocationError.Unknown)
         }
     }
 

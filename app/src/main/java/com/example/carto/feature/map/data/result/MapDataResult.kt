@@ -1,8 +1,9 @@
 package com.example.carto.feature.map.data.result
 
-sealed interface MapDataResult<out T> {
-    data class Success<T>(val data: T) : MapDataResult<T>
-    data class Failure(
+sealed interface MapDataResult<out D, out E> {
+    data class Success<D, E>(val data: D) : MapDataResult<D, E>
+    data class Failure<D, E>(
         val message: String? = null,
-    ) : MapDataResult<Nothing>
+        val errorType: E? = null,
+    ) : MapDataResult<D, E>
 }

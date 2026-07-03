@@ -1,14 +1,14 @@
 package com.example.carto.feature.map.domain.model
 
 enum class MapFailureType {
-    PermissionDenied,
-    LocationUnavailable,
+    GPSDisabled,
+    LocationPermissionDenied,
+    NetworkConnectionFailed,
     SearchFailed,
-    GeocodingFailed,
     Unknown,
 }
 
 data class MapFailure(
     val type: MapFailureType,
-    val developerMessage: String? = null,
+    val message: String? = null,
 )
