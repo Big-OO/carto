@@ -19,7 +19,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.carto.feature.addresses.presentation.view.AddressesScreen
 import com.example.carto.feature.addresses.presentation.view.NewAddressScreen
-import com.example.carto.feature.addresses.presentation.viewmodel.NewAddressViewModel
 import com.example.carto.feature.forgetpassword.presentation.ForgotPasswordScreen
 import com.example.carto.feature.home.navigation.homeGraph
 import com.example.carto.feature.login.presentation.LoginScreen
@@ -159,8 +158,6 @@ fun AppNavHost(
             }
 
             composable(Screen.NewAddress.route) { backStackEntry ->
-                val viewModel: NewAddressViewModel = hiltViewModel(backStackEntry)
-
                 val savedStateHandle = backStackEntry.savedStateHandle
                 val latitude by savedStateHandle
                     .getStateFlow<Double?>(MapResultKeys.LATITUDE, null)
@@ -200,7 +197,6 @@ fun AppNavHost(
                 }
 
                 NewAddressScreen(
-                    viewModel = viewModel,
                     onBackClick = { navController.popBackStack() },
                     onSelectFromMapClick = { navController.navigate(Screen.MapPicker.route) },
                     selectedMapAddress = selectedMapAddress,

@@ -8,10 +8,13 @@ import com.example.carto.feature.addresses.domain.model.AddressFailureType
 import com.example.carto.feature.addresses.domain.model.AddressForm
 import com.example.carto.feature.addresses.domain.model.AddressResult
 import com.example.carto.feature.addresses.domain.usecase.CreateAddressUseCase
+import com.example.carto.feature.addresses.presentation.state.NewAddressEffect
 import com.example.carto.feature.addresses.presentation.state.NewAddressUiState
 import com.example.carto.feature.map.domain.model.SelectedMapAddress
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -20,19 +23,22 @@ import javax.inject.Inject
 @HiltViewModel
 class NewAddressViewModel @Inject constructor(
     private val createAddressUseCase: CreateAddressUseCase,
-) : ViewModel() {
+) : ViewModel(), NewAddressInteractionListener {
     private val _state = MutableStateFlow(NewAddressUiState())
     val state = _state.asStateFlow()
 
-    fun onNameChanged(value: String) = updateForm { it.copy(name = value) }
-    fun onAddressChanged(value: String) = updateForm { it.copy(address1 = value) }
-    fun onCityChanged(value: String) = updateForm { it.copy(city = value) }
-    fun onProvinceChanged(value: String) = updateForm { it.copy(province = value) }
-    fun onCountryChanged(value: String) = updateForm { it.copy(country = value) }
-    fun onZipChanged(value: String) = updateForm { it.copy(zip = value) }
-    fun onDefaultChanged(value: Boolean) = updateForm { it.copy(isDefault = value) }
+    private val _effects = MutableSharedFlow<NewAddressEffect>()
+    val effects = _effects.asSharedFlow()
 
-    fun onMapAddressSelected(selectedMapAddress: SelectedMapAddress) {
+    override fun onNameChanged(value: String) = updateForm { it.copy(name = value) }
+    override fun onAddressChanged(value: String) = updateForm { it.copy(address1 = value) }
+    override fun onCityChanged(value: String) = updateForm { it.copy(city = value) }
+    override fun onProvinceChanged(value: String) = updateForm { it.copy(province = value) }
+    override fun onCountryChanged(value: String) = updateForm { it.copy(country = value) }
+    override fun onZipChanged(value: String) = updateForm { it.copy(zip = value) }
+    override fun onDefaultChanged(value: Boolean) = updateForm { it.copy(isDefault = value) }
+
+    override fun onMapAddressSelected(selectedMapAddress: SelectedMapAddress) {
         val address = selectedMapAddress.address
         updateForm {
             it.copy(
@@ -45,7 +51,7 @@ class NewAddressViewModel @Inject constructor(
         }
     }
 
-    fun saveAddress() {
+    override fun saveAddress() {
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true, errorMessage = null) }
             when (val result = createAddressUseCase(state.value.form)) {
@@ -71,9 +77,21 @@ class NewAddressViewModel @Inject constructor(
         }
     }
 
-    fun dismissSuccess(onDismissed: () -> Unit) {
+    override fun onNavigateBack() {
+        viewModelScope.launch {
+            _effects.emit(NewAddressEffect.OnNavigateBack)
+        }
+    }
+
+    override fun onSelectFromMapClick() {
+        viewModelScope.launch {
+            _effects.emit(NewAddressEffect.OnSelectFromMapClick)
+        }
+    }
+
+    fun dismissSuccess() {
         _state.update { it.copy(showSuccessDialog = false) }
-        onDismissed()
+        onNavigateBack()
     }
 
     private fun updateForm(reducer: (AddressForm) -> AddressForm) {
