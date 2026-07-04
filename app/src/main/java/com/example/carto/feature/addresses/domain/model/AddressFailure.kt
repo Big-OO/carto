@@ -3,6 +3,9 @@ package com.example.carto.feature.addresses.domain.model
 enum class AddressFailureType {
     MissingCustomer,
     Network,
+    InvalidProvince,
+    AddressAlreadyExist,
+    InvalidCountry,
     Validation,
     NotFound,
     Unknown,
@@ -10,5 +13,5 @@ enum class AddressFailureType {
 
 data class AddressFailure(
     val type: AddressFailureType,
-    val developerMessage: String? = null,
+    val message: String? = null,
 )

@@ -3,6 +3,9 @@ package com.example.carto.feature.addresses.data.repository
 import com.example.carto.feature.addresses.data.remote.AddressesRemoteDataSource
 import com.example.carto.feature.addresses.data.remote.CustomerIdDataSource
 import com.example.carto.feature.addresses.data.remote.dto.AddressDto
+import com.example.carto.feature.addresses.data.remote.mapper.toAddressCreationFailure
+import com.example.carto.feature.addresses.data.remote.mapper.toAddressesFailure
+import com.example.carto.feature.addresses.data.remote.mapper.toDefaultAddressFailure
 import com.example.carto.feature.addresses.data.result.AddressDataResult
 import com.example.carto.feature.addresses.domain.model.AddressFailure
 import com.example.carto.feature.addresses.domain.model.AddressFailureType
@@ -22,7 +25,7 @@ class AddressesRepositoryImpl @Inject constructor(
 
         return when (val result = remoteDataSource.getAddresses(customerId)) {
             is AddressDataResult.Success -> AddressResult.Success(result.data.map { it.toDomain() })
-            is AddressDataResult.Failure -> AddressResult.Failure(result.toFailure())
+            is AddressDataResult.Failure -> AddressResult.Failure(result.toAddressesFailure())
         }
     }
 
@@ -37,7 +40,7 @@ class AddressesRepositoryImpl @Inject constructor(
                 AddressResult.Success(result.data.toDomain())
             }
 
-            is AddressDataResult.Failure -> AddressResult.Failure(result.toFailure())
+            is AddressDataResult.Failure -> AddressResult.Failure(result.toAddressCreationFailure())
         }
     }
 
@@ -46,7 +49,7 @@ class AddressesRepositoryImpl @Inject constructor(
 
         return when (val result = remoteDataSource.setDefaultAddress(customerId, addressId)) {
             is AddressDataResult.Success -> AddressResult.Success(Unit)
-            is AddressDataResult.Failure -> AddressResult.Failure(result.toFailure())
+            is AddressDataResult.Failure -> AddressResult.Failure(result.toDefaultAddressFailure())
         }
     }
 
@@ -61,20 +64,9 @@ class AddressesRepositoryImpl @Inject constructor(
         return AddressResult.Failure(
             AddressFailure(
                 type = AddressFailureType.MissingCustomer,
-                developerMessage = "Missing Shopify customer id",
+                message = "Missing Shopify customer id",
             )
         )
-    }
-
-    private fun AddressDataResult.Failure.toFailure(): AddressFailure {
-        val type = when (code) {
-            400, 422 -> AddressFailureType.Validation
-            404 -> AddressFailureType.NotFound
-            null -> AddressFailureType.Network
-            in 500..599 -> AddressFailureType.Network
-            else -> AddressFailureType.Unknown
-        }
-        return AddressFailure(type = type, developerMessage = developerMessage)
     }
 
     private fun AddressDto.toDomain(): CustomerAddress {

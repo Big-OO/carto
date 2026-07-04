@@ -15,7 +15,7 @@ class CreateAddressUseCase @Inject constructor(
             return AddressResult.Failure(
                 AddressFailure(
                     type = AddressFailureType.Validation,
-                    developerMessage = "Address and phone are required",
+                    message = "Address and phone are required",
                 )
             )
         }

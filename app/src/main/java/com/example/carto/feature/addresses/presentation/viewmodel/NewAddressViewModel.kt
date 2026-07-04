@@ -65,7 +65,7 @@ class NewAddressViewModel @Inject constructor(
                 }
 
                 is AddressResult.Failure -> {
-                    Log.e(TAG, "Create address failed: ${result.failure.developerMessage}")
+                    Log.e(TAG, "Create address failed: ${result.failure.message}")
                     _state.update {
                         it.copy(
                             isSaving = false,
@@ -105,6 +105,9 @@ class NewAddressViewModel @Inject constructor(
             AddressFailureType.NotFound -> "We couldn't find this customer."
             AddressFailureType.Network -> "Check your connection and try again."
             AddressFailureType.Unknown -> "Something went wrong. Try again later."
+            AddressFailureType.InvalidProvince -> TODO()
+            AddressFailureType.AddressAlreadyExist -> TODO()
+            AddressFailureType.InvalidCountry -> TODO()
         }
     }
 

@@ -1,9 +1,10 @@
 package com.example.carto.feature.addresses.data.result
 
-sealed interface AddressDataResult<out T> {
-    data class Success<T>(val data: T) : AddressDataResult<T>
-    data class Failure(
+sealed interface AddressDataResult<out T, out E> {
+    data class Success<T, E>(val data: T) : AddressDataResult<T, E>
+    data class Failure<E>(
         val code: Int? = null,
-        val developerMessage: String? = null,
-    ) : AddressDataResult<Nothing>
+        val error: E? = null,
+        val message: String? = null,
+    ) : AddressDataResult<Nothing, E>
 }

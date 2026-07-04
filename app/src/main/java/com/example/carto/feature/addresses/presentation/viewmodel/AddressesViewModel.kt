@@ -39,7 +39,7 @@ class AddressesViewModel @Inject constructor(
                 }
 
                 is AddressResult.Failure -> {
-                    Log.e(TAG, "Load addresses failed: ${result.failure.developerMessage}")
+                    Log.e(TAG, "Load addresses failed: ${result.failure.message}")
                     _state.update {
                         it.copy(
                             isLoading = false,
@@ -73,7 +73,7 @@ class AddressesViewModel @Inject constructor(
                 }
 
                 is AddressResult.Failure -> {
-                    Log.e(TAG, "Set default address failed: ${result.failure.developerMessage}")
+                    Log.e(TAG, "Set default address failed: ${result.failure.message}")
                     _state.update {
                         it.copy(
                             isApplying = false,
@@ -96,6 +96,9 @@ class AddressesViewModel @Inject constructor(
             AddressFailureType.NotFound -> "We couldn't find this address."
             AddressFailureType.Network -> "Check your connection and try again."
             AddressFailureType.Unknown -> "Something went wrong. Try again later."
+            AddressFailureType.InvalidProvince -> TODO()
+            AddressFailureType.AddressAlreadyExist -> TODO()
+            AddressFailureType.InvalidCountry -> TODO()
         }
     }
 
