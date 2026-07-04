@@ -37,6 +37,7 @@ import com.example.carto.feature.profile.presentation.ProfileScreen
 import com.example.carto.feature.profile.presentation.ProfileViewModel
 import com.example.carto.feature.register.presentation.view.RegisterScreen
 import com.example.carto.feature.search.presentation.view.SearchScreen
+import com.example.carto.feature.settings.presentation.SettingsScreen
 import com.example.carto.navigation.PlaceholderScreens.CartPlaceholderScreen
 import com.example.carto.navigation.components.AppBottomBar
 import com.example.carto.navigation.viewmodel.AppSessionViewModel
@@ -173,8 +174,7 @@ fun AppNavHost(
                             }
 
                             ProfileEffect.NavigateToSettings -> {
-                                // Add settings route later if needed.
-                                // navController.navigate(Screen.Settings.route)
+                                navController.navigate(Screen.Settings.route)
                             }
 
                             else -> Unit
@@ -186,6 +186,17 @@ fun AppNavHost(
                     uiState = uiState,
                     effectFlow = profileViewModel.effect,
                     onEvent = profileViewModel::onEvent,
+                )
+            }
+
+            composable(Screen.Settings.route) {
+                SettingsScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onNavigateToAddressesClick = {
+                        navController.navigate(Screen.Addresses.route)
+                    }
                 )
             }
 

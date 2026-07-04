@@ -33,6 +33,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun SettingsScreen(
     onBackClick: () -> Unit = {},
+    onNavigateToAddressesClick: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     var isScreenVisible by remember { mutableStateOf(false) }
@@ -97,7 +98,9 @@ fun SettingsScreen(
                             SettingsItem(
                                 title = "Saved Locations",
                                 icon = Icons.Outlined.LocationOn,
-                                onClick = { }
+                                onClick = {
+                                    onNavigateToAddressesClick()
+                                }
                             )
                             HorizontalDivider(color = CartoTheme.colors.outline)
                             SettingsItem(
