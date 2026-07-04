@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.core.view.WindowCompat
+import com.example.carto.feature.settings.domain.model.AppTheme
 
 class CartoColors(
     val primary: Color,
@@ -118,21 +119,59 @@ private val DarkColorScheme = CartoColors(
     onError = CartoWhite,
 )
 
+private val EyeColorScheme = CartoColors(
+    primary = CartoBlack,
+    onPrimary = CartoWhite,
+    primaryContainer = Color(0xFFF6F0DD),
+    onPrimaryContainer = CartoTextPrimary,
+    secondary = CartoTextSecondary,
+    tertiary = CartoSuccess,
+    onTertiary = CartoWhite,
+    onSecondary = CartoWhite,
+    secondaryContainer = Color(0xFFF6F0DD),
+    onSecondaryContainer = CartoTextPrimary,
+    background = Color(0xFFFAF4E0),
+    onBackground = CartoTextPrimary,
+    surface = Color(0xFFFFFDF5),
+    onSurface = CartoTextPrimary,
+    surfaceVariant = Color(0xFFF1EAD2),
+    onSurfaceVariant = CartoTextSecondary,
+    outline = Color(0xFFE4DCBF),
+    outlineVariant = Color(0xFFD3CAA8),
+    error = CartoError,
+    onError = CartoWhite,
+)
+
 @Composable
 fun CartoTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    appTheme: AppTheme = AppTheme.LIGHT,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val colorScheme = when (appTheme) {
+        AppTheme.LIGHT -> LightColorScheme
+        AppTheme.EYE_MODE -> EyeColorScheme
+        AppTheme.DARK -> DarkColorScheme
+    }
+    val darkTheme = appTheme == AppTheme.DARK
     val view = LocalView.current
 
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
-            window.navigationBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
-            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = !darkTheme
+            var context = view.context
+            var activity: Activity? = null
+            while (context is android.content.ContextWrapper) {
+                if (context is Activity) {
+                    activity = context
+                    break
+                }
+                context = context.baseContext
+            }
+            activity?.window?.let { window ->
+                window.statusBarColor = colorScheme.background.toArgb()
+                window.navigationBarColor = colorScheme.background.toArgb()
+                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+                WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = !darkTheme
+            }
         }
     }
 
