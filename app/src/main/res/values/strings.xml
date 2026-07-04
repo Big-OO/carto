@@ -11,6 +11,7 @@
     <string name="login_to_your_account">Login to your account</string>
     <string name="email">Email</string>
     <string name="login_as_guest">Continue as guest</string>
+    <string name="settings">Settings</string>
 
     <string name="addresses_title">Address</string>
     <string name="addresses_new_address_title">New Address</string>

@@ -31,6 +31,7 @@ import com.example.carto.feature.map.presentation.view.MapPickerScreen
 import com.example.carto.feature.map.utils.MapResultKeys
 import com.example.carto.feature.register.presentation.view.RegisterScreen
 import com.example.carto.feature.search.presentation.view.SearchScreen
+import com.example.carto.feature.settings.presentation.SettingsScreen
 import com.example.carto.navigation.PlaceholderScreens.AccountPlaceholderScreen
 import com.example.carto.navigation.PlaceholderScreens.CartPlaceholderScreen
 import com.example.carto.navigation.components.AppBottomBar
@@ -142,7 +143,12 @@ fun AppNavHost(
             }
 
             composable(Screen.Account.route) {
-                AccountPlaceholderScreen()
+//                AccountPlaceholderScreen()
+                SettingsScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
             }
 
             composable(Screen.Search.route) {
