@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -77,6 +78,8 @@ fun MapPickerScreen(
     val viewModel: MapPickerViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val resources = LocalResources.current
+
     val snackbarHostState = remember { SnackbarHostState() }
     val mapViewportState = rememberMapViewportState {}
 
@@ -128,7 +131,7 @@ fun MapPickerScreen(
 
     LaunchedEffect(state.snackbarMessage) {
         state.snackbarMessage?.let { message ->
-            snackbarHostState.showSnackbar(context.getString(message.stringRes()))
+            snackbarHostState.showSnackbar(resources.getString(message.stringRes()))
             viewModel.consumeSnackbar()
         }
     }

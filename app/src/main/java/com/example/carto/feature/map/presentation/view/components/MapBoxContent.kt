@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.example.carto.R
 import com.example.carto.feature.map.domain.model.MapPoint
 import com.mapbox.geojson.Point
