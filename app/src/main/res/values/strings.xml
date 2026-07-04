@@ -83,4 +83,7 @@
     <string name="map_search_placeholder">Search for an address</string>
     <string name="map_clear_search_content_description">Clear search</string>
 
+    <string name="splash_app_name">Carto</string>
+    <string name="splash_logo_content_description">Carto logo</string>
+
 </resources>

@@ -82,4 +82,7 @@
     <string name="map_search_placeholder">ابحث عن عنوان</string>
     <string name="map_clear_search_content_description">مسح البحث</string>
 
+    <string name="splash_app_name">كارتو</string>
+    <string name="splash_logo_content_description">شعار كارتو</string>
+
 </resources>

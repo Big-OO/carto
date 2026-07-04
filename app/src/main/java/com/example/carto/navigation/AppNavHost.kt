@@ -37,10 +37,12 @@ import com.example.carto.feature.profile.presentation.ProfileScreen
 import com.example.carto.feature.profile.presentation.ProfileViewModel
 import com.example.carto.feature.register.presentation.view.RegisterScreen
 import com.example.carto.feature.search.presentation.view.SearchScreen
+import com.example.carto.feature.splash.presentation.view.SplashScreen
 import com.example.carto.feature.settings.presentation.SettingsScreen
 import com.example.carto.navigation.PlaceholderScreens.CartPlaceholderScreen
 import com.example.carto.navigation.components.AppBottomBar
 import com.example.carto.navigation.viewmodel.AppSessionViewModel
+import com.example.carto.on_boarding.OnBoardingScreen
 
 @Composable
 fun AppNavHost(
@@ -82,9 +84,61 @@ fun AppNavHost(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.Login.route,
+            startDestination = Screen.Splash.route,
             modifier = Modifier.fillMaxSize(),
         ) {
+            composable(Screen.Splash.route) {
+                SplashScreen(
+                    onNavigateToOnBoarding = {
+                        navController.navigate(Screen.onBoarding.route) {
+                            popUpTo(Screen.Splash.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    },
+                    onNavigateToLogin = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Splash.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    },
+                    onNavigateToHome = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Splash.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    },
+                )
+            }
+
+            composable(Screen.onBoarding.route) {
+                OnBoardingScreen(
+                    onFinishOnboarding = {
+                        sessionViewModel.completeOnBoarding()
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.onBoarding.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    },
+                    onLoginClick = {
+                        sessionViewModel.completeOnBoarding()
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.onBoarding.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    },
+                )
+            }
+
             composable(Screen.Login.route) {
                 LoginScreen(
                     onNavigateToHome = {
