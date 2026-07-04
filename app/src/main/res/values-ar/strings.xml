@@ -1,0 +1,85 @@
+<resources>
+    <string name="app_name">Carto</string>
+    <string name="login_with_google">تسجيل الدخول باستخدام جوجل</string>
+    <string name="don_t_have_an_account">"ليس لديك حساب؟ "</string>
+    <string name="join">انضم الآن</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="reset_your_password">إعادة تعيين كلمة المرور</string>
+    <string name="forgot_your_password">"هل نسيت كلمة المرور؟ "</string>
+    <string name="password">كلمة المرور</string>
+    <string name="it_s_great_to_see_you_again">سعداء برؤيتك مرة أخرى.</string>
+    <string name="login_to_your_account">سجّل الدخول إلى حسابك</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="login_as_guest">المتابعة كزائر</string>
+
+    <string name="addresses_title">العناوين</string>
+    <string name="addresses_new_address_title">عنوان جديد</string>
+    <string name="addresses_saved_address_title">العناوين المحفوظة</string>
+    <string name="addresses_empty_addresses">لا توجد عناوين محفوظة حتى الآن.</string>
+    <string name="addresses_add_new_address">إضافة عنوان جديد</string>
+    <string name="addresses_apply_default">تطبيق</string>
+    <string name="addresses_default_badge">افتراضي</string>
+    <string name="addresses_back_content_description">رجوع</string>
+
+    <string name="addresses_location_title">الموقع</string>
+    <string name="addresses_address_details_title">تفاصيل العنوان</string>
+    <string name="addresses_address_nickname_label">اسم العنوان</string>
+    <string name="addresses_address_nickname_placeholder">المنزل، العمل، الشقة…</string>
+    <string name="addresses_full_address_label">العنوان الكامل</string>
+    <string name="addresses_full_address_placeholder">اكتب عنوانك الكامل…</string>
+    <string name="addresses_city_label">المدينة</string>
+    <string name="addresses_city_placeholder">القاهرة</string>
+    <string name="addresses_province_label">المحافظة</string>
+    <string name="addresses_province_placeholder">القاهرة</string>
+    <string name="addresses_country_label">الدولة</string>
+    <string name="addresses_country_placeholder">مصر</string>
+    <string name="addresses_zip_label">الرمز البريدي</string>
+    <string name="addresses_zip_placeholder">11511</string>
+    <string name="addresses_make_default_address">اجعل هذا العنوان هو العنوان الافتراضي</string>
+    <string name="addresses_add_button">إضافة</string>
+
+    <string name="addresses_success_dialog_title">تهانينا!</string>
+    <string name="addresses_success_dialog_message">تمت إضافة عنوانك الجديد بنجاح.</string>
+    <string name="addresses_success_dialog_button">شكرًا</string>
+
+    <string name="addresses_success_address_added">تمت إضافة العنوان بنجاح.</string>
+    <string name="addresses_success_default_address_updated">تم تحديث العنوان الافتراضي.</string>
+    <string name="addresses_error_missing_customer">يرجى تسجيل الدخول مرة أخرى لإدارة العناوين.</string>
+    <string name="addresses_error_validation">يرجى إكمال بيانات العنوان المطلوبة.</string>
+    <string name="addresses_error_not_found">لم نتمكن من العثور على هذا العنوان.</string>
+    <string name="addresses_error_network">تحقق من اتصالك بالإنترنت وحاول مرة أخرى.</string>
+    <string name="addresses_error_unauthorized">يرجى تسجيل الدخول مرة أخرى لإدارة العناوين.</string>
+    <string name="addresses_error_server">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="addresses_error_invalid_province">يرجى إدخال محافظة صحيحة.</string>
+    <string name="addresses_error_address_already_exists">هذا العنوان موجود بالفعل.</string>
+    <string name="addresses_error_invalid_country">يرجى إدخال دولة صحيحة.</string>
+    <string name="addresses_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="addresses_select_location_from_map_hint">اضغط لفتح الخريطة واختيار موقع التوصيل.</string>
+    <string name="addresses_success_address_removed">تم حذف العنوان بنجاح.</string>
+    <string name="addresses_remove_address">حذف</string>
+    <string name="addresses_select_location_from_map">اختر من الخريطة</string>
+    <string name="addresses_error_default_address_deletion">العنوان الاساسي لا يمكن مسحه</string>
+    <string name="addresses_remove_dialog_title">حذف العنوان؟</string>
+    <string name="addresses_remove_dialog_message">هل أنت متأكد أنك تريد حذف هذا العنوان؟</string>
+    <string name="addresses_swipe_or_long_press_remove">اسحب أو اضغط مطولًا للحذف</string>
+    <string name="addresses_select_address_on_map">أختار عنوانك عن طريق الخريطة</string>
+
+    <string name="map_back_content_description">رجوع</string>
+    <string name="map_my_location_content_description">موقعي الحالي</string>
+    <string name="map_use_this_location">استخدام هذا الموقع</string>
+    <string name="map_cancel">إلغاء</string>
+    <string name="map_open_app_settings">فتح الإعدادات</string>
+    <string name="map_open_location_settings">فتح إعدادات الموقع</string>
+    <string name="map_location_permission_dialog_title">مطلوب إذن الموقع</string>
+    <string name="map_location_permission_dialog_message">يرجى السماح بإذن الموقع من الإعدادات حتى نتمكن من تحديد موقعك الحالي.</string>
+    <string name="map_gps_dialog_title">تشغيل الموقع</string>
+    <string name="map_gps_dialog_message">خدمات الموقع مغلقة. يرجى تفعيل GPS للحصول على موقعك الحالي.</string>
+    <string name="map_error_location_unavailable">لم نتمكن من تحديد موقعك. حدد نقطة يدويًا أو حاول مرة أخرى.</string>
+    <string name="map_error_location_selected_missing_details">تم تحديد الموقع. أضف تفاصيل العنوان الناقصة يدويًا.</string>
+    <string name="map_error_search_failed">لم نتمكن من البحث عن هذا العنوان. حاول مرة أخرى.</string>
+    <string name="map_error_address_resolve_failed">لم نتمكن من قراءة هذا العنوان. يرجى إكماله يدويًا.</string>
+    <string name="map_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="map_search_placeholder">ابحث عن عنوان</string>
+    <string name="map_clear_search_content_description">مسح البحث</string>
+
+</resources>
