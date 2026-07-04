@@ -3,6 +3,8 @@ package com.example.carto.feature.map.presentation.state
 import com.example.carto.feature.map.domain.model.MapPoint
 import com.example.carto.feature.map.domain.model.MapSearchSuggestion
 import com.example.carto.feature.map.domain.model.SelectedMapAddress
+import com.example.carto.feature.map.presentation.model.MapActionDialog
+import com.example.carto.feature.map.presentation.model.MapSnackbarMessage
 
 data class MapPickerUiState(
     val isLoadingCurrentLocation: Boolean = true,
@@ -13,7 +15,8 @@ data class MapPickerUiState(
     val selectedAddress: SelectedMapAddress? = null,
     val suggestions: List<MapSearchSuggestion> = emptyList(),
     val showSuggestions: Boolean = false,
-    val errorMessage: String? = null,
+    val snackbarMessage: MapSnackbarMessage? = null,
+    val actionDialog: MapActionDialog? = null,
 ) {
     val canSave: Boolean get() = selectedAddress != null && !isResolvingAddress
 }

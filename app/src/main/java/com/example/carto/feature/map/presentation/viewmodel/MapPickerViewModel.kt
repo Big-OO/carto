@@ -3,12 +3,16 @@ package com.example.carto.feature.map.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carto.feature.map.domain.model.MapAddress
+import com.example.carto.feature.map.domain.model.MapFailureType
 import com.example.carto.feature.map.domain.model.MapPoint
 import com.example.carto.feature.map.domain.model.MapResult
 import com.example.carto.feature.map.domain.model.SelectedMapAddress
 import com.example.carto.feature.map.domain.usecase.GetCurrentLocationUseCase
 import com.example.carto.feature.map.domain.usecase.ReverseGeocodeUseCase
 import com.example.carto.feature.map.domain.usecase.SearchMapPlacesUseCase
+import com.example.carto.feature.map.presentation.model.MapActionDialog
+import com.example.carto.feature.map.presentation.model.MapSnackbarMessage
 import com.example.carto.feature.map.presentation.state.MapPickerUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -33,7 +37,13 @@ class MapPickerViewModel @Inject constructor(
 
     fun loadCurrentLocation() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoadingCurrentLocation = true, errorMessage = null) }
+            _state.update {
+                it.copy(
+                    isLoadingCurrentLocation = true,
+                    snackbarMessage = null,
+                    actionDialog = null,
+                )
+            }
             when (val result = getCurrentLocationUseCase()) {
                 is MapResult.Success -> {
                     _state.update {
@@ -46,15 +56,36 @@ class MapPickerViewModel @Inject constructor(
                 }
 
                 is MapResult.Failure -> {
-                    Log.e(TAG, "Failed to load current location: ${result.failure.message}")
+                    Log.e(TAG, "Failed to load current location: ${result.failure.type}, ${result.failure.message}")
                     _state.update {
                         it.copy(
                             isLoadingCurrentLocation = false,
-                            errorMessage = "We couldn't get your location. Select a point manually or try again.",
+                            snackbarMessage = result.failure.toSnackbarMessage(),
+                            actionDialog = result.failure.toActionDialog(),
                         )
                     }
                 }
             }
+        }
+    }
+
+    fun onLocationPermissionMissing() {
+        _state.update {
+            it.copy(
+                isLoadingCurrentLocation = false,
+                snackbarMessage = null,
+                actionDialog = MapActionDialog.LocationPermission,
+            )
+        }
+    }
+
+    fun onLocationPermissionDenied() {
+        _state.update {
+            it.copy(
+                isLoadingCurrentLocation = false,
+                snackbarMessage = null,
+                actionDialog = MapActionDialog.LocationPermission,
+            )
         }
     }
 
@@ -88,13 +119,13 @@ class MapPickerViewModel @Inject constructor(
                 }
 
                 is MapResult.Failure -> {
-                    Log.e(TAG, "Map search failed: ${result.failure.message}")
+                    Log.e(TAG, "Map search failed: ${result.failure.type}, ${result.failure.message}")
                     _state.update {
                         it.copy(
                             isSearching = false,
                             suggestions = emptyList(),
                             showSuggestions = false,
-                            errorMessage = "We couldn't search for this address. Try again.",
+                            snackbarMessage = MapSnackbarMessage.SearchFailed,
                         )
                     }
                 }
@@ -127,7 +158,7 @@ class MapPickerViewModel @Inject constructor(
 
     fun selectPoint(point: MapPoint) {
         viewModelScope.launch {
-            _state.update { it.copy(isResolvingAddress = true, errorMessage = null) }
+            _state.update { it.copy(isResolvingAddress = true, snackbarMessage = null) }
             when (val result = reverseGeocodeUseCase(point)) {
                 is MapResult.Success -> {
                     _state.update {
@@ -139,16 +170,44 @@ class MapPickerViewModel @Inject constructor(
                 }
 
                 is MapResult.Failure -> {
-                    Log.e(TAG, "Reverse geocoding failed: ${result.failure.message}")
+                    Log.e(TAG, "Reverse geocoding failed: ${result.failure.type}, ${result.failure.message}")
                     _state.update {
                         it.copy(
                             isResolvingAddress = false,
-                            selectedAddress = SelectedMapAddress(point, com.example.carto.feature.map.domain.model.MapAddress()),
-                            errorMessage = "Location selected. Add missing address details manually.",
+                            selectedAddress = SelectedMapAddress(point, MapAddress()),
+                            snackbarMessage = MapSnackbarMessage.LocationSelectedWithMissingDetails,
                         )
                     }
                 }
             }
+        }
+    }
+
+    fun consumeSnackbar() {
+        _state.update { it.copy(snackbarMessage = null) }
+    }
+
+    fun dismissActionDialog() {
+        _state.update { it.copy(actionDialog = null) }
+    }
+
+    private fun com.example.carto.feature.map.domain.model.MapFailure.toSnackbarMessage(): MapSnackbarMessage? {
+        return when (type) {
+            MapFailureType.GPSDisabled,
+            MapFailureType.LocationPermissionDenied -> null
+            MapFailureType.NetworkConnectionFailed -> MapSnackbarMessage.LocationUnavailable
+            MapFailureType.SearchFailed -> MapSnackbarMessage.SearchFailed
+            MapFailureType.Unknown -> MapSnackbarMessage.Unknown
+        }
+    }
+
+    private fun com.example.carto.feature.map.domain.model.MapFailure.toActionDialog(): MapActionDialog? {
+        return when (type) {
+            MapFailureType.GPSDisabled -> MapActionDialog.GpsDisabled
+            MapFailureType.LocationPermissionDenied -> MapActionDialog.LocationPermission
+            MapFailureType.NetworkConnectionFailed,
+            MapFailureType.SearchFailed,
+            MapFailureType.Unknown -> null
         }
     }
 

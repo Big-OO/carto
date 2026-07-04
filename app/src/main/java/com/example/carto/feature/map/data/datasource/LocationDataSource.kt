@@ -3,6 +3,7 @@ package com.example.carto.feature.map.data.datasource
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import com.example.carto.feature.map.data.error.LocationError
@@ -19,18 +20,25 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 
 class LocationDataSource @Inject constructor(
-    @param:ApplicationContext private val context: Context,
+    @ApplicationContext private val context: Context,
 ) {
     private val fusedLocationClient by lazy {
         LocationServices.getFusedLocationProviderClient(context)
     }
 
-    @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     suspend fun getCurrentLocation(timeoutMillis: Long = 10_000L): MapDataResult<MapPoint, LocationError> {
         if (!hasLocationPermission()) {
             return MapDataResult.Failure(
                 message = "Location permission is not granted",
-                errorType = LocationError.LocationPermissionDenied
+                errorType = LocationError.LocationPermissionDenied,
+            )
+        }
+
+        if (!isLocationEnabled()) {
+            return MapDataResult.Failure(
+                message = "Location services are disabled",
+                errorType = LocationError.GPSDisabled,
             )
         }
 
@@ -84,5 +92,15 @@ class LocationDataSource @Inject constructor(
         ) == PackageManager.PERMISSION_GRANTED
 
         return fine || coarse
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        return try {
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        } catch (_: Throwable) {
+            false
+        }
     }
 }

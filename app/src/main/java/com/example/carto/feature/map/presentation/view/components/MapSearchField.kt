@@ -33,9 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.carto.R
 import com.example.carto.feature.map.domain.model.MapPoint
 import com.example.carto.feature.map.domain.model.MapSearchSuggestion
 
@@ -64,7 +66,7 @@ fun MapSearchField(
             ),
             placeholder = {
                 Text(
-                    text = "Search for an address",
+                    text = stringResource(R.string.map_search_placeholder),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
@@ -92,7 +94,7 @@ fun MapSearchField(
                     IconButton(onClick = onClearClick) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Clear search",
+                            contentDescription = stringResource(R.string.map_clear_search_content_description),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }

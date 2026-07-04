@@ -34,24 +34,33 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.carto.R
 import com.example.carto.feature.map.domain.model.MapPoint
 import com.example.carto.feature.map.domain.model.SelectedMapAddress
+import com.example.carto.feature.map.presentation.model.MapActionDialog
+import com.example.carto.feature.map.presentation.view.components.MapActionRequiredDialog
 import com.example.carto.feature.map.presentation.view.components.MapBoxContent
 import com.example.carto.feature.map.presentation.view.components.MapSearchField
+import com.example.carto.feature.map.presentation.view.components.openAppSettings
+import com.example.carto.feature.map.presentation.view.components.openLocationSettings
+import com.example.carto.feature.map.presentation.view.components.stringRes
 import com.example.carto.feature.map.presentation.view.components.toMapboxPoint
 import com.example.carto.feature.map.presentation.viewmodel.MapPickerViewModel
 import com.mapbox.maps.dsl.cameraOptions
@@ -66,9 +75,9 @@ fun MapPickerScreen(
     modifier: Modifier = Modifier,
 ) {
     val viewModel: MapPickerViewModel = hiltViewModel()
-
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
     val mapViewportState = rememberMapViewportState {}
 
     fun flyTo(point: MapPoint, zoom: Double = 15.0) {
@@ -79,15 +88,18 @@ fun MapPickerScreen(
                 pitch(0.0)
                 bearing(0.0)
             },
-            animationOptions = MapAnimationOptions
-                .mapAnimationOptions { duration(900) },
+            animationOptions = MapAnimationOptions.mapAnimationOptions { duration(900) },
         )
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted) viewModel.loadCurrentLocation()
+        if (isGranted) {
+            viewModel.loadCurrentLocation()
+        } else {
+            viewModel.onLocationPermissionDenied()
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -114,9 +126,15 @@ fun MapPickerScreen(
         state.selectedAddress?.point?.let { flyTo(it) }
     }
 
+    LaunchedEffect(state.snackbarMessage) {
+        state.snackbarMessage?.let { message ->
+            snackbarHostState.showSnackbar(context.getString(message.stringRes()))
+            viewModel.consumeSnackbar()
+        }
+    }
+
     BoxWithConstraints(
-        modifier = modifier
-            .fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
         val screenHeight = maxHeight
         val appBarHeight = screenHeight * 0.15f
@@ -145,7 +163,7 @@ fun MapPickerScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.map_back_content_description),
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
                 )
@@ -165,24 +183,13 @@ fun MapPickerScreen(
             )
         }
 
-        state.errorMessage?.let { message ->
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 108.dp),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-                shadowElevation = 6.dp,
-            ) {
-                Text(
-                    text = message,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-        }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 108.dp),
+        )
 
         FloatingActionButton(
             onClick = viewModel::loadCurrentLocation,
@@ -196,7 +203,7 @@ fun MapPickerScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.MyLocation,
-                contentDescription = "My location",
+                contentDescription = stringResource(R.string.map_my_location_content_description),
                 modifier = Modifier.size(24.dp),
             )
         }
@@ -231,7 +238,7 @@ fun MapPickerScreen(
                     )
                 } else {
                     Text(
-                        text = "Use this location",
+                        text = stringResource(R.string.map_use_this_location),
                         modifier = Modifier.padding(vertical = 10.dp),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
@@ -251,5 +258,19 @@ fun MapPickerScreen(
                 CircularWavyProgressIndicator()
             }
         }
+    }
+
+    state.actionDialog?.let { dialog ->
+        MapActionRequiredDialog(
+            dialog = dialog,
+            onDismiss = viewModel::dismissActionDialog,
+            onConfirm = {
+                viewModel.dismissActionDialog()
+                when (dialog) {
+                    MapActionDialog.LocationPermission -> context.openAppSettings()
+                    MapActionDialog.GpsDisabled -> context.openLocationSettings()
+                }
+            }
+        )
     }
 }
