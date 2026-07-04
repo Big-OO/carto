@@ -1,18 +1,32 @@
+import java.util.Properties
+import java.io.FileInputStream
+import org.gradle.authentication.http.BasicAuthentication
+
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
+    val localProperties = Properties()
+    val localPropertiesFile = file("local.properties")
+
+    if (localPropertiesFile.exists()) {
+        localProperties.load(FileInputStream(localPropertiesFile))
+    }
+
+    val mapboxDownloadsToken =
+        providers.gradleProperty("MAPBOX_DOWNLOADS_TOKEN").orNull
+            ?: providers.gradleProperty("mapbox.downloads.token").orNull
+            ?: localProperties.getProperty("MAPBOX_DOWNLOADS_TOKEN")
+            ?: localProperties.getProperty("mapbox.downloads.token")
+            ?: ""
+
     repositories {
         google()
         mavenCentral()
@@ -24,9 +38,7 @@ dependencyResolutionManagement {
             }
             credentials {
                 username = "mapbox"
-                password = providers.gradleProperty("MAPBOX_DOWNLOADS_TOKEN").orNull
-                    ?: providers.gradleProperty("mapbox.downloads.token").orNull
-                            ?: ""
+                password = mapboxDownloadsToken
             }
         }
     }
