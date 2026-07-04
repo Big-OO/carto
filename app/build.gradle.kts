@@ -1,5 +1,5 @@
 import java.util.Properties
-val packageName: String = "com.example.carto"
+val packageName: String = "com.shopify.carto"
 
 
 plugins {
