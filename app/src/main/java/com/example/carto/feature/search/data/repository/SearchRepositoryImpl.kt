@@ -5,7 +5,6 @@ import com.example.carto.feature.search.data.mapper.toDomain
 import com.example.carto.feature.search.data.remote.SearchProductRemoteDataSource
 import com.example.carto.feature.search.data.result.SearchDataResult
 import com.example.carto.feature.search.domain.model.SearchFailure
-import com.example.carto.feature.search.domain.model.SearchFailureType
 import com.example.carto.feature.search.domain.model.SearchHistoryItem
 import com.example.carto.feature.search.domain.model.SearchProduct
 import com.example.carto.feature.search.domain.model.SearchResult
@@ -18,12 +17,20 @@ class SearchRepositoryImpl @Inject constructor(
     private val remoteDataSource: SearchProductRemoteDataSource,
     private val localDataSource: SearchHistoryLocalDataSource,
 ) : SearchRepository {
+    override suspend fun getInitialProducts(): SearchResult<List<SearchProduct>> {
+        return when (val result = remoteDataSource.getInitialProducts()) {
+            is SearchDataResult.Success -> SearchResult.Success(result.data)
+            is SearchDataResult.Failure -> result.failure.toDomainResult()
+        }
+    }
+
     override suspend fun searchProducts(keyword: String): SearchResult<List<SearchProduct>> {
-        if (keyword.isBlank()) {
-            return SearchResult.Success(emptyList())
+        val cleanedKeyword = keyword.trim()
+        if (cleanedKeyword.isBlank()) {
+            return getInitialProducts()
         }
 
-        return when (val result = remoteDataSource.searchProducts(keyword)) {
+        return when (val result = remoteDataSource.searchProducts(cleanedKeyword)) {
             is SearchDataResult.Success -> SearchResult.Success(result.data)
             is SearchDataResult.Failure -> result.failure.toDomainResult()
         }

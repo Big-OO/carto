@@ -1,5 +1,6 @@
 [versions]
 compileSdk = "37"
+kotlinxSerializationJson = "1.11.0"
 minSdk = "24"
 targetSdk = "37"
 
@@ -35,6 +36,11 @@ turbine = "1.2.1"
 material3 = "1.11.0-alpha07"
 apollo = "5.0.1"
 
+mapboxMaps = "11.19.0"
+mapboxSearch = "2.18.2"
+playServicesLocation = "21.4.0"
+
+
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 
@@ -57,6 +63,7 @@ androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4
 androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 material3 = {group = "org.jetbrains.compose.material3", name = "material3", version.ref = "material3"}
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -101,6 +108,11 @@ mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 apollo-runtime = { group = "com.apollographql.apollo", name = "apollo-runtime", version.ref = "apollo" }
 
+mapbox-android-maps = { module = "com.mapbox.maps:android-ndk27", version.ref = "mapboxMaps" }
+mapbox-maps-compose = { module = "com.mapbox.extension:maps-compose", version.ref = "mapboxMaps" }
+mapbox-search-android = { module = "com.mapbox.search:mapbox-search-android-ndk27", version.ref = "mapboxSearch" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -108,3 +120,4 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

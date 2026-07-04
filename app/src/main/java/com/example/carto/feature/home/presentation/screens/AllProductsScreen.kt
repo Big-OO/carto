@@ -12,14 +12,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.PestControlRodent
 import androidx.compose.material.icons.filled.ProductionQuantityLimits
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -33,6 +30,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.carto.feature.favorite.presentation.FavoriteViewModel
 import com.example.carto.feature.home.domain.model.Product
 import com.example.carto.feature.home.presentation.screens.components.ProductCard
 import com.example.carto.feature.home.presentation.screens.components.SearchTextField
@@ -45,6 +45,7 @@ fun AllProductsScreen(
     isGuest: Boolean,
     onBackClick: () -> Unit,
     onProductClick: (Product) -> Unit,
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
 ) {
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
@@ -61,6 +62,7 @@ fun AllProductsScreen(
         }
     }
 
+    val favoriteIds by favoriteViewModel.favoriteIds.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -99,8 +101,8 @@ fun AllProductsScreen(
             if (filteredProducts.isEmpty()) {
 
                 EmptyCategoryView(
-                    mainMesg = "No products found",
-                    subMesg = "Try another keyword.",
+                    mainMsg = "No products found",
+                    subMsg = "Try another keyword.",
                     image = Icons.Default.ProductionQuantityLimits
                 )
 
@@ -114,12 +116,22 @@ fun AllProductsScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
-                    items(filteredProducts) { product ->
+
+                    items(filteredProducts, key = { it.id }) { product ->
 
                         ProductCard(
                             product = product,
                             isGuest = isGuest,
+                            isFavorite = favoriteIds.contains(product.id),
                             onClick = onProductClick,
+                            onFavoriteClick = { clicked ->
+                                favoriteViewModel.toggleFavorite(
+                                    productId = clicked.id,
+                                    name = clicked.name,
+                                    imageUrl = clicked.imageUrl,
+                                    price = clicked.price,
+                                )
+                            },
                             onGuestFavoriteClick = {
                                 scope.launch {
                                     snackbarHostState.showSnackbar(
@@ -134,3 +146,4 @@ fun AllProductsScreen(
         }
     }
 }
+

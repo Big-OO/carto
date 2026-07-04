@@ -25,10 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,17 +35,17 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.carto.feature.home.domain.model.Product
 
+
 @Composable
 fun ProductCard(
     product: Product,
     modifier: Modifier = Modifier,
     isGuest: Boolean = false,
+    isFavorite: Boolean = false,
     onClick: (Product) -> Unit = {},
     onFavoriteClick: (Product) -> Unit = {},
     onGuestFavoriteClick: () -> Unit = {},
 ) {
-
-    var isFavorite by remember { mutableStateOf(false) }
 
     val colors = MaterialTheme.colorScheme
 
@@ -118,7 +114,6 @@ fun ProductCard(
                             if (isGuest) {
                                 onGuestFavoriteClick()
                             } else {
-                                isFavorite = !isFavorite
                                 onFavoriteClick(product)
                             }
 

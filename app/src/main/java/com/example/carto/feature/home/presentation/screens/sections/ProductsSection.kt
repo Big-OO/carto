@@ -18,8 +18,10 @@ import com.example.carto.feature.home.presentation.screens.components.SectionHea
 fun ProductsSection(
     products: List<Product>,
     isGuest: Boolean,
+    favoriteIds: Set<Long>,
     onSeeAll: () -> Unit,
     onProductClick: (Product) -> Unit,
+    onFavoriteClick: (Product) -> Unit,
     onGuestFavoriteClick: () -> Unit,
 ) {
     Column {
@@ -32,12 +34,14 @@ fun ProductsSection(
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(products) { product ->
+            items(products, key = { it.id }) { product ->
                 ProductCard(
                     product = product,
                     modifier = Modifier.width(190.dp),
                     isGuest = isGuest,
+                    isFavorite = favoriteIds.contains(product.id),
                     onClick = { onProductClick(product) },
+                    onFavoriteClick = onFavoriteClick,
                     onGuestFavoriteClick = onGuestFavoriteClick
                 )
             }
