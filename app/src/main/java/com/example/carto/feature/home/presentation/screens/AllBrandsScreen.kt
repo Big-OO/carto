@@ -33,7 +33,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.example.carto.feature.home.domain.model.Brand
 import com.example.carto.feature.home.presentation.screens.components.SearchTextField
 
 
@@ -123,8 +122,8 @@ fun AllBrandsScreen(
                     if (filteredBrands.isEmpty()) {
 
                         EmptyCategoryView(
-                            mainMesg = "No brands found",
-                            subMesg = "Try another keyword.",
+                            mainMsg = "No brands found",
+                            subMsg = "Try another keyword.",
                             image = Icons.Default.BrandingWatermark
                         )
 

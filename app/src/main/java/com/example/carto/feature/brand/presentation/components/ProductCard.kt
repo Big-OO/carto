@@ -14,27 +14,29 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.example.carto.R
-
 import com.example.carto.feature.brand.presentation.Product
+import androidx.compose.material.icons.filled.Favorite
+
 
 @Composable
 fun ProductCard(
     product: Product,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isGuest: Boolean = false,
+    isFavorite: Boolean = false,
+    onFavoriteClick: (Product) -> Unit = {},
+    onGuestFavoriteClick: () -> Unit = {},
 ) {
     Card(
         modifier = modifier,
@@ -52,32 +54,32 @@ fun ProductCard(
             ) {
                 AsyncImage(
                     model = product.imageUrl,
-                    placeholder = painterResource(R.drawable.ic_launcher_foreground),
                     contentDescription = product.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
 
                 IconButton(
-                    onClick = {},
+                    onClick = {
+                        if (isGuest) {
+                            onGuestFavoriteClick()
+                        } else {
+                            onFavoriteClick(product)
+                        }
+                    },
                     modifier = Modifier.align(Alignment.TopEnd),
-
-                    ) {
+                ) {
                     Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
+                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         contentDescription = null,
-                        tint = Color.White
+                        tint = if (isFavorite) Color.Red else Color.White
                     )
                 }
             }
 
             Text(
                 text = product.name,
-                modifier = Modifier.padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    top = 12.dp
-                ),
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
@@ -86,21 +88,14 @@ fun ProductCard(
 
             Text(
                 text = product.type,
-                modifier = Modifier.padding(
-                    horizontal = 12.dp,
-                    vertical = 4.dp
-                ),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                 fontSize = 12.sp,
                 color = Color.Gray
             )
 
             Text(
                 text = product.price,
-                modifier = Modifier.padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    bottom = 12.dp
-                ),
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold
             )

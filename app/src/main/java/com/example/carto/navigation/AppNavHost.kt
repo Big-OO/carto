@@ -7,9 +7,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
@@ -27,27 +24,32 @@ import com.example.carto.feature.register.presentation.view.RegisterScreen
 import com.example.carto.feature.search.presentation.view.SearchScreen
 import com.example.carto.navigation.PlaceholderScreens.AccountPlaceholderScreen
 import com.example.carto.navigation.PlaceholderScreens.CartPlaceholderScreen
-import com.example.carto.navigation.PlaceholderScreens.SavedPlaceholderScreen
 import com.example.carto.navigation.components.AppBottomBar
 import com.example.carto.navigation.viewmodel.AppSessionViewModel
-import com.example.carto.on_boarding.OnBoardingScreen
-
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.example.carto.feature.favorite.presentation.FavoriteToastViewModel
+import com.example.carto.feature.favorite.presentation.SavedScreen
+import com.example.carto.feature.favorite.presentation.components.FavoriteAddedSnackbar
 
 @Composable
 fun AppNavHost(
     navController: NavHostController = rememberNavController(),
     sessionViewModel: AppSessionViewModel = hiltViewModel(),
+    favoriteToastViewModel: FavoriteToastViewModel = hiltViewModel(),
 ) {
     val session by sessionViewModel.session.collectAsStateWithLifecycle()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val currentSession = session ?: return
-    var startRoute by rememberSaveable { mutableStateOf<String?>(null) }
-    if (startRoute == null) {
-        startRoute = when {
-            !currentSession.isOnboardingSeen -> Screen.onBoarding.route
-            currentSession.isLoggedIn -> Screen.Home.route
-            else -> Screen.Login.route
+    val favoriteToast by favoriteToastViewModel.toast.collectAsStateWithLifecycle()
+
+    LaunchedEffect(session?.isLoggedIn, session?.isGuest, currentRoute) {
+        if (session?.isLoggedIn == true && !session!!.isGuest && currentRoute == Screen.Login.route) {
+            navController.navigate(Screen.Home.route) {
+                popUpTo(Screen.Login.route) { inclusive = true }
+                launchSingleTop = true
+            }
         }
     }
 
@@ -56,7 +58,7 @@ fun AppNavHost(
     ) {
         NavHost(
             navController = navController,
-            startDestination = startRoute!!,
+            startDestination = Screen.Login.route,
             modifier = Modifier.fillMaxSize()
         ) {
             composable(Screen.Login.route) {
@@ -76,28 +78,6 @@ fun AppNavHost(
                         navController.navigate(Screen.ForgotPassword.route)
                     }
                 )
-            }
-
-
-            composable(Screen.onBoarding.route){
-                OnBoardingScreen(
-                    onFinishOnboarding = {
-                        navController.navigate(Screen.Register.route){
-                            popUpTo(Screen.onBoarding.route){
-                                inclusive = true
-                            }
-                        }
-                        sessionViewModel.completeOnBoarding()
-                    }
-
-                ) {
-                    navController.navigate(Screen.Login.route){
-                        popUpTo(Screen.onBoarding.route){
-                            inclusive = true
-                        }
-                    }
-                    sessionViewModel.completeOnBoarding()
-                }
             }
 
             composable(Screen.Register.route) {
@@ -141,7 +121,11 @@ fun AppNavHost(
             }
 
             composable(Screen.Saved.route) {
-                SavedPlaceholderScreen()
+                SavedScreen(
+                    onProductClick = { productId ->
+                        navController.navigate(Screen.ProductDetail.createRoute(productId))
+                    }
+                )
             }
 
             composable(Screen.Cart.route) {
@@ -162,11 +146,32 @@ fun AppNavHost(
                         launchSingleTop = true
                     }
                 },
-                isGuest = currentSession.isGuest,
+                isGuest = session?.isGuest ?: true,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .zIndex(1f)
             )
         }
+
+        FavoriteAddedSnackbar(
+            toast = favoriteToast,
+            onViewClick = {
+                favoriteToastViewModel.dismiss()
+                navController.navigate(Screen.Saved.route) {
+                    popUpTo(Screen.Home.route) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+                        onUndoClick = favoriteToastViewModel::undo,
+            onDismiss = favoriteToastViewModel::dismiss,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .zIndex(2f)
+                .padding(bottom = if (currentRoute in bottomBarRoutes) 104.dp else 20.dp)
+
+        )
     }
 }
