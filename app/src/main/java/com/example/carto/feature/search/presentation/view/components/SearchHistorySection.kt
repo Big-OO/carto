@@ -1,30 +1,31 @@
 package com.example.carto.feature.search.presentation.view.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.carto.R
 import com.example.carto.feature.search.domain.model.SearchHistoryItem
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchHistorySection(
     history: List<SearchHistoryItem>,
@@ -33,46 +34,31 @@ fun SearchHistorySection(
     onClearHistoryClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "Recent Searches",
-                modifier = Modifier
-                    .weight(1f),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+    if (history.isEmpty()) return
 
-            if (history.isNotEmpty()) {
-                Text(
-                    text = "Clear all",
-                    modifier = Modifier.clickable(onClick = onClearHistoryClicked),
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textDecoration = TextDecoration.Underline,
-                )
-            }
-        }
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+    ) {
+        Text(
+            text = "Recent searches",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
 
-        LazyColumn(
-            modifier = Modifier.padding(top = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(0.dp),
+        FlowRow(
+            modifier = Modifier.padding(top = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            maxItemsInEachRow = 3,
         ) {
-            itemsIndexed(
-                items = history,
-                key = { _, item -> item.id }
-            ) { index, item ->
-                SearchHistoryRow(
+            history.forEach { item ->
+                SearchHistoryChip(
                     item = item,
                     onClick = { onHistoryItemClicked(item.query) },
                     onDeleteClick = { onHistoryItemDeleted(item.id) },
-                    showDivider = index != history.lastIndex,
                 )
             }
         }
@@ -80,46 +66,51 @@ fun SearchHistorySection(
 }
 
 @Composable
-private fun SearchHistoryRow(
+private fun SearchHistoryChip(
     item: SearchHistoryItem,
     onClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    showDivider: Boolean,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
+    Surface(
+        modifier = modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(50),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outline,
+        ),
+    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick)
-                .padding(horizontal = 24.dp),
+            modifier = Modifier.padding(start = 14.dp, end = 6.dp, top = 9.dp, bottom = 9.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            HistoryClockIcon(
+                modifier = Modifier.size(17.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Spacer(Modifier.width(7.dp))
+
             Text(
                 text = item.query,
-                modifier = Modifier.weight(1f),
-                fontSize = 16.sp,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
             )
 
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clickable(onClick = onDeleteClick),
-                contentAlignment = Alignment.Center,
+            Spacer(Modifier.width(4.dp))
+
+            IconButton(
+                onClick = onDeleteClick,
+                modifier = Modifier.size(26.dp),
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_close),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                ChipCloseIcon(
+                    modifier = Modifier.size(13.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-        }
-
-        if (showDivider) {
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 24.dp),
-                color = MaterialTheme.colorScheme.outline
-            )
         }
     }
 }
