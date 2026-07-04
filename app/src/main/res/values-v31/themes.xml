@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Carto.Splash" parent="Theme.Carto">
+        <item name="android:windowSplashScreenBackground">@color/white</item>
+        <item name="android:windowSplashScreenBrandingImage">@mipmap/ic_launcher</item>
+        <item name="android:windowSplashscreenContent">@string/app_name</item>
+    </style>
+
+</resources>
