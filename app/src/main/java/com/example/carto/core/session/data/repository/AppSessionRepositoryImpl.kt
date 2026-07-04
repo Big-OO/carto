@@ -5,9 +5,12 @@ import com.example.carto.core.session.domain.model.AppSession
 import com.example.carto.core.session.domain.repository.AppSessionRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import com.google.firebase.auth.FirebaseAuth
+
 
 class AppSessionRepositoryImpl @Inject constructor(
     private val localDataSource: AppSessionLocalDataSource,
+    private val firebaseAuth: FirebaseAuth,
 ) : AppSessionRepository {
     override val session: Flow<AppSession> = localDataSource.session
     override suspend fun completeOnBoarding() {
@@ -23,6 +26,7 @@ class AppSessionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun clearSession() {
+        firebaseAuth.signOut()
         localDataSource.clearSession()
     }
 }

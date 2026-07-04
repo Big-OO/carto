@@ -46,6 +46,9 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.carto.feature.favorite.presentation.FavoriteViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,8 +58,10 @@ fun CategoryProductsScreen(
     isGuest: Boolean,
     onBackClick: () -> Unit,
     onProductClick: (Long) -> Unit,
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsState()
+    val favoriteIds by favoriteViewModel.favoriteIds.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -107,8 +112,8 @@ fun CategoryProductsScreen(
                 if (uiState.products.isEmpty()) {
 
                     EmptyCategoryView(
-                        mainMesg = "No products found",
-                        subMesg = "This category doesn't contain any products yet.",
+                        mainMsg = "No products found",
+                        subMsg = "This category doesn't contain any products yet.",
                         image = Icons.Default.Category
                     )
 
@@ -120,18 +125,27 @@ fun CategoryProductsScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(uiState.products) { product ->
-                        ProductCard(
-                            product = product,
-                            isGuest = isGuest,
-                            onClick = { onProductClick(product.id) },
-                            onGuestFavoriteClick = {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("Please login to add favorites.")
-                                }
-                            },
-                        )
-                    }
+                      items(uiState.products, key = { it.id }) { product ->
+                          ProductCard(
+                              product = product,
+                              isGuest = isGuest,
+                              isFavorite = favoriteIds.contains(product.id),
+                              onClick = { onProductClick(product.id) },
+                              onFavoriteClick = { clicked ->
+                                  favoriteViewModel.toggleFavorite(
+                                      productId = clicked.id,
+                                      name = clicked.name,
+                                      imageUrl = clicked.imageUrl,
+                                      price = clicked.price,
+                                  )
+                              },
+                              onGuestFavoriteClick = {
+                                  scope.launch {
+                                      snackbarHostState.showSnackbar("Please login to add favorites.")
+                                  }
+                              },
+                          )
+                      }
                 }
                 }
             }
@@ -140,7 +154,7 @@ fun CategoryProductsScreen(
 }
 
 @Composable
-fun EmptyCategoryView(mainMesg:String,subMesg:String,image: ImageVector?) {
+fun EmptyCategoryView(mainMsg:String, subMsg:String, image: ImageVector?) {
 
     val infiniteTransition = rememberInfiniteTransition(label = "floating")
 
@@ -188,7 +202,7 @@ fun EmptyCategoryView(mainMesg:String,subMesg:String,image: ImageVector?) {
                 Spacer(Modifier.height(20.dp))
 
                 Text(
-                    text = mainMesg,
+                    text = mainMsg,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -196,7 +210,7 @@ fun EmptyCategoryView(mainMesg:String,subMesg:String,image: ImageVector?) {
                 Spacer(Modifier.height(6.dp))
 
                 Text(
-                    text = subMesg,
+                    text = subMsg,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
