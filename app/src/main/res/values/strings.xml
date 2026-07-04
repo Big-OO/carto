@@ -48,6 +48,7 @@
     <string name="addresses_success_address_added">Address added successfully.</string>
     <string name="addresses_success_address_removed">Address removed successfully.</string>
     <string name="addresses_success_default_address_updated">Default address updated.</string>
+    <string name="addresses_error_default_address_deletion">Default address cannot be removed</string>
     <string name="addresses_error_missing_customer">Please login again before managing addresses.</string>
     <string name="addresses_error_validation">Please complete the required address details.</string>
     <string name="addresses_error_not_found">We couldn\'t find this address.</string>

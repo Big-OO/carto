@@ -58,6 +58,7 @@
     <string name="addresses_success_address_removed">تم حذف العنوان بنجاح.</string>
     <string name="addresses_remove_address">حذف</string>
     <string name="addresses_select_location_from_map">اختر من الخريطة</string>
+    <string name="addresses_error_default_address_deletion">العنوان الاساسي لا يمكن مسحه</string>
 
     <string name="map_back_content_description">رجوع</string>
     <string name="map_my_location_content_description">موقعي الحالي</string>
