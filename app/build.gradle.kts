@@ -14,9 +14,9 @@ plugins {
 
 apollo {
     service("shopify") {
-        packageName.set("$packageName.graphql.shopify")
+        packageName.set("com.shopify.carto.core.graphql.shopify")
         srcDir("src/main/graphql/shopify")
-        schemaFiles.from("src/main/core/graphql/shopify/schema.graphqls")
+        schemaFile.set(file("src/main/graphql/shopify/schema.json"))
         packageNamesFromFilePaths()
     }
 }
@@ -71,6 +71,11 @@ android {
             "String",
             "SHOPIFY_ADMIN_ACCESS_TOKEN",
             localProperty("shopify.admin.access.token").asBuildConfigString()
+        )
+        buildConfigField(
+            "String",
+            "SHOPIFY_STOREFRONT_ACCESS_TOKEN",
+            localProperty("storefront.access.token").asBuildConfigString()
         )
         buildConfigField(
             "String",
@@ -187,7 +192,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.room.testing)
-    testImplementation(libs.mockwebserver3)
     testImplementation(libs.hilt.android.testing)
     kspTest(libs.hilt.compiler)
 
@@ -200,7 +204,6 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.room.testing)
     androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.mockwebserver3)
     androidTestImplementation(libs.turbine)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
