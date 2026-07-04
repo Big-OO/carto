@@ -32,6 +32,8 @@ import com.example.carto.feature.home.presentation.screens.sections.CategoriesSe
 import com.example.carto.feature.home.presentation.screens.sections.HomeHeader
 import com.example.carto.feature.home.presentation.screens.sections.ProductsSection
 import kotlinx.coroutines.launch
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.carto.feature.favorite.presentation.FavoriteViewModel
 
 @Composable
 fun HomeScreen(
@@ -43,9 +45,11 @@ fun HomeScreen(
     onCategoryClick: (Category) -> Unit,
     onSearchClick: () -> Unit,
     onBrandClick: (String) -> Unit,
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val session by viewModel.session.collectAsStateWithLifecycle()
+    val favoriteIds by favoriteViewModel.favoriteIds.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -65,6 +69,7 @@ fun HomeScreen(
                 modifier = Modifier.padding(padding),
                 content = state.content,
                 isGuest = session.isGuest,
+                favoriteIds = favoriteIds,
                 onSeeAllProducts = onSeeAllProducts,
                 onSeeAllVendors = onSeeAllVendors,
                 onSeeAllCategories = onSeeAllCategories,
@@ -72,6 +77,14 @@ fun HomeScreen(
                 onCategoryClick = onCategoryClick,
                 onSearchClick = onSearchClick,
                 onBrandClick = onBrandClick,
+                onFavoriteClick = { product ->
+                    favoriteViewModel.toggleFavorite(
+                        productId = product.id,
+                        name = product.name,
+                        imageUrl = product.imageUrl,
+                        price = product.price,
+                    )
+                },
                 onGuestFavoriteClick = {
                     scope.launch {
                         snackbarHostState.showSnackbar("Please login to add favorites.")
@@ -86,6 +99,7 @@ fun HomeScreen(
 private fun HomeContent(
     content: HomeContent,
     isGuest: Boolean,
+    favoriteIds: Set<Long>,
     onSeeAllProducts: () -> Unit,
     onSeeAllVendors: () -> Unit,
     onSeeAllCategories: () -> Unit,
@@ -93,6 +107,7 @@ private fun HomeContent(
     onCategoryClick: (Category) -> Unit,
     onSearchClick: () -> Unit,
     onBrandClick: (String) -> Unit,
+    onFavoriteClick: (Product) -> Unit,
     onGuestFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -126,8 +141,10 @@ private fun HomeContent(
             ProductsSection(
                 products = content.products.take(6),
                 isGuest = isGuest,
+                favoriteIds = favoriteIds,
                 onSeeAll = onSeeAllProducts,
                 onProductClick = onProductClick,
+                onFavoriteClick = onFavoriteClick,
                 onGuestFavoriteClick = onGuestFavoriteClick,
             )
         }

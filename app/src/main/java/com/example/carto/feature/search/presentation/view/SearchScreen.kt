@@ -4,13 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +25,7 @@ import com.example.carto.feature.search.presentation.view.components.EmptySearch
 import com.example.carto.feature.search.presentation.view.components.SearchHistorySection
 import com.example.carto.feature.search.presentation.view.components.SearchInputBar
 import com.example.carto.feature.search.presentation.view.components.SearchProductResultItem
+import com.example.carto.feature.search.presentation.view.components.SearchProductResultItemShimmer
 import com.example.carto.feature.search.presentation.view.components.SearchTopBar
 import com.example.carto.feature.search.presentation.viewmodel.SearchInteractionListener
 import com.example.carto.feature.search.presentation.viewmodel.SearchSideEffect
@@ -45,6 +43,7 @@ fun SearchScreen(
         viewModel.effects.collect { effect ->
             when (effect) {
                 is SearchSideEffect.NavigateToProduct -> onProductClick(effect.productId)
+                SearchSideEffect.NavigateBack -> onBackClick()
             }
         }
     }
@@ -52,16 +51,13 @@ fun SearchScreen(
     SearchScreenContent(
         state = state,
         interactionListener = viewModel,
-        onBackClick = onBackClick,
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SearchScreenContent(
     state: SearchUiState,
     interactionListener: SearchInteractionListener,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -70,10 +66,7 @@ private fun SearchScreenContent(
             .padding(top = 50.dp),
     ) {
         SearchTopBar(
-            onBackClick = {
-                interactionListener.onBackClicked()
-                onBackClick()
-            },
+            onBackClick = interactionListener::onBackClicked,
         )
 
         Spacer(Modifier.height(34.dp))
@@ -84,65 +77,83 @@ private fun SearchScreenContent(
             onSearchSubmitted = interactionListener::onSearchSubmitted,
         )
 
-        Spacer(Modifier.height(30.dp))
+        Spacer(Modifier.height(26.dp))
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-        ) {
-            when {
-                state.shouldShowHistory -> {
-                    SearchHistorySection(
-                        history = state.history,
-                        onHistoryItemClicked = interactionListener::onHistoryItemClicked,
-                        onHistoryItemDeleted = interactionListener::onHistoryItemDeleted,
-                        onClearHistoryClicked = interactionListener::onClearHistoryClicked,
-                    )
+        SearchContent(
+            state = state,
+            interactionListener = interactionListener,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun SearchContent(
+    state: SearchUiState,
+    interactionListener: SearchInteractionListener,
+    modifier: Modifier = Modifier,
+) {
+    when {
+        state.errorMessage.isNotBlank() -> {
+            Box(modifier = modifier.fillMaxSize()) {
+                Text(
+                    text = state.errorMessage,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 24.dp),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+
+        state.shouldShowEmptyResult -> {
+            Box(modifier = modifier.fillMaxSize()) {
+                EmptySearchContent(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+        }
+
+        else -> {
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+            ) {
+                if (state.shouldShowHistory) {
+                    item(key = "history") {
+                        SearchHistorySection(
+                            history = state.visibleHistory,
+                            onHistoryItemClicked = interactionListener::onHistoryItemClicked,
+                            onHistoryItemDeleted = interactionListener::onHistoryItemDeleted,
+                            onClearHistoryClicked = interactionListener::onClearHistoryClicked,
+                        )
+
+                        Spacer(Modifier.height(24.dp))
+                    }
                 }
 
-                state.isLoading -> {
-                    CircularWavyProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-
-                state.errorMessage.isNotBlank() -> {
-                    Text(
-                        text = state.errorMessage,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(horizontal = 24.dp),
-                        color = MaterialTheme.colorScheme.error,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-
-                state.shouldShowEmptyResult -> {
-                    EmptySearchContent(
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                }
-
-                state.products.isNotEmpty() -> {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    ) {
-                        itemsIndexed(
-                            items = state.products,
-                            key = { _, product -> product.id },
-                        ) { index, product ->
-                            SearchProductResultItem(
-                                product = product,
-                                onClick = { interactionListener.onProductClicked(product.id) },
-                                showDivider = index != state.products.lastIndex,
-                            )
-                        }
+                if (state.isLoading) {
+                    items(SHIMMER_ITEM_COUNT) { index ->
+                        SearchProductResultItemShimmer(
+                            showDivider = index != SHIMMER_ITEM_COUNT - 1,
+                        )
+                    }
+                } else {
+                    itemsIndexed(
+                        items = state.displayedProducts,
+                        key = { _, product -> product.id },
+                    ) { index, product ->
+                        SearchProductResultItem(
+                            product = product,
+                            onClick = { interactionListener.onProductClicked(product.id) },
+                            showDivider = index != state.displayedProducts.lastIndex,
+                        )
                     }
                 }
             }
         }
     }
 }
+
+private const val SHIMMER_ITEM_COUNT = 5

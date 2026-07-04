@@ -19,6 +19,9 @@ sealed class Screen(val route: String) {
     data object BrandProducts : Screen("brand_products/{brandName}") {
         fun createRoute(brandName: String) = "brand_products/${android.net.Uri.encode(brandName)}"
     }
+    data object Addresses : Screen("addresses")
+    data object NewAddress : Screen("new_address")
+    data object MapPicker : Screen("map_picker")
 }
 
 val bottomBarRoutes = setOf(
