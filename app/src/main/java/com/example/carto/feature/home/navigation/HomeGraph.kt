@@ -40,7 +40,7 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
                 navController.navigate(HomeRoutes.categoryProducts(it.id, it.title))
             },
             onSearchClick = {
-                navController.navigate(Screen.Addresses.route)
+                navController.navigate(HomeRoutes.Search)
             },
             onBrandClick = { brandName ->
                 navController.navigate(Screen.BrandProducts.createRoute(brandName))
