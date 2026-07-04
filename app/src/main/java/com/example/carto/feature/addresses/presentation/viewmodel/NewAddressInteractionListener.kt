@@ -13,5 +13,4 @@ interface NewAddressInteractionListener {
     fun onMapAddressSelected(selectedMapAddress: SelectedMapAddress)
     fun saveAddress()
     fun onNavigateBack()
-    fun onSelectFromMapClick()
 }

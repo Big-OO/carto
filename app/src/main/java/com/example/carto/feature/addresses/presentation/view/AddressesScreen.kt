@@ -32,6 +32,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -39,10 +42,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.carto.R
+import com.example.carto.feature.addresses.presentation.model.stringRes
+import com.example.carto.feature.addresses.presentation.state.AddressesUiState
 import com.example.carto.feature.addresses.presentation.view.components.AddressCard
 import com.example.carto.feature.addresses.presentation.view.components.AddressTopBar
+import com.example.carto.feature.addresses.presentation.viewmodel.AddressesInteractionListener
 import com.example.carto.feature.addresses.presentation.viewmodel.AddressesViewModel
-
 
 @Composable
 fun AddressesScreen(
@@ -51,21 +57,20 @@ fun AddressesScreen(
     modifier: Modifier = Modifier,
 ) {
     val viewModel = hiltViewModel<AddressesViewModel>()
-
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val resources = LocalResources.current
 
-    LaunchedEffect(state.errorMessage, state.successMessage) {
-        val message = state.errorMessage ?: state.successMessage
-        if (message != null) {
-            snackbarHostState.showSnackbar(message)
-            viewModel.clearMessages()
+    LaunchedEffect(state.snackbarMessage) {
+        state.snackbarMessage?.let { message ->
+            snackbarHostState.showSnackbar(resources.getString(message.stringRes()))
+            viewModel.consumeSnackbar()
         }
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.loadAddresses()
         }
     }
@@ -75,82 +80,106 @@ fun AddressesScreen(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 24.dp),
-        ) {
-            AddressTopBar(
-                title = "Address",
-                onBackClick = onBackClick,
-            )
+        AddressesContent(
+            state = state,
+            interactionListener = viewModel,
+            onBackClick = onBackClick,
+            onAddNewAddressClick = onAddNewAddressClick,
+            modifier = Modifier.padding(padding),
+        )
+    }
+}
 
-            Spacer(modifier = Modifier.height(28.dp))
+@Composable
+private fun AddressesContent(
+    state: AddressesUiState,
+    interactionListener: AddressesInteractionListener,
+    onBackClick: () -> Unit,
+    onAddNewAddressClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+    ) {
+        AddressTopBar(
+            title = stringResource(R.string.addresses_title),
+            onBackClick = onBackClick,
+        )
 
-            Text(
-                text = "Saved Address",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.SemiBold,
-            )
+        Spacer(modifier = Modifier.height(28.dp))
 
-            Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = stringResource(R.string.addresses_saved_address_title),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontWeight = FontWeight.SemiBold,
+        )
 
-            when {
-                state.isLoading -> {
-                    Box(
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    }
+        Spacer(modifier = Modifier.height(12.dp))
+
+        when {
+            state.isLoading -> {
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
+            }
 
-                state.addresses.isEmpty() -> {
-                    Box(
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = "No saved addresses yet.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            state.addresses.isEmpty() -> {
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = stringResource(R.string.addresses_empty_addresses),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(state.addresses, key = { it.id }) { address ->
+                        AddressCard(
+                            address = address,
+                            selected = state.selectedAddressId == address.id,
+                            isRemoving = state.removingAddressId == address.id,
+                            onClick = { interactionListener.selectAddress(address.id) },
+                            onRemoveClick = { interactionListener.removeAddress(address.id) },
                         )
                     }
                 }
-
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(state.addresses, key = { it.id }) { address ->
-                            AddressCard(
-                                address = address,
-                                selected = state.selectedAddressId == address.id,
-                                onClick = { viewModel.selectAddress(address.id) },
-                            )
-                        }
-                    }
-                }
             }
+        }
 
-            OutlinedButton(
-                onClick = onAddNewAddressClick,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                Text(text = "Add New Address")
-            }
+        OutlinedButton(
+            onClick = onAddNewAddressClick,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+        ) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            Text(text = stringResource(R.string.addresses_add_new_address))
+        }
 
-            Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
+        AnimatedVisibility(
+            visible = state.hasDefaultAddressChange,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
             Button(
-                onClick = viewModel::applyDefaultAddress,
+                onClick = interactionListener::applyDefaultAddress,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = state.selectedAddressId != null && !state.isApplying,
+                enabled = !state.isApplying,
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -165,7 +194,7 @@ fun AddressesScreen(
                 }
                 AnimatedVisibility(visible = !state.isApplying, enter = fadeIn(), exit = fadeOut()) {
                     Text(
-                        text = "Apply",
+                        text = stringResource(R.string.addresses_apply_default),
                         modifier = Modifier.padding(vertical = 8.dp),
                     )
                 }

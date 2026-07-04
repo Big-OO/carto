@@ -9,6 +9,12 @@ data class AddressForm(
     val zip: String = "",
     val isDefault: Boolean = false,
 ) {
-    val firstName: String = name.split(" ").getOrNull(0) ?: "Home"
-    val lastName: String = name.split(" ").getOrNull(1) ?: ""
+    private val nameParts: List<String>
+        get() = name.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
+
+    val firstName: String
+        get() = nameParts.firstOrNull().orEmpty()
+
+    val lastName: String
+        get() = nameParts.drop(1).joinToString(" ")
 }

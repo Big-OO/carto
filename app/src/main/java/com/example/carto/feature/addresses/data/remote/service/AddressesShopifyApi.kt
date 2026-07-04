@@ -5,6 +5,7 @@ import com.example.carto.feature.addresses.data.remote.dto.AddressesResponseDto
 import com.example.carto.feature.addresses.data.remote.dto.CreateAddressBodyDto
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -28,6 +29,13 @@ interface AddressesShopifyApi {
 
     @PUT("admin/api/{version}/customers/{customerId}/addresses/{addressId}/default.json")
     suspend fun setDefaultAddress(
+        @Path("version") version: String,
+        @Path("customerId") customerId: Long,
+        @Path("addressId") addressId: Long,
+    ): Response<Unit>
+
+    @DELETE("admin/api/{version}/customers/{customerId}/addresses/{addressId}.json")
+    suspend fun deleteAddress(
         @Path("version") version: String,
         @Path("customerId") customerId: Long,
         @Path("addressId") addressId: Long,

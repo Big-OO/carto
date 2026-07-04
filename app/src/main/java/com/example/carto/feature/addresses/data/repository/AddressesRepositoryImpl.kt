@@ -6,6 +6,7 @@ import com.example.carto.feature.addresses.data.remote.dto.AddressDto
 import com.example.carto.feature.addresses.data.remote.mapper.toAddressCreationFailure
 import com.example.carto.feature.addresses.data.remote.mapper.toAddressesFailure
 import com.example.carto.feature.addresses.data.remote.mapper.toDefaultAddressFailure
+import com.example.carto.feature.addresses.data.remote.mapper.toDeleteAddressFailure
 import com.example.carto.feature.addresses.data.result.AddressDataResult
 import com.example.carto.feature.addresses.domain.model.AddressFailure
 import com.example.carto.feature.addresses.domain.model.AddressFailureType
@@ -53,6 +54,15 @@ class AddressesRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteAddress(addressId: Long): AddressResult<Unit> {
+        val customerId = getCustomerIdOrFailure() ?: return missingCustomerFailure()
+
+        return when (val result = remoteDataSource.deleteAddress(customerId, addressId)) {
+            is AddressDataResult.Success -> AddressResult.Success(Unit)
+            is AddressDataResult.Failure -> AddressResult.Failure(result.toDeleteAddressFailure())
+        }
+    }
+
     private suspend fun getCustomerIdOrFailure(): Long? {
         return when (val result = customerIdDataSource.getShopifyCustomerId()) {
             is AddressDataResult.Success -> result.data
@@ -72,7 +82,8 @@ class AddressesRepositoryImpl @Inject constructor(
     private fun AddressDto.toDomain(): CustomerAddress {
         return CustomerAddress(
             id = id ?: 0L,
-            nickname = name ?: ("Address - " + "$id".substring(4)),
+            nickname = name?.takeIf { it.isNotBlank() }
+                ?: listOf(firstName, lastName).filterNot { it.isNullOrBlank() }.joinToString(" ").ifBlank { "Address" },
             address1 = address1.orEmpty(),
             address2 = address2.orEmpty(),
             city = city.orEmpty(),

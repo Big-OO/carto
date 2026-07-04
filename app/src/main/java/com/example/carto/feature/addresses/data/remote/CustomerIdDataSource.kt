@@ -5,6 +5,7 @@ import com.example.carto.feature.addresses.data.result.AddressDataResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.io.IOException
 import javax.inject.Inject
 
 class CustomerIdDataSource @Inject constructor(
@@ -14,7 +15,10 @@ class CustomerIdDataSource @Inject constructor(
     suspend fun getShopifyCustomerId(): AddressDataResult<Long, CustomerIdError> {
         return try {
             val uid = firebaseAuth.currentUser?.uid
-                ?: return AddressDataResult.Failure(message = "No Firebase user is logged in", error = CustomerIdError.UnKnown)
+                ?: return AddressDataResult.Failure(
+                    message = "No Firebase user is logged in",
+                    error = CustomerIdError.MissingCustomer,
+                )
 
             val snapshot = firestore.collection("users").document(uid).get().await()
             val customerId = when (val rawCustomerId = snapshot.get("shopifyCustomerId")) {
@@ -26,12 +30,17 @@ class CustomerIdDataSource @Inject constructor(
             }
 
             if (customerId == null) {
-                AddressDataResult.Failure(error = CustomerIdError.UnKnown, message = "shopifyCustomerId is missing for user=$uid")
+                AddressDataResult.Failure(
+                    error = CustomerIdError.MissingCustomer,
+                    message = "shopifyCustomerId is missing for user=$uid",
+                )
             } else {
                 AddressDataResult.Success(customerId)
             }
+        } catch (throwable: IOException) {
+            AddressDataResult.Failure(error = CustomerIdError.Network, message = throwable.message)
         } catch (throwable: Throwable) {
-            AddressDataResult.Failure(error = CustomerIdError.UnKnown, message = throwable.message)
+            AddressDataResult.Failure(error = CustomerIdError.Unknown, message = throwable.message)
         }
     }
 }

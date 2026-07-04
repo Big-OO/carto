@@ -3,11 +3,10 @@ package com.example.carto.feature.addresses.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.carto.feature.addresses.domain.model.AddressFailure
-import com.example.carto.feature.addresses.domain.model.AddressFailureType
 import com.example.carto.feature.addresses.domain.model.AddressForm
 import com.example.carto.feature.addresses.domain.model.AddressResult
 import com.example.carto.feature.addresses.domain.usecase.CreateAddressUseCase
+import com.example.carto.feature.addresses.presentation.model.toSnackbarMessage
 import com.example.carto.feature.addresses.presentation.state.NewAddressEffect
 import com.example.carto.feature.addresses.presentation.state.NewAddressUiState
 import com.example.carto.feature.map.domain.model.SelectedMapAddress
@@ -53,7 +52,7 @@ class NewAddressViewModel @Inject constructor(
 
     override fun saveAddress() {
         viewModelScope.launch {
-            _state.update { it.copy(isSaving = true, errorMessage = null) }
+            _state.update { it.copy(isSaving = true, snackbarMessage = null) }
             when (val result = createAddressUseCase(state.value.form)) {
                 is AddressResult.Success -> {
                     _state.update {
@@ -65,11 +64,11 @@ class NewAddressViewModel @Inject constructor(
                 }
 
                 is AddressResult.Failure -> {
-                    Log.e(TAG, "Create address failed: ${result.failure.message}")
+                    Log.e(TAG, "Create address failed: ${result.failure.type}, ${result.failure.message}")
                     _state.update {
                         it.copy(
                             isSaving = false,
-                            errorMessage = result.failure.toUserMessage(),
+                            snackbarMessage = result.failure.toSnackbarMessage(),
                         )
                     }
                 }
@@ -83,32 +82,17 @@ class NewAddressViewModel @Inject constructor(
         }
     }
 
-    override fun onSelectFromMapClick() {
-        viewModelScope.launch {
-            _effects.emit(NewAddressEffect.OnSelectFromMapClick)
-        }
-    }
-
     fun dismissSuccess() {
         _state.update { it.copy(showSuccessDialog = false) }
         onNavigateBack()
     }
 
-    private fun updateForm(reducer: (AddressForm) -> AddressForm) {
-        _state.update { it.copy(form = reducer(it.form), errorMessage = null) }
+    fun consumeSnackbar() {
+        _state.update { it.copy(snackbarMessage = null) }
     }
 
-    private fun AddressFailure.toUserMessage(): String {
-        return when (type) {
-            AddressFailureType.MissingCustomer -> "Please login again before adding an address."
-            AddressFailureType.Validation -> "Please complete the required address details."
-            AddressFailureType.NotFound -> "We couldn't find this customer."
-            AddressFailureType.Network -> "Check your connection and try again."
-            AddressFailureType.Unknown -> "Something went wrong. Try again later."
-            AddressFailureType.InvalidProvince -> TODO()
-            AddressFailureType.AddressAlreadyExist -> TODO()
-            AddressFailureType.InvalidCountry -> TODO()
-        }
+    private fun updateForm(reducer: (AddressForm) -> AddressForm) {
+        _state.update { it.copy(form = reducer(it.form), snackbarMessage = null) }
     }
 
     companion object {

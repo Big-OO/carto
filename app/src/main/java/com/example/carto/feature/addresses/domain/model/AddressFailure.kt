@@ -3,11 +3,14 @@ package com.example.carto.feature.addresses.domain.model
 enum class AddressFailureType {
     MissingCustomer,
     Network,
+    Unauthorized,
+    DefaultAddressDeletion,
     InvalidProvince,
     AddressAlreadyExist,
     InvalidCountry,
     Validation,
     NotFound,
+    Server,
     Unknown,
 }
 

@@ -12,8 +12,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.carto.R
 
 @Composable
 fun AddressSuccessDialog(
@@ -31,7 +33,7 @@ fun AddressSuccessDialog(
         },
         title = {
             Text(
-                text = "Congratulations!",
+                text = stringResource(R.string.addresses_success_dialog_title),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium,
@@ -39,7 +41,7 @@ fun AddressSuccessDialog(
         },
         text = {
             Text(
-                text = "Your new address has been added.",
+                text = stringResource(R.string.addresses_success_dialog_message),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodySmall,
@@ -56,7 +58,7 @@ fun AddressSuccessDialog(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
             ) {
-                Text("Thanks")
+                Text(text = stringResource(R.string.addresses_success_dialog_button))
             }
         },
     )
