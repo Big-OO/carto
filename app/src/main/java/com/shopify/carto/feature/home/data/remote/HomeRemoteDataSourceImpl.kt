@@ -1,32 +1,32 @@
 package com.shopify.carto.feature.home.data.remote
 
-import com.shopify.carto.feature.home.data.HomeApiService
-import jakarta.inject.Inject
+import com.shopify.carto.feature.home.data.network.HomeNetworkDataSource
+import javax.inject.Inject
 
 class HomeRemoteDataSourceImpl @Inject constructor(
-    private val api: HomeApiService
+    private val networkDataSource: HomeNetworkDataSource
 ) : HomeRemoteDataSource {
 
     override suspend fun getProducts() =
         safeApiCall {
-            api.getProducts()
+            networkDataSource.getProducts()
         }
 
     override suspend fun getCollections() =
         safeApiCall {
-            api.getCollections()
+            networkDataSource.getCollections()
         }
 
     override suspend fun getBrands() =
         safeApiCall {
-            api.getBrands()
+            networkDataSource.getBrands()
         }
 
     override suspend fun getProductsByCollection(
         collectionId: Long
     ) =
         safeApiCall {
-            api.getProductsByCollection(
+            networkDataSource.getProductsByCollection(
                 collectionId = collectionId
             )
         }
@@ -35,7 +35,7 @@ class HomeRemoteDataSourceImpl @Inject constructor(
         productId: Long
     ) =
         safeApiCall {
-            api.getProductById(
+            networkDataSource.getProductById(
                 productId = productId
             )
         }

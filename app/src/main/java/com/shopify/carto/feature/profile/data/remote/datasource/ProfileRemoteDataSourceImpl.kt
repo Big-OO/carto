@@ -1,19 +1,19 @@
 package com.shopify.carto.feature.profile.data.remote.datasource
 
-import com.shopify.carto.core.config.ShopifyConfig
-import com.shopify.carto.feature.profile.data.remote.api.ProfileShopifyApi
+import com.shopify.carto.core.network.config.ShopifyConfig
+import com.shopify.carto.feature.profile.data.remote.network.ProfileNetworkDataSource
 import com.shopify.carto.feature.profile.data.remote.dto.ShopifyCustomerProfileResponseDto
 import com.shopify.carto.feature.profile.data.remote.dto.UpdateShopifyCustomerRequestDto
 import javax.inject.Inject
 
 class ProfileRemoteDataSourceImpl @Inject constructor(
-    private val api: ProfileShopifyApi,
+    private val networkDataSource: ProfileNetworkDataSource,
     private val config: ShopifyConfig,
 ) : ProfileRemoteDataSource {
 
     override suspend fun getCustomerProfile(customerId: Long): Result<ShopifyCustomerProfileResponseDto> {
         return runCatching {
-            val response = api.getCustomerProfile(
+            val response = networkDataSource.getCustomerProfile(
                 version = config.apiVersion,
                 customerId = customerId
             )
@@ -31,7 +31,7 @@ class ProfileRemoteDataSourceImpl @Inject constructor(
         request: UpdateShopifyCustomerRequestDto
     ): Result<ShopifyCustomerProfileResponseDto> {
         return runCatching {
-            val response = api.updateCustomerProfile(
+            val response = networkDataSource.updateCustomerProfile(
                 version = config.apiVersion,
                 customerId = customerId,
                 body = request

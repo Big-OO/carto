@@ -1,6 +1,9 @@
 package com.shopify.carto.feature.home.di
 
+import com.shopify.carto.core.network.qualifier.AdminRetrofit
 import com.shopify.carto.feature.home.data.HomeApiService
+import com.shopify.carto.feature.home.data.network.HomeNetworkDataSource
+import com.shopify.carto.feature.home.data.network.RetrofitHomeNetworkDataSource
 import com.shopify.carto.feature.home.data.remote.HomeRemoteDataSource
 import com.shopify.carto.feature.home.data.remote.HomeRemoteDataSourceImpl
 import com.shopify.carto.feature.home.data.repository.HomeRepositoryImp
@@ -24,7 +27,7 @@ abstract class HomeDIModule {
     companion object {
         @Provides
         @Singleton
-        fun provideHomeApiService(retrofit: Retrofit): HomeApiService {
+        fun provideHomeApiService(@AdminRetrofit retrofit: Retrofit): HomeApiService {
             return retrofit.create(HomeApiService::class.java)
         }
     }
@@ -39,4 +42,10 @@ abstract class RemoteDataSourceModule {
     abstract fun bindHomeRemoteDataSource(
         impl: HomeRemoteDataSourceImpl
     ): HomeRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindHomeNetworkDataSource(
+        dataSource: RetrofitHomeNetworkDataSource
+    ): HomeNetworkDataSource
 }

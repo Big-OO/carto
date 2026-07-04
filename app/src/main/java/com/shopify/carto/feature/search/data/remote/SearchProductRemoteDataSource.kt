@@ -1,8 +1,9 @@
 package com.shopify.carto.feature.search.data.remote
 
-import com.shopify.carto.core.config.ShopifyConfig
+import com.shopify.carto.core.network.config.ShopifyConfig
 import com.shopify.carto.feature.search.data.mapper.matchesKeyword
 import com.shopify.carto.feature.search.data.mapper.toDomain
+import com.shopify.carto.feature.search.data.remote.network.SearchNetworkDataSource
 import com.shopify.carto.feature.search.data.result.SearchDataResult
 import com.shopify.carto.feature.search.domain.model.SearchFailure
 import com.shopify.carto.feature.search.domain.model.SearchFailureType
@@ -11,7 +12,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 class SearchProductRemoteDataSource @Inject constructor(
-    private val api: SearchShopifyApi,
+    private val networkDataSource: SearchNetworkDataSource,
     private val config: ShopifyConfig,
 ) {
     suspend fun getInitialProducts(): SearchDataResult<List<SearchProduct>> {
@@ -32,7 +33,7 @@ class SearchProductRemoteDataSource @Inject constructor(
         keyword: String?,
         limit: Int,
     ): SearchDataResult<List<SearchProduct>> {
-        if (!config.isValid) {
+        if (!config.isAdminRestValid) {
             return SearchDataResult.Failure(
                 SearchFailure(
                     type = SearchFailureType.ShopifyConfigurationMissing,
@@ -42,7 +43,7 @@ class SearchProductRemoteDataSource @Inject constructor(
         }
 
         return try {
-            val response = api.getProductsForSearch(
+            val response = networkDataSource.getProductsForSearch(
                 version = config.apiVersion,
                 limit = limit,
             )

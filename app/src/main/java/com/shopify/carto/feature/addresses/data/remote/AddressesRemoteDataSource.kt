@@ -1,6 +1,6 @@
 package com.shopify.carto.feature.addresses.data.remote
 
-import com.shopify.carto.core.config.ShopifyConfig
+import com.shopify.carto.core.network.config.ShopifyConfig
 import com.shopify.carto.feature.addresses.data.remote.dto.AddressDto
 import com.shopify.carto.feature.addresses.data.remote.dto.CreateAddressBodyDto
 import com.shopify.carto.feature.addresses.data.remote.dto.CreateAddressDto
@@ -8,7 +8,7 @@ import com.shopify.carto.feature.addresses.data.remote.error.AddressCreationErro
 import com.shopify.carto.feature.addresses.data.remote.error.DeleteAddressError
 import com.shopify.carto.feature.addresses.data.remote.error.GetAddressesError
 import com.shopify.carto.feature.addresses.data.remote.error.SetDefaultAddressError
-import com.shopify.carto.feature.addresses.data.remote.service.AddressesShopifyApi
+import com.shopify.carto.feature.addresses.data.remote.network.AddressesNetworkDataSource
 import com.shopify.carto.feature.addresses.data.result.AddressDataResult
 import com.shopify.carto.feature.addresses.domain.model.AddressForm
 import com.google.gson.Gson
@@ -17,12 +17,12 @@ import java.io.IOException
 import javax.inject.Inject
 
 class AddressesRemoteDataSource @Inject constructor(
-    private val api: AddressesShopifyApi,
+    private val networkDataSource: AddressesNetworkDataSource,
     private val config: ShopifyConfig,
 ) {
     suspend fun getAddresses(customerId: Long): AddressDataResult<List<AddressDto>, GetAddressesError> {
         return try {
-            val response = api.getAddresses(config.apiVersion, customerId)
+            val response = networkDataSource.getAddresses(config.apiVersion, customerId)
             if (response.isSuccessful) {
                 AddressDataResult.Success(response.body()?.addresses.orEmpty())
             } else {
@@ -52,7 +52,7 @@ class AddressesRemoteDataSource @Inject constructor(
                     lastName = form.lastName,
                 )
             )
-            val response = api.createAddress(config.apiVersion, customerId, body)
+            val response = networkDataSource.createAddress(config.apiVersion, customerId, body)
             val address = response.body()?.address
             if (response.isSuccessful && address != null) {
                 AddressDataResult.Success(address)
@@ -73,7 +73,7 @@ class AddressesRemoteDataSource @Inject constructor(
 
     suspend fun setDefaultAddress(customerId: Long, addressId: Long): AddressDataResult<Unit, SetDefaultAddressError> {
         return try {
-            val response = api.setDefaultAddress(config.apiVersion, customerId, addressId)
+            val response = networkDataSource.setDefaultAddress(config.apiVersion, customerId, addressId)
             if (response.isSuccessful) {
                 AddressDataResult.Success(Unit)
             } else {
@@ -92,7 +92,7 @@ class AddressesRemoteDataSource @Inject constructor(
 
     suspend fun deleteAddress(customerId: Long, addressId: Long): AddressDataResult<Unit, DeleteAddressError> {
         return try {
-            val response = api.deleteAddress(config.apiVersion, customerId, addressId)
+            val response = networkDataSource.deleteAddress(config.apiVersion, customerId, addressId)
             if (response.isSuccessful) {
                 AddressDataResult.Success(Unit)
             } else {

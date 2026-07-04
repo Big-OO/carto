@@ -1,9 +1,10 @@
 package com.shopify.carto.feature.register.data.shopify
 
-import com.shopify.carto.core.config.ShopifyConfig
+import com.shopify.carto.core.network.config.ShopifyConfig
 import com.shopify.carto.feature.register.data.result.RegisterDataResult
 import com.shopify.carto.feature.register.data.shopify.model.CreateShopifyCustomerRequest
 import com.shopify.carto.feature.register.data.shopify.model.ShopifyCustomerBody
+import com.shopify.carto.feature.register.data.shopify.network.RegisterNetworkDataSource
 import com.shopify.carto.feature.register.domain.model.RegisterFailure
 import com.shopify.carto.feature.register.domain.model.RegisterFailureType
 import retrofit2.Response
@@ -11,7 +12,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 class ShopifyCustomerRemoteDataSource @Inject constructor(
-    private val api: RegisterShopifyApi,
+    private val networkDataSource: RegisterNetworkDataSource,
     private val config: ShopifyConfig,
 ) {
     suspend fun getOrCreateCustomerId(fullName: String, email: String): RegisterDataResult<Long> {
@@ -30,7 +31,7 @@ class ShopifyCustomerRemoteDataSource @Inject constructor(
 
     private suspend fun searchExistingCustomerId(email: String): RegisterDataResult<Long?> {
         return try {
-            val response = api.searchCustomerByEmail(
+            val response = networkDataSource.searchCustomerByEmail(
                 version = config.apiVersion,
                 query = "email:${email.trim()}",
             )
@@ -52,7 +53,7 @@ class ShopifyCustomerRemoteDataSource @Inject constructor(
 
     private suspend fun createCustomer(fullName: String, email: String): RegisterDataResult<Long> {
         return try {
-            val response = api.createCustomer(
+            val response = networkDataSource.createCustomer(
                 version = config.apiVersion,
                 body = CreateShopifyCustomerRequest(
                     customer = ShopifyCustomerBody(
