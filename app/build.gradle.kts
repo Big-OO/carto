@@ -123,6 +123,12 @@ android {
             )
         }
     }
+
+    lint {
+        abortOnError = true
+        warningsAsErrors = false
+        baseline = file("lint-baseline.xml")
+    }
 }
 
 dependencies {
