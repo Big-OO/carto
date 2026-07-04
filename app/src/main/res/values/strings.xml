@@ -20,14 +20,14 @@
     <string name="addresses_apply_default">Apply</string>
     <string name="addresses_default_badge">Default</string>
     <string name="addresses_back_content_description">Back</string>
+    <string name="addresses_remove_address">Remove</string>
 
     <string name="addresses_location_title">Location</string>
+    <string name="addresses_select_location_from_map">Select from map</string>
+    <string name="addresses_select_location_from_map_hint">Tap to open the map and choose your delivery location.</string>
     <string name="addresses_address_details_title">Address Details</string>
-    <string name="addresses_confirm_selected_address">Confirm selected address</string>
     <string name="addresses_address_nickname_label">Address Nickname</string>
     <string name="addresses_address_nickname_placeholder">Home, Office, Apartment…</string>
-    <string name="addresses_phone_label">Phone Number</string>
-    <string name="addresses_phone_placeholder">+200000000000</string>
     <string name="addresses_full_address_label">Full Address</string>
     <string name="addresses_full_address_placeholder">Enter your full address…</string>
     <string name="addresses_city_label">City</string>
@@ -46,6 +46,7 @@
     <string name="addresses_success_dialog_button">Thanks</string>
 
     <string name="addresses_success_address_added">Address added successfully.</string>
+    <string name="addresses_success_address_removed">Address removed successfully.</string>
     <string name="addresses_success_default_address_updated">Default address updated.</string>
     <string name="addresses_error_missing_customer">Please login again before managing addresses.</string>
     <string name="addresses_error_validation">Please complete the required address details.</string>
@@ -57,6 +58,7 @@
     <string name="addresses_error_address_already_exists">This address already exists.</string>
     <string name="addresses_error_invalid_country">Please enter a valid country.</string>
     <string name="addresses_error_unknown">Something went wrong. Try again later.</string>
+
 
     <string name="map_back_content_description">Back</string>
     <string name="map_my_location_content_description">My location</string>
