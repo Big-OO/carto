@@ -62,6 +62,7 @@
     <string name="addresses_remove_dialog_title">Remove address?</string>
     <string name="addresses_remove_dialog_message">Are you sure you want to remove this address?</string>
     <string name="addresses_swipe_or_long_press_remove">Swipe or long press to remove</string>
+    <string name="addresses_select_address_on_map">Select address on Map</string>
 
     <string name="map_back_content_description">Back</string>
     <string name="map_my_location_content_description">My location</string>

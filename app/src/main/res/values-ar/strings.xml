@@ -62,6 +62,7 @@
     <string name="addresses_remove_dialog_title">حذف العنوان؟</string>
     <string name="addresses_remove_dialog_message">هل أنت متأكد أنك تريد حذف هذا العنوان؟</string>
     <string name="addresses_swipe_or_long_press_remove">اسحب أو اضغط مطولًا للحذف</string>
+    <string name="addresses_select_address_on_map">أختار عنوانك عن طريق الخريطة</string>
 
     <string name="map_back_content_description">رجوع</string>
     <string name="map_my_location_content_description">موقعي الحالي</string>
