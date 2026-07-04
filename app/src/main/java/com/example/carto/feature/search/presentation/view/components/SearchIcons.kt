@@ -73,3 +73,77 @@ fun OpenArrowIcon(
         )
     }
 }
+
+@Composable
+fun HistoryClockIcon(
+    modifier: Modifier = Modifier,
+    color: Color? = null,
+) {
+    val iconColor = color ?: MaterialTheme.colorScheme.onSurfaceVariant
+
+    Canvas(modifier = modifier.size(18.dp)) {
+        val strokeWidth = 2.4f
+        val center = Offset(size.width / 2f, size.height / 2f)
+        val radius = size.minDimension * 0.36f
+
+        drawCircle(
+            color = iconColor,
+            radius = radius,
+            center = center,
+            style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
+        )
+        drawLine(
+            color = iconColor,
+            start = center,
+            end = Offset(size.width * 0.5f, size.height * 0.28f),
+            strokeWidth = strokeWidth,
+            cap = StrokeCap.Round,
+        )
+        drawLine(
+            color = iconColor,
+            start = center,
+            end = Offset(size.width * 0.66f, size.height * 0.52f),
+            strokeWidth = strokeWidth,
+            cap = StrokeCap.Round,
+        )
+        drawLine(
+            color = iconColor,
+            start = Offset(size.width * 0.16f, size.height * 0.28f),
+            end = Offset(size.width * 0.08f, size.height * 0.48f),
+            strokeWidth = strokeWidth,
+            cap = StrokeCap.Round,
+        )
+        drawLine(
+            color = iconColor,
+            start = Offset(size.width * 0.16f, size.height * 0.28f),
+            end = Offset(size.width * 0.36f, size.height * 0.26f),
+            strokeWidth = strokeWidth,
+            cap = StrokeCap.Round,
+        )
+    }
+}
+
+@Composable
+fun ChipCloseIcon(
+    modifier: Modifier = Modifier,
+    color: Color? = null,
+) {
+    val iconColor = color ?: MaterialTheme.colorScheme.onSurfaceVariant
+
+    Canvas(modifier = modifier.size(14.dp)) {
+        drawLine(
+            color = iconColor,
+            start = Offset(size.width * 0.25f, size.height * 0.25f),
+            end = Offset(size.width * 0.75f, size.height * 0.75f),
+            strokeWidth = 2.4f,
+            cap = StrokeCap.Round,
+        )
+        drawLine(
+            color = iconColor,
+            start = Offset(size.width * 0.75f, size.height * 0.25f),
+            end = Offset(size.width * 0.25f, size.height * 0.75f),
+            strokeWidth = 2.4f,
+            cap = StrokeCap.Round,
+        )
+    }
+}
