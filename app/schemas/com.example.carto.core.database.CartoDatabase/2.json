@@ -2,6 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
+    "identityHash": "b894fe7604d48e8842ad44c9594593df",
     "identityHash": "9551a1acd3ea4c54cada5013c1661980",
     "entities": [
       {
@@ -46,6 +47,30 @@
         ]
       },
       {
+        "tableName": "customer_profiles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `email` TEXT NOT NULL, `phone` TEXT, `ordersCount` INTEGER NOT NULL, `totalSpent` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "firstName",
+            "columnName": "firstName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastName",
+            "columnName": "lastName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
         "tableName": "favorite_products",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` INTEGER NOT NULL, `name` TEXT NOT NULL, `imageUrl` TEXT, `price` REAL NOT NULL, `addedAt` INTEGER NOT NULL, PRIMARY KEY(`productId`))",
         "fields": [
@@ -62,6 +87,20 @@
             "notNull": true
           },
           {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "ordersCount",
+            "columnName": "ordersCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalSpent",
+            "columnName": "totalSpent",
+            "affinity": "TEXT",
             "fieldPath": "imageUrl",
             "columnName": "imageUrl",
             "affinity": "TEXT"
@@ -82,6 +121,7 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
+            "id"
             "productId"
           ]
         }
@@ -89,6 +129,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b894fe7604d48e8842ad44c9594593df')"
       "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9551a1acd3ea4c54cada5013c1661980')"
     ]
   }

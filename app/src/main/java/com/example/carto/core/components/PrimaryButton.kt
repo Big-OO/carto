@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 fun PrimaryButton(
     text: String,
     enabled: Boolean,
+    modifier: Modifier = Modifier,
     onCLick: () -> Unit
 ) {
     val scale by animateFloatAsState(
@@ -37,7 +38,7 @@ fun PrimaryButton(
 
     Button(
         onClick = { onCLick.invoke() },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
             .scale(scale),

@@ -11,7 +11,6 @@ import androidx.room.Room
 import com.example.carto.BuildConfig
 import com.example.carto.core.config.ShopifyConfig
 import com.example.carto.core.database.CartoDatabase
-import com.example.carto.core.database.MIGRATION_2_3
 import com.example.carto.feature.favorite.data.local.FavoriteProductDao
 import com.example.carto.feature.search.data.local.SearchHistoryDao
 import com.google.firebase.auth.FirebaseAuth
@@ -29,6 +28,8 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+
+import com.example.carto.feature.profile.data.local.CustomerProfileDao
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -108,9 +109,14 @@ object SharedDIModule {
             CartoDatabase::class.java,
             CartoDatabase.DATABASE_NAME,
         )
-            .addMigrations(MIGRATION_2_3)
-            .fallbackToDestructiveMigration()
-            .build()
+        .fallbackToDestructiveMigration()
+        .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCustomerProfileDao(database: CartoDatabase): CustomerProfileDao {
+        return database.customerProfileDao()
     }
 
     @Provides

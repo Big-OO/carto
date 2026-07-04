@@ -1,0 +1,66 @@
+package com.example.carto.feature.profile.presentation.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.carto.core.components.PrimaryButton
+import com.example.carto.feature.profile.presentation.ProfileEvent
+import com.example.carto.ui.theme.CartoTheme
+
+@Composable
+fun ProfileGuestContent(
+    onEvent: (ProfileEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Lock,
+            contentDescription = "Guest Session",
+            modifier = Modifier.size(80.dp),
+            tint = CartoTheme.colors.primary
+        )
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = "Access Your Profile",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = CartoTheme.colors.onBackground,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = "You are currently browsing as a guest. Please log in or register to view your profile details, orders history, and addresses.",
+            fontSize = 15.sp,
+            color = CartoTheme.colors.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            lineHeight = 22.sp
+        )
+        Spacer(Modifier.height(32.dp))
+        PrimaryButton(
+            text = "Log In",
+            enabled = true,
+            onCLick = { onEvent(ProfileEvent.LoginClicked) }
+        )
+    }
+}
