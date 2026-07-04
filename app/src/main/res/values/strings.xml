@@ -59,7 +59,9 @@
     <string name="addresses_error_address_already_exists">This address already exists.</string>
     <string name="addresses_error_invalid_country">Please enter a valid country.</string>
     <string name="addresses_error_unknown">Something went wrong. Try again later.</string>
-
+    <string name="addresses_remove_dialog_title">Remove address?</string>
+    <string name="addresses_remove_dialog_message">Are you sure you want to remove this address?</string>
+    <string name="addresses_swipe_or_long_press_remove">Swipe or long press to remove</string>
 
     <string name="map_back_content_description">Back</string>
     <string name="map_my_location_content_description">My location</string>
