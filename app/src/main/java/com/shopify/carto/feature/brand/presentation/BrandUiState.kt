@@ -10,6 +10,6 @@ sealed interface BrandUiState {
         val filterChips: List<String>,
         val selectedChip: String
     ) : BrandUiState
-    
-    data class Error(val message: String) : BrandUiState
+
+    data class Error(val error: Throwable) : BrandUiState
 }
