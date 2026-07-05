@@ -82,7 +82,7 @@ class BrandViewModel @Inject constructor(
                 val errorMsg = productsResult.exceptionOrNull()?.message 
                     ?: detailsResult.exceptionOrNull()?.message 
                     ?: "Failed to load brand data"
-                _uiState.value = BrandUiState.Error(errorMsg)
+                _uiState.value = BrandUiState.Error(Throwable(errorMsg))
             }
         }
     }

@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -44,10 +45,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.rememberLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.shopify.carto.R
 import com.shopify.carto.core.components.PrimaryButton
 import com.shopify.carto.core.components.TextField
 import com.shopify.carto.feature.register.presentation.state.RegisterFormInput
 import com.shopify.carto.feature.register.presentation.state.RegisterFormUiState
+import com.shopify.carto.feature.register.presentation.view.components.PhoneTextField
 import com.shopify.carto.feature.register.presentation.viewmodel.RegisterInteractionListener
 import com.shopify.carto.feature.register.presentation.viewmodel.RegisterSideEffects
 import com.shopify.carto.feature.register.presentation.viewmodel.RegisterViewModel
@@ -121,7 +124,7 @@ private fun RegisterScreenContent(
                     Column {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Create an account",
+                            text = stringResource(R.string.register_title),
                             fontSize = 30.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.onBackground,
@@ -129,7 +132,7 @@ private fun RegisterScreenContent(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Let’s create your account.",
+                            text = stringResource(R.string.register_subtitle),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -160,7 +163,7 @@ private fun RegisterScreenContent(
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
                             TextField(
-                                title = "Full Name",
+                                title = stringResource(R.string.register_full_name_label),
                                 value = state.fullName.value,
                                 isValidate = state.fullName.isValidField(
                                     isValid = interactionListener.isFullNameIsValid(),
@@ -171,8 +174,15 @@ private fun RegisterScreenContent(
                                 interactionListener.onFullNameValueChanged(it)
                             }
 
+                            Text(
+                                text = stringResource(R.string.register_password_rules),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 6.dp)
+                            )
+
                             TextField(
-                                title = "Email",
+                                title = stringResource(R.string.register_email_label),
                                 value = state.email.value,
                                 isValidate = state.email.isValidField(
                                     isValid = interactionListener.isEmailIsValid(),
@@ -183,8 +193,21 @@ private fun RegisterScreenContent(
                                 interactionListener.onEmailValueChanged(it)
                             }
 
+                            PhoneTextField(
+                                title = stringResource(R.string.register_phone_number_label),
+                                value = state.phoneNumber.value,
+                                placeholder = "1012345678",
+                                isValidate = state.phoneNumber.isValidField(
+                                    isValid = interactionListener.isPhoneNumberIsValid()
+                                ),
+                                errorMessage = state.phoneNumber.visibleErrorMessage(),
+                                onValueChange = {
+                                    interactionListener.onPhoneNumberValueChanged(it)
+                                }
+                            )
+
                             TextField(
-                                title = "Password",
+                                title = stringResource(R.string.register_password_label),
                                 value = state.password.value,
                                 isValidate = state.password.isValidField(
                                     isValid = interactionListener.isPasswordIsValid(),
@@ -198,7 +221,7 @@ private fun RegisterScreenContent(
                             }
 
                             Text(
-                                text = "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.",
+                                text = stringResource(R.string.register_password_rules),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = 6.dp)
@@ -215,7 +238,8 @@ private fun RegisterScreenContent(
                             Spacer(modifier = Modifier.height(4.dp))
 
                             PrimaryButton(
-                                text = if (state.isLoading) "Creating account…" else "Create an Account",
+                                text = if (state.isLoading) stringResource(R.string.register_create_account_btn_loading)
+                                else stringResource(R.string.register_create_account_btn),
                                 enabled = !state.isLoading && interactionListener.isPasswordIsValid() &&
                                         interactionListener.isEmailIsValid() &&
                                         interactionListener.isFullNameIsValid(),
@@ -250,7 +274,7 @@ private fun RegisterScreenContent(
                                 fontSize = 14.sp,
                             ),
                         ) {
-                            append("Already have an account? ")
+                            append(stringResource(R.string.register_already_have_an_account))
                         }
                         withStyle(
                             SpanStyle(
@@ -260,7 +284,7 @@ private fun RegisterScreenContent(
                                 textDecoration = TextDecoration.Underline,
                             ),
                         ) {
-                            append("Log In")
+                            append(stringResource(R.string.register_login_btn))
                         }
                     }
 

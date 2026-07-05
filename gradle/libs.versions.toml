@@ -2,6 +2,7 @@
 compileSdk = "37"
 kotlinxSerializationJson = "1.11.0"
 minSdk = "24"
+paymobSdk = "1.9.2"
 targetSdk = "37"
 
 agp = "9.2.1"
@@ -71,6 +72,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
+paymob-sdk = { module = "com.paymob.sdk:Paymob-SDK", version.ref = "paymobSdk" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 retrofit-converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }

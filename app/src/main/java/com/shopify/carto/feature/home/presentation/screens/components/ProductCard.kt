@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.shopify.carto.feature.home.domain.model.Product
+import com.shopify.carto.ui.theme.CartoTheme
 
 
 @Composable
@@ -154,7 +155,7 @@ fun ProductCard(
                                 horizontal = 6.dp,
                                 vertical = 2.dp
                             ),
-                            color = Color.White,
+                            color = CartoTheme.colors.primary,
                             style = MaterialTheme.typography.labelSmall
                         )
 
@@ -170,7 +171,7 @@ fun ProductCard(
                 Text(
                     text = product.productType.uppercase(),
                     style = MaterialTheme.typography.labelSmall,
-                    color = colors.primary
+                    color = CartoTheme.colors.primary
                 )
 
                 Spacer(Modifier.height(2.dp))
@@ -178,6 +179,7 @@ fun ProductCard(
                 Text(
                     text = product.name,
                     style = MaterialTheme.typography.titleMedium,
+                    color = CartoTheme.colors.primary,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 2,
                     minLines = 2
@@ -199,7 +201,8 @@ fun ProductCard(
                             Text(
                                 text = "$${"%.2f".format(product.price)}",
                                 style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = CartoTheme.colors.primary
                             )
                         }
 

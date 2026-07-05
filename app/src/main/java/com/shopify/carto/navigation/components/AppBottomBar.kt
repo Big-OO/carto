@@ -9,6 +9,11 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -23,13 +28,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.shopify.carto.R
+import com.shopify.carto.navigation.NavItem
 import com.shopify.carto.navigation.Screen
 import com.shopify.carto.navigation.authRequiredRoutes
-import com.shopify.carto.navigation.navItems
+
 
 @Composable
 fun AppBottomBar(
@@ -42,6 +50,12 @@ fun AppBottomBar(
     val currentRoute = navBackStackEntry?.destination?.route
     var showAuthDialog by remember { mutableStateOf(false) }
 
+    val navItems = listOf(
+        NavItem(Screen.Home.route, stringResource(id = R.string.homeNavTitle), Icons.Filled.Home),
+        NavItem(Screen.Saved.route, stringResource(id = R.string.savedNavTitle), Icons.Outlined.FavoriteBorder),
+        NavItem(Screen.Cart.route, stringResource(id = R.string.cartNavTitle), Icons.Outlined.ShoppingCart),
+        NavItem(Screen.Account.route,stringResource(id = R.string.accountNavTitle) , Icons.Outlined.AccountCircle)
+    )
     Box(
         modifier = modifier
             .fillMaxWidth()

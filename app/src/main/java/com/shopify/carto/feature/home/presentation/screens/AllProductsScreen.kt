@@ -29,48 +29,44 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.shopify.carto.R
 import com.shopify.carto.feature.favorite.presentation.FavoriteViewModel
-import com.shopify.carto.feature.home.domain.model.Product
+import com.shopify.carto.feature.home.presentation.HomeUiState
+import com.shopify.carto.feature.home.presentation.HomeViewModel
+import com.shopify.carto.feature.home.presentation.screens.components.ErrorBox
 import com.shopify.carto.feature.home.presentation.screens.components.ProductCard
+import com.shopify.carto.feature.home.presentation.screens.components.ProductsGridShimmer
 import com.shopify.carto.feature.home.presentation.screens.components.SearchTextField
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AllProductsScreen(
-    products: List<Product>,
+    viewModel: HomeViewModel,
     isGuest: Boolean,
     onBackClick: () -> Unit,
-    onProductClick: (Product) -> Unit,
+    onProductClick: (com.shopify.carto.feature.home.domain.model.Product) -> Unit,
     favoriteViewModel: FavoriteViewModel = hiltViewModel(),
 ) {
 
-    var searchQuery by rememberSaveable { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val filteredProducts = remember(products, searchQuery) {
-        if (searchQuery.isBlank()) {
-            products
-        } else {
-            products.filter {
-                it.name.contains(searchQuery, true) ||
-                        it.vendor.contains(searchQuery, true) ||
-                        it.productType.contains(searchQuery, true)
-            }
-        }
-    }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     val favoriteIds by favoriteViewModel.favoriteIds.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val guestFavoriteMessage = stringResource(R.string.commonLoginRequiredFavorite)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Products") },
+                title = { Text(stringResource(R.string.productsScreenTitle)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -83,67 +79,103 @@ fun AllProductsScreen(
         }
     ) { padding ->
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
+        when (val state = uiState) {
 
-            SearchTextField(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                query = searchQuery,
-                onQueryChange = { searchQuery = it },
-                placeholder = "Search products..."
+            HomeUiState.Loading -> ProductsGridShimmer(
+                modifier = Modifier.padding(padding)
             )
 
-            Spacer(Modifier.height(12.dp))
+            is HomeUiState.Error -> ErrorBox(
+                error = state.error,
+                onRetry = viewModel::fetchHomeData,
+                modifier = Modifier.padding(padding),
+            )
 
-            if (filteredProducts.isEmpty()) {
+            is HomeUiState.Success -> {
 
-                EmptyCategoryView(
-                    mainMsg = "No products found",
-                    subMsg = "Try another keyword.",
-                    image = Icons.Default.ProductionQuantityLimits
-                )
+                val products = state.content.products
 
-            } else {
+                val filteredProducts = remember(products, searchQuery) {
+                    if (searchQuery.isBlank()) {
+                        products
+                    } else {
+                        products.filter {
+                            it.name.contains(searchQuery, true) ||
+                                    it.vendor.contains(searchQuery, true) ||
+                                    it.productType.contains(searchQuery, true)
+                        }
+                    }
+                }
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
                 ) {
 
+                    SearchTextField(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        placeholder = stringResource(R.string.productsSearchHint)
+                    )
 
-                    items(filteredProducts, key = { it.id }) { product ->
+                    Spacer(Modifier.height(12.dp))
 
-                        ProductCard(
-                            product = product,
-                            isGuest = isGuest,
-                            isFavorite = favoriteIds.contains(product.id),
-                            onClick = onProductClick,
-                            onFavoriteClick = { clicked ->
-                                favoriteViewModel.toggleFavorite(
-                                    productId = clicked.id,
-                                    name = clicked.name,
-                                    imageUrl = clicked.imageUrl,
-                                    price = clicked.price,
-                                )
-                            },
-                            onGuestFavoriteClick = {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        "Please login to add favorites."
+                    when {
+
+                        searchQuery.isNotBlank() && filteredProducts.isEmpty() -> {
+                            EmptyCategoryView(
+                                mainMsg = stringResource(R.string.productsEmptySearchTitle),
+                                subMsg = stringResource(R.string.productsEmptySearchSubtitle),
+                                image = Icons.Default.ProductionQuantityLimits
+                            )
+                        }
+
+                        searchQuery.isBlank() && filteredProducts.isEmpty() -> {
+                            EmptyCategoryView(
+                                mainMsg = stringResource(R.string.productsEmptyDataTitle),
+                                subMsg = stringResource(R.string.productsEmptyDataSubtitle),
+                                image = Icons.Default.ProductionQuantityLimits
+                            )
+                        }
+
+                        else -> {
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+
+                                items(filteredProducts, key = { it.id }) { product ->
+
+                                    ProductCard(
+                                        product = product,
+                                        isGuest = isGuest,
+                                        isFavorite = favoriteIds.contains(product.id),
+                                        onClick = onProductClick,
+                                        onFavoriteClick = { clicked ->
+                                            favoriteViewModel.toggleFavorite(
+                                                productId = clicked.id,
+                                                name = clicked.name,
+                                                imageUrl = clicked.imageUrl,
+                                                price = clicked.price,
+                                            )
+                                        },
+                                        onGuestFavoriteClick = {
+                                            scope.launch {
+                                                snackbarHostState.showSnackbar(guestFavoriteMessage)
+                                            }
+                                        }
                                     )
                                 }
                             }
-                        )
+                        }
                     }
                 }
             }
         }
     }
 }
-

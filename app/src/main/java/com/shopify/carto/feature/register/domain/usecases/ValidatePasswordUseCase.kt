@@ -7,10 +7,13 @@ class ValidatePasswordUseCase {
         if (password.isEmpty())
             return ValidationFormError.Empty
 
-        if (!Regex("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$")
-                .matches(password))
+        if (!PASSWORD_REGEX.matches(password))
             return ValidationFormError.Invalid
 
         return ValidationFormError.Valid
+    }
+
+    private companion object {
+        val PASSWORD_REGEX = Regex("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$")
     }
 }

@@ -35,6 +35,9 @@ import com.shopify.carto.feature.map.domain.model.MapPoint
 import com.shopify.carto.feature.map.domain.model.SelectedMapAddress
 import com.shopify.carto.feature.map.presentation.view.MapPickerScreen
 import com.shopify.carto.feature.map.utils.MapResultKeys
+import com.shopify.carto.feature.payment.presentation.view.CheckoutScreen
+import com.shopify.carto.feature.payment.presentation.view.PaymentResultScreen
+import com.shopify.carto.feature.payment.presentation.viewmodel.CheckoutViewModel
 import com.shopify.carto.feature.product_details.presentation.ProductDetailsScreen
 import com.shopify.carto.feature.profile.presentation.ProfileEffect
 import com.shopify.carto.feature.profile.presentation.ProfileScreen
@@ -123,21 +126,23 @@ fun AppNavHost(
             composable(Screen.onBoarding.route) {
                 OnBoardingScreen(
                     onFinishOnboarding = {
-                        sessionViewModel.completeOnBoarding()
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(Screen.onBoarding.route) {
-                                inclusive = true
+                        sessionViewModel.completeOnBoarding {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(Screen.onBoarding.route) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
                             }
-                            launchSingleTop = true
                         }
                     },
                     onLoginClick = {
-                        sessionViewModel.completeOnBoarding()
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(Screen.onBoarding.route) {
-                                inclusive = true
+                        sessionViewModel.completeOnBoarding {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(Screen.onBoarding.route) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
                             }
-                            launchSingleTop = true
                         }
                     },
                 )
@@ -211,13 +216,15 @@ fun AppNavHost(
                     },
                 )
             }
+
             composable(
                 route = Screen.ProductDetail.route,
                 arguments = listOf(
                     navArgument("productId") { type = NavType.LongType }
                 )
             ) { backStackEntry ->
-                val productId = backStackEntry.arguments?.getLong("productId")?.toString() ?: return@composable
+                val productId =
+                    backStackEntry.arguments?.getLong("productId")?.toString() ?: return@composable
 
                 ProductDetailsScreen(
                     productId = productId,
@@ -230,7 +237,12 @@ fun AppNavHost(
                         }
                     },
                     onNavigateToReviews = {
-                        navController.navigate(Screen.ProductReviews.route.replace("{productId}", productId)) {
+                        navController.navigate(
+                            Screen.ProductReviews.route.replace(
+                                "{productId}",
+                                productId
+                            )
+                        ) {
                             launchSingleTop = true
                         }
                     }
@@ -246,13 +258,79 @@ fun AppNavHost(
             }
 
             composable(Screen.ProductReviews.route) { backStackEntry ->
-                val productId = backStackEntry.arguments?.getString("productId") ?: return@composable
+                val productId =
+                    backStackEntry.arguments?.getString("productId") ?: return@composable
 
                 ProductReviewsScreen(
                     productId = productId,
                     onBackClick = {
                         navController.popBackStack()
                     }
+                )
+            }
+
+            composable(Screen.Checkout.route) { backStackEntry ->
+                val checkoutViewModel: CheckoutViewModel = hiltViewModel(backStackEntry)
+
+                CheckoutScreen(
+                    viewModel = checkoutViewModel,
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onPaymentSuccess = { transactionId, orderId ->
+                        navController.navigate(
+                            Screen.PaymentResult.createRoute(
+                                success = true,
+                                transactionId = orderId.ifBlank { transactionId },
+                            )
+                        ) {
+                            popUpTo(Screen.Checkout.route) {
+                                inclusive = true
+                            }
+                        }
+                    },
+                    onPaymentFailed = { message ->
+                        navController.navigate(
+                            Screen.PaymentResult.createRoute(
+                                success = false,
+                                transactionId = message,
+                            )
+                        ) {
+                            popUpTo(Screen.Checkout.route) {
+                                inclusive = true
+                            }
+                        }
+                    },
+                )
+            }
+
+            composable(
+                route = Screen.PaymentResult.route,
+                arguments = listOf(
+                    navArgument("success") { type = NavType.BoolType },
+                    navArgument("transactionId") { type = NavType.StringType },
+                ),
+            ) { backStackEntry ->
+                val isSuccess = backStackEntry.arguments?.getBoolean("success") ?: false
+                val transactionId = backStackEntry.arguments?.getString("transactionId").orEmpty()
+
+                PaymentResultScreen(
+                    isSuccess = isSuccess,
+                    transactionId = transactionId,
+                    onContinueShopping = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(0) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onRetryPayment = {
+                        navController.navigate(Screen.Checkout.route) {
+                            popUpTo(Screen.PaymentResult.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    },
                 )
             }
 
@@ -294,6 +372,9 @@ fun AppNavHost(
                     },
                     onNavigateToAddressesClick = {
                         navController.navigate(Screen.Addresses.route)
+                    },
+                    onNavigateToPaymentMethodsClick = {
+                        navController.navigate(Screen.Checkout.route)
                     }
                 )
             }
@@ -409,7 +490,9 @@ fun AppNavHost(
                     sessionViewModel.clearSession()
 
                     navController.navigate(Screen.Login.route) {
-                        launchSingleTop = true
+                        popUpTo(0) {
+                            inclusive = true
+                        }
                     }
                 },
                 isGuest = session?.isGuest ?: true,

@@ -14,5 +14,6 @@ fun RegisterFailure.toUserMessage(): String {
         RegisterFailureType.ShopifySyncFailed,
         RegisterFailureType.FirebaseSyncFailed,
         RegisterFailureType.Unknown -> "We couldn't create your account right now. Try again later."
+        RegisterFailureType.PhoneNumberAlreadyUsed -> "Phone number is already registered"
     }
 }
