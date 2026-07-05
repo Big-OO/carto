@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -22,7 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-
+import com.example.carto.product_reviews.presentation.screen.ProductReviewsScreen
 import com.shopify.carto.feature.addresses.presentation.view.AddressesScreen
 import com.shopify.carto.feature.addresses.presentation.view.NewAddressScreen
 import com.shopify.carto.feature.favorite.presentation.FavoriteToastViewModel
@@ -39,14 +38,15 @@ import com.shopify.carto.feature.map.utils.MapResultKeys
 import com.shopify.carto.feature.payment.presentation.view.CheckoutScreen
 import com.shopify.carto.feature.payment.presentation.view.PaymentResultScreen
 import com.shopify.carto.feature.payment.presentation.viewmodel.CheckoutViewModel
+import com.shopify.carto.feature.product_details.presentation.ProductDetailsScreen
 import com.shopify.carto.feature.profile.presentation.ProfileEffect
 import com.shopify.carto.feature.profile.presentation.ProfileScreen
 import com.shopify.carto.feature.profile.presentation.ProfileViewModel
 import com.shopify.carto.feature.register.presentation.view.RegisterScreen
 import com.shopify.carto.feature.search.presentation.view.SearchScreen
-import com.shopify.carto.feature.splash.presentation.view.SplashScreen
 import com.shopify.carto.feature.settings.presentation.SettingsScreen
-import com.shopify.carto.navigation.PlaceholderScreens.CartPlaceholderScreen
+import com.shopify.carto.feature.shopping_cart.presentation.CartScreen
+import com.shopify.carto.feature.splash.presentation.view.SplashScreen
 import com.shopify.carto.navigation.components.AppBottomBar
 import com.shopify.carto.navigation.viewmodel.AppSessionViewModel
 import com.shopify.carto.on_boarding.OnBoardingScreen
@@ -217,8 +217,56 @@ fun AppNavHost(
                 )
             }
 
+            composable(
+                route = Screen.ProductDetail.route,
+                arguments = listOf(
+                    navArgument("productId") { type = NavType.LongType }
+                )
+            ) { backStackEntry ->
+                val productId =
+                    backStackEntry.arguments?.getLong("productId")?.toString() ?: return@composable
+
+                ProductDetailsScreen(
+                    productId = productId,
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onNavigateToCart = {
+                        navController.navigate(Screen.Cart.route) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onNavigateToReviews = {
+                        navController.navigate(
+                            Screen.ProductReviews.route.replace(
+                                "{productId}",
+                                productId
+                            )
+                        ) {
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
             composable(Screen.Cart.route) {
-                CartPlaceholderScreen()
+                CartScreen(
+
+                    onNavigateToCheckout = { checkoutUrl ->
+
+                    }
+                )
+            }
+
+            composable(Screen.ProductReviews.route) { backStackEntry ->
+                val productId =
+                    backStackEntry.arguments?.getString("productId") ?: return@composable
+
+                ProductReviewsScreen(
+                    productId = productId,
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
             }
 
             composable(Screen.Checkout.route) { backStackEntry ->

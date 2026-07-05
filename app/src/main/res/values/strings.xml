@@ -196,4 +196,8 @@
 
     <string name="snackbar_message_product_added_to_favorites_guest">Please login to add favorites.</string>
 
+    <string name="error_product_not_found">Product Not Found</string>
+    <string name="error_network_connection">No Internet Connection</string>
+    <string name="error_server_down">Server Down Error</string>
+    <string name="error_unknown">UnKnown Error</string>
 </resources>

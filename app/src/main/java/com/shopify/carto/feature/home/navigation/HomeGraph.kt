@@ -18,6 +18,7 @@ import com.shopify.carto.feature.home.presentation.screens.AllProductsScreen
 import com.shopify.carto.feature.home.presentation.screens.CategoryProductsScreen
 import com.shopify.carto.feature.home.presentation.screens.HomeScreen
 import com.shopify.carto.feature.home.presentation.screens.productdetails.ProductDetailsScreen
+import com.shopify.carto.feature.product_details.presentation.ProductDetailsScreen
 import com.shopify.carto.navigation.Screen
 import com.shopify.carto.navigation.viewmodel.AppSessionViewModel
 
@@ -155,14 +156,4 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         )
     }
 
-    composable(
-        route = Screen.ProductDetail.route,
-        arguments = listOf(
-            navArgument("productId") { type = NavType.LongType }
-        )
-    ) {
-        ProductDetailsScreen(
-            onBackClick = { navController.popBackStack() }
-        )
-    }
 }

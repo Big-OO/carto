@@ -1,0 +1,70 @@
+package com.shopify.carto.feature.shopping_cart.presentation.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun CartSummarySection(
+    subtotal: Double,
+    shippingFee: Double,
+    total: Double,
+    currency: String,
+    onCheckoutClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        SummaryRow(label = "Sub-total", value = subtotal, currency = currency)
+        SummaryRow(label = "Shipping fee", value = shippingFee, currency = currency)
+
+        HorizontalDivider()
+
+        SummaryRow(label = "Total", value = total, currency = currency, emphasize = true)
+
+        Button(
+            onClick = onCheckoutClick,
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Black, contentColor = Color.White),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Go To Checkout", fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@Composable
+private fun SummaryRow(
+    label: String,
+    value: Double,
+    currency: String,
+    emphasize: Boolean = false
+) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(
+            text = label,
+            style = if (emphasize) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
+            fontWeight = if (emphasize) FontWeight.Bold else FontWeight.Normal,
+            color = if (emphasize) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = "$currency ${"%.2f".format(value)}",
+            style = if (emphasize) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
+            fontWeight = if (emphasize) FontWeight.Bold else FontWeight.Normal
+        )
+    }
+}
