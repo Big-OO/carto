@@ -365,7 +365,9 @@ fun AppNavHost(
                     sessionViewModel.clearSession()
 
                     navController.navigate(Screen.Login.route) {
-                        launchSingleTop = true
+                        popUpTo(0) {
+                            inclusive = true
+                        }
                     }
                 },
                 isGuest = session?.isGuest ?: true,
