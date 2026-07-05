@@ -3,6 +3,9 @@ package com.shopify.carto.feature.product_details.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.shopify.carto.R
+import com.shopify.carto.core.session.domain.model.AppSession
+import com.shopify.carto.core.session.domain.usecase.ObserveAppSessionUseCase
 import com.shopify.carto.core.utils.toUiErrorMessage
 import com.shopify.carto.feature.favorite.domain.usecase.ObserveFavoritesUseCase
 import com.shopify.carto.feature.favorite.domain.usecase.ToggleFavoriteUseCase
@@ -22,7 +25,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -38,10 +40,12 @@ class ProductDetailsViewModel @Inject constructor(
     private val observeCartUseCase: ObserveCartUseCase,
     private val addToCartUseCase: AddToCartUseCase,
     private val removeFromCartUseCase: RemoveFromCartUseCase,
-    private val refreshCartUseCase: RefreshCartUseCase
+    private val refreshCartUseCase: RefreshCartUseCase,
+    private val observeAppSessionUseCase: ObserveAppSessionUseCase
 ) : ViewModel() {
 
     private val productIdFlow = MutableStateFlow<Long?>(null)
+    private val currentSessionFlow = MutableStateFlow(AppSession())
 
     private val _uiState = MutableStateFlow(ProductDetailsUiState())
     val uiState: StateFlow<ProductDetailsUiState> = _uiState.asStateFlow()
@@ -50,6 +54,7 @@ class ProductDetailsViewModel @Inject constructor(
     val effect: Flow<ProductDetailsEffect> = _effect.receiveAsFlow()
 
     init {
+        observeSessionState()
         observeFavoriteState()
         observeCartState()
     }
@@ -92,6 +97,13 @@ class ProductDetailsViewModel @Inject constructor(
     }
 
     private fun onFavoriteClick() {
+        val session = currentSessionFlow.value
+
+        if (session.isGuest || !session.isLoggedIn) {
+            sendEffect(ProductDetailsEffect.ShowError(R.string.login_required))
+            return
+        }
+
         val product = _uiState.value.product ?: return
         viewModelScope.launch {
             toggleFavoriteUseCase(
@@ -104,6 +116,13 @@ class ProductDetailsViewModel @Inject constructor(
     }
 
     private fun onAddToCartClick() {
+        val session = currentSessionFlow.value
+
+        if (session.isGuest || !session.isLoggedIn) {
+            sendEffect(ProductDetailsEffect.ShowError(R.string.login_required))
+            return
+        }
+
         val state = _uiState.value
         val variant = state.selectedVariant ?: return
 
@@ -143,6 +162,12 @@ class ProductDetailsViewModel @Inject constructor(
         }
     }
 
+    private fun observeSessionState() {
+        observeAppSessionUseCase()
+            .onEach { session -> currentSessionFlow.value = session }
+            .launchIn(viewModelScope)
+    }
+
     private fun observeFavoriteState() {
         combine(
             productIdFlow.filterNotNull(),
@@ -154,6 +179,7 @@ class ProductDetailsViewModel @Inject constructor(
             .onEach { isFavorite -> _uiState.update { it.copy(isFavorite = isFavorite) } }
             .launchIn(viewModelScope)
     }
+
     private fun observeCartState() {
         combine(observeCartUseCase(), _uiState) { cartResult, state ->
             cartResult.getOrNull()?.lines.orEmpty().any { it.merchandiseId == state.selectedVariant?.merchandiseId }
