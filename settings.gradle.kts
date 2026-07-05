@@ -1,3 +1,5 @@
+import java.util.Properties
+
 pluginManagement {
     repositories {
         google {
@@ -11,8 +13,17 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
+    val localProperties = Properties()
+    val localPropertiesFile = File(rootDir, "local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { localProperties.load(it) }
+    }
+    val mapboxToken = localProperties.getProperty("mapbox.downloads.token") ?: ""
+
     repositories {
         google()
         mavenCentral()
@@ -24,9 +35,7 @@ dependencyResolutionManagement {
             }
             credentials {
                 username = "mapbox"
-                password = providers.gradleProperty("MAPBOX_DOWNLOADS_TOKEN").orNull
-                    ?: providers.gradleProperty("mapbox.downloads.token").orNull
-                            ?: ""
+                password = mapboxToken
             }
         }
     }
@@ -34,4 +43,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Carto"
 include(":app")
- 

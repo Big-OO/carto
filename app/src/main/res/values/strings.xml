@@ -86,4 +86,8 @@
     <string name="splash_app_name">Carto</string>
     <string name="splash_logo_content_description">Carto logo</string>
 
+    <string name="error_product_not_found">Product Not Found</string>
+    <string name="error_network_connection">No Internet Connection</string>
+    <string name="error_server_down">Server Down Error</string>
+    <string name="error_unknown">UnKnown Error</string>
 </resources>
