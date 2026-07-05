@@ -6,6 +6,8 @@ import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import com.shopify.carto.R
 
 data class NavItem(
     val route: String,
@@ -13,9 +15,3 @@ data class NavItem(
     val icon: ImageVector
 )
 
-val navItems = listOf(
-    NavItem(Screen.Home.route, "Home", Icons.Filled.Home),
-    NavItem(Screen.Saved.route, "Saved", Icons.Outlined.FavoriteBorder),
-    NavItem(Screen.Cart.route, "Cart", Icons.Outlined.ShoppingCart),
-    NavItem(Screen.Account.route, "Account", Icons.Outlined.AccountCircle)
-)

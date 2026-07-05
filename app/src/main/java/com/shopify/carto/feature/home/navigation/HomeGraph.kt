@@ -1,7 +1,7 @@
 package com.shopify.carto.feature.home.navigation
 
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -11,7 +11,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.shopify.carto.feature.home.presentation.CategoryProductsViewModel
-import com.shopify.carto.feature.home.presentation.HomeUiState
 import com.shopify.carto.feature.home.presentation.HomeViewModel
 import com.shopify.carto.feature.home.presentation.screens.AllBrandsScreen
 import com.shopify.carto.feature.home.presentation.screens.AllCategoriesScreen
@@ -53,16 +52,13 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
     }
     composable(HomeRoutes.AllCategories) {
 
-        val viewModel: HomeViewModel = hiltViewModel()
-
-        val state by viewModel.uiState.collectAsState()
+        val homeBackStackEntry = remember(it) {
+            navController.getBackStackEntry(Screen.Home.route)
+        }
+        val viewModel: HomeViewModel = hiltViewModel(homeBackStackEntry)
 
         AllCategoriesScreen(
-            categories =
-                (state as? HomeUiState.Success)
-                    ?.content
-                    ?.categories
-                    ?: emptyList(),
+            viewModel = viewModel,
 
             onBackClick = {
                 navController.popBackStack()
@@ -80,15 +76,17 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         )
     }
 
-    composable(HomeRoutes.AllProducts) {
-        val viewModel: HomeViewModel = hiltViewModel()
-        val state by viewModel.uiState.collectAsState()
+    composable(HomeRoutes.AllProducts) { backStackEntry ->
+        val homeBackStackEntry = remember(backStackEntry) {
+            navController.getBackStackEntry(Screen.Home.route)
+        }
+        val viewModel: HomeViewModel = hiltViewModel(homeBackStackEntry)
         val sessionViewModel: AppSessionViewModel = hiltViewModel()
         val session by sessionViewModel.session.collectAsStateWithLifecycle()
         val currentSession = session ?: return@composable
 
         AllProductsScreen(
-            products = (state as? HomeUiState.Success)?.content?.products ?: emptyList(),
+            viewModel = viewModel,
             isGuest = currentSession.isGuest,
             onBackClick = { navController.popBackStack() },
             onProductClick = {
@@ -97,8 +95,11 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         )
     }
 
-    composable(HomeRoutes.AllBrands) {
-        val viewModel: HomeViewModel = hiltViewModel()
+    composable(HomeRoutes.AllBrands) { backStackEntry ->
+        val homeBackStackEntry = remember(backStackEntry) {
+            navController.getBackStackEntry(Screen.Home.route)
+        }
+        val viewModel: HomeViewModel = hiltViewModel(homeBackStackEntry)
 
         AllBrandsScreen(
             viewModel = viewModel,
