@@ -1,4 +1,97 @@
 <resources>
+    <!--   ِApp Navigation Titles  -->
+    <string name="homeNavTitle">Home</string>
+    <string name="savedNavTitle">Saved</string>
+    <string name="cartNavTitle">Cart</string>
+    <string name="accountNavTitle">Account</string>
+
+    <string name="commonRetry">Retry</string>
+    <string name="commonSeeAll">See All</string>
+    <string name="commonSearch">Search</string>
+    <string name="commonCancel">Cancel</string>
+    <string name="commonBack">Back</string>
+    <string name="commonLoginRequiredFavorite">Please login to add favorites.</string>
+
+    <!--   HOME SCREEN   -->
+    <string name="homeDiscoverTitle">Discover</string>
+    <string name="homeCategoriesTitle">Categories</string>
+    <string name="homeProductsTitle">All Products</string>
+    <string name="homeBrandsTitle">All Brands</string>
+
+    <!--   Saved SCREEN   -->
+    <string name="savedScreenTitle">Saved</string>
+    <string name="savedEmptyTitle">No favorites yet</string>
+    <string name="savedEmptySubtitle">Tap the heart on any product to save it here.</string>
+
+    <!--   Search SCREEN   -->
+    <string name="searchScreenTitle">Search</string>
+    <string name="searchHintTitle">Search for clothes...</string>
+
+    <!--   ERRORS   -->
+    <string name="errorNoInternetTitle">No Internet Connection</string>
+    <string name="errorNoInternetMessage">Please check your Wi-Fi or mobile data and try again.</string>
+    <string name="errorTimeoutTitle">Request Timed Out</string>
+    <string name="errorTimeoutMessage">The server is taking too long to respond. Please try again.</string>
+    <string name="errorServerTitle">Something Went Wrong</string>
+    <string name="errorServerMessage">Our servers are having trouble right now. Please try again shortly.</string>
+    <string name="errorNotFoundTitle">Nothing Here</string>
+    <string name="errorNotFoundMessage">We couldn\'t find what you were looking for.</string>
+    <string name="errorUnknownTitle">Unexpected Error</string>
+    <string name="errorUnknownMessage">Something unexpected happened. Please try again.</string>
+
+    <!--   ALL CATEGORIES SCREEN   -->
+    <string name="categoriesScreenTitle">Categories</string>
+    <string name="categoriesSearchHint">Search categories</string>
+    <string name="categoriesEmptySearchTitle">No categories found</string>
+    <string name="categoriesEmptySearchSubtitle">Try another keyword.</string>
+    <string name="categoriesEmptyDataTitle">No categories available</string>
+    <string name="categoriesEmptyDataSubtitle">Check back later for new categories.</string>
+
+    <!--   ALL PRODUCTS SCREEN   -->
+    <string name="productsScreenTitle">Products</string>
+    <string name="productsSearchHint">Search products…</string>
+    <string name="productsEmptySearchTitle">No products found</string>
+    <string name="productsEmptySearchSubtitle">Try another keyword.</string>
+    <string name="productsEmptyDataTitle">No products available</string>
+    <string name="productsEmptyDataSubtitle">Check back later for new arrivals.</string>
+
+    <!--   ALL BRANDS SCREEN   -->
+    <string name="brandsScreenTitle">Brands</string>
+    <string name="brandsSearchHint">Search brands…</string>
+    <string name="brandsEmptySearchTitle">No brands found</string>
+    <string name="brandsEmptySearchSubtitle">Try another keyword.</string>
+    <string name="brandsEmptyDataTitle">No brands available</string>
+    <string name="brandsEmptyDataSubtitle">Check back later for new brands.</string>
+
+    <!--   SETTINGS  -->
+    <string name="settingsAccountSectionTitle">Account Settings</string>
+    <string name="settingsSavedLocations">Saved Locations</string>
+    <string name="settingsOrderHistory">Order History</string>
+    <string name="settingsPaymentMethods">Payment Methods</string>
+    <string name="settingsMarketPreferenceSectionTitle">Market Preference</string>
+    <string name="settingsCurrency">Currency</string>
+    <string name="settingsApplicationSectionTitle">Application Settings</string>
+    <string name="settingsTheme">Theme</string>
+    <string name="settingsLanguage">Language</string>
+
+    <!--   Account SCREEN   -->
+    <string name="accountUpdateProfileTitle">Update Profile</string>
+    <string name="accountFullNameTitle">Full Name</string>
+    <string name="accountCancelTitle">Cancel</string>
+    <string name="accountEditProfileBtnTitle">Edit Profile</string>
+    <string name="accountSettingsBtnTitle">Settings</string>
+    <string name="accountEmailAddressTitle">Email Address</string>
+    <string name="accountPhoneNumberTitle">Phone Number</string>
+    <string name="accountTotalOrdersTitle">Total Orders</string>
+    <string name="accountTotalSpentTitle">Total Spent</string>
+    <string name="accountLogoutBtnTitle">Logout</string>
+    <string name="accountNotProvidedPhoneTitle">Not provided</string>
+    <string name="accountSaveChangesTitle">Save Changes</string>
+    <string name="accountSaveChangesLoadingTitle">Saving updates...</string>
+    <string name="accountEnterYourFullNamePlaceHolder">Enter your full name</string>
+    <string name="accountErrorMsgWhenLT3WordsTitle">Name must be at least 3 characters long</string>
+    <string name="accountErrorMsgWhenFASNameAreMissingTitle">Please enter both first and last name</string>
+
     <string name="app_name">Carto</string>
     <string name="login_with_google">Login with Google</string>
     <string name="don_t_have_an_account">"Don't have an account? "</string>
@@ -13,6 +106,7 @@
     <string name="login_as_guest">Continue as guest</string>
     <string name="settings">Settings</string>
 
+    <!-- Register Screen -->
     <string name="register_title">Create an account</string>
     <string name="register_subtitle">Let\'s create your account.</string>
     <string name="register_full_name_label">Full Name</string>
@@ -25,6 +119,7 @@
     <string name="register_already_have_an_account">Already have an account? </string>
     <string name="register_login_btn">Log In</string>
 
+    <!-- Addresses Screen -->
     <string name="addresses_title">Address</string>
     <string name="addresses_new_address_title">New Address</string>
     <string name="addresses_saved_address_title">Saved Address</string>
@@ -98,5 +193,7 @@
     <string name="splash_app_name">Carto</string>
     <string name="splash_logo_content_description">Carto logo</string>
     <string name="register_phone_number_country_code">+20</string>
+
+    <string name="snackbar_message_product_added_to_favorites_guest">Please login to add favorites.</string>
 
 </resources>

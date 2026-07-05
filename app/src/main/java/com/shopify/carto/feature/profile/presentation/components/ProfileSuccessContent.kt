@@ -32,7 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.shopify.carto.R
 import com.shopify.carto.core.components.PrimaryButton
 import com.shopify.carto.core.components.SecondaryButton
 import com.shopify.carto.feature.profile.presentation.ProfileEffect
@@ -98,13 +100,13 @@ fun ProfileSuccessContent(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 PrimaryButton(
-                    text = "Edit Profile",
+                    text = stringResource(R.string.accountUpdateProfileTitle),
                     enabled = true,
                     modifier = Modifier.weight(1f),
                     onCLick = { showEditBottomSheet = true },
                 )
                 SecondaryButton(
-                    text = "Settings",
+                    text = stringResource(R.string.accountSettingsBtnTitle),
                     icon = Icons.Outlined.Settings,
                     modifier = Modifier.weight(1f),
                     color = CartoTheme.colors.primary
@@ -115,7 +117,7 @@ fun ProfileSuccessContent(
 
             ProfileInfoCard(
                 icon = Icons.Outlined.Email,
-                title = "Email Address",
+                title = stringResource(R.string.accountEmailAddressTitle),
                 value = profile.email
             )
 
@@ -123,8 +125,8 @@ fun ProfileSuccessContent(
 
             ProfileInfoCard(
                 icon = Icons.Outlined.Phone,
-                title = "Phone Number",
-                value = profile.phone ?: "Not provided"
+                title = stringResource(R.string.accountPhoneNumberTitle),
+                value = profile.phone ?: stringResource(R.string.accountNotProvidedPhoneTitle)
             )
 
             Spacer(Modifier.height(12.dp))
@@ -135,14 +137,14 @@ fun ProfileSuccessContent(
             ) {
                 ProfileInfoCard(
                     icon = Icons.Outlined.LocalMall,
-                    title = "Total Orders",
+                    title = stringResource(R.string.accountTotalOrdersTitle),
                     value = profile.ordersCount.toString(),
                     modifier = Modifier.weight(1f)
                 )
 
                 ProfileInfoCard(
                     icon = Icons.Outlined.Payments,
-                    title = "Total Spent",
+                    title = stringResource(R.string.accountTotalSpentTitle),
                     value = profile.totalSpent,
                     modifier = Modifier.weight(1f)
                 )
@@ -151,7 +153,7 @@ fun ProfileSuccessContent(
             Spacer(Modifier.height(24.dp))
 
             SecondaryButton(
-                text = "Logout",
+                text = stringResource(R.string.accountLogoutBtnTitle),
                 icon = Icons.Outlined.Logout,
                 color = CartoTheme.colors.error
             ) { onEvent(ProfileEvent.LogoutClicked) }

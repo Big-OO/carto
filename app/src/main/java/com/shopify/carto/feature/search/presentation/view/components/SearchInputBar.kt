@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -73,7 +74,7 @@ fun SearchInputBar(
                 ) {
                     if (query.isBlank()) {
                         Text(
-                            text = "Search for clothes...",
+                            text = stringResource(R.string.searchHintTitle),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 18.sp,
                         )
