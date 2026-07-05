@@ -26,6 +26,8 @@ import com.shopify.carto.feature.favorite.presentation.components.FavoriteProduc
 import com.shopify.carto.feature.home.presentation.screens.EmptyCategoryView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
+import com.shopify.carto.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +42,9 @@ fun SavedScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            CenterAlignedTopAppBar(title = { Text("Saved") })
+            CenterAlignedTopAppBar(title = { Text(
+                stringResource(id = R.string.savedNavTitle),
+            ) })
         },
     ) { padding ->
         val isLoading = favorites.isEmpty() && isInitialLoading
@@ -65,8 +69,8 @@ fun SavedScreen(
                 }
             } else if (favorites.isEmpty()) {
                 EmptyCategoryView(
-                    mainMsg = "No favorites yet",
-                    subMsg = "Tap the heart on any product to save it here.",
+                    mainMsg = stringResource(id = R.string.savedEmptyTitle),
+                    subMsg = stringResource(id = R.string.savedEmptySubtitle),
                     image = Icons.Default.Favorite,
                 )
             } else {
