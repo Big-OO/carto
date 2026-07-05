@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 
 
@@ -26,7 +27,7 @@ class SavedViewModel @Inject constructor(
     val isInitialLoading: StateFlow<Boolean> = _isInitialLoading.asStateFlow()
 
     val favorites: StateFlow<List<FavoriteProduct>> = observeFavoritesUseCase()
-        .onStart {
+        .onEach {
             _isInitialLoading.value = false
         }
         .stateIn(

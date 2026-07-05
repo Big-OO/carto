@@ -21,9 +21,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.shopify.carto.R
 import com.shopify.carto.core.components.PrimaryButton
 import com.shopify.carto.core.components.TextField
 import com.shopify.carto.feature.profile.presentation.ProfileEffect
@@ -68,16 +70,16 @@ fun EditProfileBottomSheetContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Update Profile",
+            text = stringResource(id = R.string.accountUpdateProfileTitle),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = CartoTheme.colors.onSurface
         )
 
         TextField(
-            title = "Full Name",
+            title = stringResource(id = R.string.accountFullNameTitle),
             value = name,
-            placeholder = "Enter your full name",
+            placeholder = stringResource(id = R.string.accountEnterYourFullNamePlaceHolder),
             errorMessage = nameError,
             onValueChange = { newValue ->
                 name = newValue
@@ -110,11 +112,11 @@ fun EditProfileBottomSheetContent(
             ) {
                 CircularProgressIndicator(color = CartoTheme.colors.primary)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Saving updates...", fontSize = 14.sp, color = Color.Gray)
+                Text(text = stringResource(id = R.string.accountSaveChangesLoadingTitle), fontSize = 14.sp, color = Color.Gray)
             }
         } else {
             PrimaryButton(
-                text = "Save Changes",
+                text = stringResource(id = R.string.accountSaveChangesTitle),
                 enabled = isSaveEnabled,
                 onCLick = {
                     isSaving = true
@@ -134,7 +136,7 @@ fun EditProfileBottomSheetContent(
                 )
             ) {
                 Text(
-                    text = "Cancel",
+                    text = stringResource(id = R.string.accountCancelTitle),
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )

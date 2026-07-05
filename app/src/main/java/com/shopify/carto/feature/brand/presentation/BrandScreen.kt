@@ -98,7 +98,7 @@ fun BrandScreen(
 
                 is BrandUiState.Error -> {
                     ErrorBox(
-                        message = currentState.message,
+                        error = currentState.error,
                         onRetry = { viewModel.onEvent(BrandEvent.LoadBrand(brandId)) }
                     )
                 }
