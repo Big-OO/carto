@@ -119,21 +119,23 @@ fun AppNavHost(
             composable(Screen.onBoarding.route) {
                 OnBoardingScreen(
                     onFinishOnboarding = {
-                        sessionViewModel.completeOnBoarding()
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(Screen.onBoarding.route) {
-                                inclusive = true
+                        sessionViewModel.completeOnBoarding {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(Screen.onBoarding.route) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
                             }
-                            launchSingleTop = true
                         }
                     },
                     onLoginClick = {
-                        sessionViewModel.completeOnBoarding()
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(Screen.onBoarding.route) {
-                                inclusive = true
+                        sessionViewModel.completeOnBoarding {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(Screen.onBoarding.route) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
                             }
-                            launchSingleTop = true
                         }
                     },
                 )
@@ -365,7 +367,9 @@ fun AppNavHost(
                     sessionViewModel.clearSession()
 
                     navController.navigate(Screen.Login.route) {
-                        launchSingleTop = true
+                        popUpTo(0) {
+                            inclusive = true
+                        }
                     }
                 },
                 isGuest = session?.isGuest ?: true,
