@@ -29,3 +29,12 @@ annotation class AdminAuthInterceptor
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class StorefrontAuthInterceptor
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class PaymobRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class PaymobFlashRetrofit
+

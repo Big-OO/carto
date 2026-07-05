@@ -9,11 +9,11 @@ import com.shopify.carto.feature.profile.domain.usecase.RefreshProfileUseCase
 import com.shopify.carto.feature.profile.domain.usecase.UpdateProfileUseCase
 import com.shopify.carto.feature.profile.presentation.model.ProfileData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,8 +29,8 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ProfileState>(ProfileState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private val _effect = Channel<ProfileEffect>(Channel.BUFFERED)
-    val effect = _effect.receiveAsFlow()
+    private val _effect = MutableSharedFlow<ProfileEffect>()
+    val effect = _effect.asSharedFlow()
 
     init {
         loadProfile()
@@ -155,7 +155,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun sendEffect(effect: ProfileEffect) {
         viewModelScope.launch {
-            _effect.send(effect)
+            _effect.emit(effect)
         }
     }
 }

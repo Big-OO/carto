@@ -24,6 +24,11 @@ sealed class Screen(val route: String) {
     data object Addresses : Screen("addresses")
     data object NewAddress : Screen("new_address")
     data object MapPicker : Screen("map_picker")
+    data object Checkout : Screen("checkout")
+    data object PaymentResult : Screen("payment_result/{success}/{transactionId}") {
+        fun createRoute(success: Boolean, transactionId: String = "") =
+            "payment_result/$success/${android.net.Uri.encode(transactionId)}"
+    }
 }
 
 val bottomBarRoutes = setOf(

@@ -87,6 +87,31 @@ android {
             "MAPBOX_DOWNLOADS_TOKEN",
             localProperty("mapbox.downloads.token").asBuildConfigString()
         )
+        buildConfigField(
+            "String",
+            "PAYMOB_PUBLIC_KEY",
+            localProperty("paymob.public.key").asBuildConfigString()
+        )
+        buildConfigField(
+            "String",
+            "PAYMOB_INTEGRATION_ID",
+            localProperty("paymob.integration.id").asBuildConfigString()
+        )
+        buildConfigField(
+            "String",
+            "PAYMOB_WALLET_INTEGRATION_ID",
+            localProperty("paymob.wallet.integration.id").asBuildConfigString()
+        )
+        buildConfigField(
+            "String",
+            "SUPABASE_BASE_URL",
+            localProperty("supabase.base.url").asBuildConfigString()
+        )
+        buildConfigField(
+            "String",
+            "PAYMOB_FLASH_BASE_URL",
+            localProperty("paymob.flash.base.url").asBuildConfigString()
+        )
     }
 
     buildTypes {
@@ -111,6 +136,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        dataBinding = true
     }
 
     testOptions {
@@ -207,6 +233,8 @@ dependencies {
     androidTestImplementation(libs.turbine)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
+    implementation(libs.paymob.sdk)
 
     implementation(libs.mapbox.android.maps)
     implementation(libs.mapbox.maps.compose)
