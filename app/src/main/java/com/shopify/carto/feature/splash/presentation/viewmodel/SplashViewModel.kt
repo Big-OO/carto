@@ -2,14 +2,18 @@ package com.shopify.carto.feature.splash.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.shopify.carto.core.session.domain.model.AppSession
 import com.shopify.carto.core.session.domain.usecase.ObserveAppSessionUseCase
 import com.shopify.carto.feature.splash.presentation.state.SplashDestination
 import com.shopify.carto.feature.splash.presentation.state.SplashEffect
+import com.shopify.carto.feature.splash.presentation.state.SplashUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,53 +22,51 @@ class SplashViewModel @Inject constructor(
     private val observeAppSessionUseCase: ObserveAppSessionUseCase,
 ) : ViewModel(), SplashInteractionListener {
 
-    private val _effect = MutableSharedFlow<SplashEffect>()
-    val effect = _effect.asSharedFlow()
+    private val _uiState = MutableStateFlow(SplashUiState())
+    val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
-    private var destination: SplashDestination? = null
+    private val _effect = Channel<SplashEffect>(Channel.BUFFERED)
+    val effect = _effect.receiveAsFlow()
+
     private var isAnimationFinished = false
-    private var isNavigationSent = false
+    private var hasNavigated = false
 
     init {
         resolveStartDestination()
     }
 
-    override fun onSplashAnimationFinished() {
-        isAnimationFinished = true
-        navigateWhenReady()
-    }
-
     private fun resolveStartDestination() {
         viewModelScope.launch {
             val session = observeAppSessionUseCase().first()
-            destination = session.toSplashDestination()
-            navigateWhenReady()
+
+            val destination = when {
+                !session.isOnboardingSeen -> SplashDestination.OnBoarding
+                session.isLoggedIn -> SplashDestination.Home
+                else -> SplashDestination.Login
+            }
+
+            _uiState.update {
+                it.copy(destination = destination)
+            }
+
+            navigateIfReady()
         }
     }
 
-    private fun navigateWhenReady() {
-        val target = destination ?: return
-        if (!isAnimationFinished || isNavigationSent) return
+    override fun onSplashAnimationFinished() {
+        isAnimationFinished = true
+        navigateIfReady()
+    }
 
-        isNavigationSent = true
+    private fun navigateIfReady() {
+        if (hasNavigated || !isAnimationFinished) return
+
+        val destination = _uiState.value.destination ?: return
+
+        hasNavigated = true
+
         viewModelScope.launch {
-            _effect.emit(target.toEffect())
-        }
-    }
-
-    private fun AppSession.toSplashDestination(): SplashDestination {
-        return when {
-            !isOnboardingSeen -> SplashDestination.OnBoarding
-            isLoggedIn -> SplashDestination.Home
-            else -> SplashDestination.Login
-        }
-    }
-
-    private fun SplashDestination.toEffect(): SplashEffect {
-        return when (this) {
-            SplashDestination.OnBoarding -> SplashEffect.NavigateToOnBoarding
-            SplashDestination.Login -> SplashEffect.NavigateToLogin
-            SplashDestination.Home -> SplashEffect.NavigateToHome
+            _effect.send(SplashEffect.Navigate(destination))
         }
     }
 }

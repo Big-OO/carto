@@ -1,10 +1,10 @@
 package com.shopify.carto.core.session.data.local
 
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.shopify.carto.core.session.domain.model.AppSession
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +19,7 @@ class AppSessionLocalDataSource @Inject constructor(
     val session: Flow<AppSession> = dataStore.data
         .catch { exception ->
             if (exception is IOException) {
-                emit(androidx.datastore.preferences.core.emptyPreferences())
+                emit(emptyPreferences())
             } else {
                 throw exception
             }
@@ -45,6 +45,7 @@ class AppSessionLocalDataSource @Inject constructor(
         dataStore.edit { preferences ->
             preferences[IS_LOGGED_IN] = true
             preferences[IS_GUEST] = false
+
             if (customerId.isNullOrBlank()) {
                 preferences.remove(CUSTOMER_ID)
             } else {
@@ -53,20 +54,23 @@ class AppSessionLocalDataSource @Inject constructor(
         }
     }
 
-    suspend fun completeOnBoarding(){
-        dataStore.edit {preferences ->
+    suspend fun completeOnBoarding() {
+        dataStore.edit { preferences ->
             preferences[IS_ONBOARDING_COMPLETED] = true
         }
     }
 
     suspend fun clearSession() {
         dataStore.edit { preferences ->
+            val isOnboardingCompleted = preferences[IS_ONBOARDING_COMPLETED] ?: false
+
             preferences.clear()
+
+            preferences[IS_ONBOARDING_COMPLETED] = isOnboardingCompleted
         }
     }
 
     private companion object {
-
         val IS_ONBOARDING_COMPLETED = booleanPreferencesKey("is_onboarding_completed")
         val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
         val IS_GUEST = booleanPreferencesKey("is_guest")

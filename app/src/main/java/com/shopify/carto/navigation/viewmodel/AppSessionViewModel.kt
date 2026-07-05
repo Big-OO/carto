@@ -17,17 +17,19 @@ import javax.inject.Inject
 class AppSessionViewModel @Inject constructor(
     observeAppSessionUseCase: ObserveAppSessionUseCase,
     private val clearAppSessionUseCase: ClearAppSessionUseCase,
-    private val finishOnBoardingUseCase: FinishOnBoardingUseCase
+    private val finishOnBoardingUseCase: FinishOnBoardingUseCase,
 ) : ViewModel() {
+
     val session: StateFlow<AppSession?> = observeAppSessionUseCase().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = null,
     )
 
-    fun completeOnBoarding(){
+    fun completeOnBoarding(onCompleted: () -> Unit = {}) {
         viewModelScope.launch {
             finishOnBoardingUseCase()
+            onCompleted()
         }
     }
 
