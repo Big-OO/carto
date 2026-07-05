@@ -15,7 +15,7 @@ class ShopifyCustomerRemoteDataSource @Inject constructor(
     private val networkDataSource: RegisterNetworkDataSource,
     private val config: ShopifyConfig,
 ) {
-    suspend fun getOrCreateCustomerId(fullName: String, email: String): RegisterDataResult<Long> {
+    suspend fun getOrCreateCustomerId(fullName: String, email: String, phoneNumber: String): RegisterDataResult<Long> {
         return when (val searchResult = searchExistingCustomerId(email)) {
             is RegisterDataResult.Failure -> searchResult
             is RegisterDataResult.Success -> {
@@ -23,7 +23,7 @@ class ShopifyCustomerRemoteDataSource @Inject constructor(
                 if (existingCustomerId != null) {
                     RegisterDataResult.Success(existingCustomerId)
                 } else {
-                    createCustomer(fullName = fullName, email = email)
+                    createCustomer(fullName = fullName, email = email, phoneNumber = phoneNumber)
                 }
             }
         }
@@ -51,7 +51,7 @@ class ShopifyCustomerRemoteDataSource @Inject constructor(
         }
     }
 
-    private suspend fun createCustomer(fullName: String, email: String): RegisterDataResult<Long> {
+    private suspend fun createCustomer(fullName: String, email: String, phoneNumber: String): RegisterDataResult<Long> {
         return try {
             val response = networkDataSource.createCustomer(
                 version = config.apiVersion,
@@ -60,6 +60,7 @@ class ShopifyCustomerRemoteDataSource @Inject constructor(
                         firstName = extractFirstName(fullName),
                         lastName = extractLastName(fullName),
                         email = email.trim(),
+                        phoneNumber = phoneNumber,
                         verifiedEmail = false,
                         sendEmailWelcome = false,
                         tags = "mobile-app,firebase-auth",
@@ -88,6 +89,12 @@ class ShopifyCustomerRemoteDataSource @Inject constructor(
 
     private fun Response<out Any>.toShopifyFailure(operation: String): RegisterFailure {
         val errorBody = runCatching { errorBody()?.string() }.getOrNull().orEmpty()
+        if (errorBody.contains("phone") && code() == 422){
+            return RegisterFailure(
+                type = RegisterFailureType.PhoneNumberAlreadyUsed,
+                message = "Phone number is already exist",
+            )
+        }
         return RegisterFailure(
             type = RegisterFailureType.ShopifySyncFailed,
             message = "Shopify $operation failed. statusCode=${code()}, errorBody=${errorBody.ifBlank { "No error body." }}",

@@ -12,6 +12,7 @@ import com.shopify.carto.feature.register.domain.usecases.RegisterUserUseCase
 import com.shopify.carto.feature.register.domain.usecases.ValidateEmailUseCase
 import com.shopify.carto.feature.register.domain.usecases.ValidateFullNameUseCase
 import com.shopify.carto.feature.register.domain.usecases.ValidatePasswordUseCase
+import com.shopify.carto.feature.register.domain.usecases.ValidatePhoneNumber
 import com.shopify.carto.feature.register.presentation.state.RegisterFormUiState
 import com.shopify.carto.feature.register.presentation.uimodels.FieldType
 import com.shopify.carto.feature.register.presentation.utils.toUserMessage
@@ -30,6 +31,7 @@ class RegisterViewModel @Inject constructor(
     private val validateEmailUseCase: ValidateEmailUseCase,
     private val validateFullNameUseCase: ValidateFullNameUseCase,
     private val validatePasswordUseCase: ValidatePasswordUseCase,
+    private val validatePhoneNumberUseCase: ValidatePhoneNumber,
     private val registerUserUseCase: RegisterUserUseCase,
 ) : ViewModel(), RegisterInteractionListener {
 
@@ -62,11 +64,15 @@ class RegisterViewModel @Inject constructor(
         return validateEmailUseCase(_state.value.email.value) == ValidationFormError.Valid
     }
 
+    override fun isPhoneNumberIsValid(): Boolean {
+        return validatePhoneNumberUseCase(_state.value.phoneNumber.value) == ValidationFormError.Valid
+    }
+
     override fun isPasswordIsValid(): Boolean {
         return validatePasswordUseCase(_state.value.password.value) == ValidationFormError.Valid
     }
 
-    override fun togglePasswordVisibility(){
+    override fun togglePasswordVisibility() {
         _state.update {
             it.copy(isPasswordVisible = !it.isPasswordVisible)
         }
@@ -80,6 +86,19 @@ class RegisterViewModel @Inject constructor(
         _state.update {
             it.copy(
                 password = it.password.copy(
+                    value = newValue,
+                    isError = false,
+                    errorMessage = "",
+                ),
+                generalErrorMessage = "",
+            )
+        }
+    }
+
+    override fun onPhoneNumberValueChanged(newValue: String) {
+        _state.update {
+            it.copy(
+                phoneNumber = it.phoneNumber.copy(
                     value = newValue,
                     isError = false,
                     errorMessage = "",
@@ -123,6 +142,7 @@ class RegisterViewModel @Inject constructor(
                             fullName = currentState.fullName.value.trim(),
                             email = currentState.email.value.trim(),
                             password = currentState.password.value,
+                            phoneNumber = "+20${currentState.phoneNumber.value}"
                         )
                     )
                 }.getOrElse { exception ->

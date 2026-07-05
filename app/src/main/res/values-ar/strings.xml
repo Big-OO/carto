@@ -11,6 +11,19 @@
     <string name="login_to_your_account">سجّل الدخول إلى حسابك</string>
     <string name="email">البريد الإلكتروني</string>
     <string name="login_as_guest">المتابعة كزائر</string>
+    <string name="settings">الإعدادات</string>
+
+    <string name="register_title">إنشاء حساب</string>
+    <string name="register_subtitle">لنقم بإنشاء حسابك.</string>
+    <string name="register_full_name_label">الاسم الكامل</string>
+    <string name="register_email_label">البريد الإلكتروني</string>
+    <string name="register_phone_number_label">رقم التليفون</string>
+    <string name="register_password_label">كلمة المرور</string>
+    <string name="register_password_rules">يجب أن تتكون كلمة المرور من 8 أحرف على الأقل، وأن تتضمن حرفًا كبيرًا، وحرفًا صغيرًا، ورقمًا، ورمزًا خاصًا.</string>
+    <string name="register_create_account_btn">إنشاء حساب</string>
+    <string name="register_create_account_btn_loading">إنشاء حساب…</string>
+    <string name="register_already_have_an_account">هل لديك حساب بالفعل\؟ </string>
+    <string name="register_login_btn">تسجيل الدخول</string>
 
     <string name="addresses_title">العناوين</string>
     <string name="addresses_new_address_title">عنوان جديد</string>
@@ -84,5 +97,6 @@
 
     <string name="splash_app_name">كارتو</string>
     <string name="splash_logo_content_description">شعار كارتو</string>
+    <string name="register_phone_number_country_code">+٢٠</string>
 
 </resources>
