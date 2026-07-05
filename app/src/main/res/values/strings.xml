@@ -11,4 +11,92 @@
     <string name="login_to_your_account">Login to your account</string>
     <string name="email">Email</string>
     <string name="login_as_guest">Continue as guest</string>
+    <string name="settings">Settings</string>
+
+    <string name="register_title">Create an account</string>
+    <string name="register_subtitle">Let\'s create your account.</string>
+    <string name="register_full_name_label">Full Name</string>
+    <string name="register_email_label">Email</string>
+    <string name="register_phone_number_label">Phone Number</string>
+    <string name="register_password_label">Password</string>
+    <string name="register_password_rules">Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.</string>
+    <string name="register_create_account_btn">Create an Account</string>
+    <string name="register_create_account_btn_loading">Creating account…</string>
+    <string name="register_already_have_an_account">Already have an account? </string>
+    <string name="register_login_btn">Log In</string>
+
+    <string name="addresses_title">Address</string>
+    <string name="addresses_new_address_title">New Address</string>
+    <string name="addresses_saved_address_title">Saved Address</string>
+    <string name="addresses_empty_addresses">No saved addresses yet.</string>
+    <string name="addresses_add_new_address">Add New Address</string>
+    <string name="addresses_apply_default">Apply</string>
+    <string name="addresses_default_badge">Default</string>
+    <string name="addresses_back_content_description">Back</string>
+    <string name="addresses_remove_address">Remove</string>
+
+    <string name="addresses_location_title">Location</string>
+    <string name="addresses_select_location_from_map">Select from map</string>
+    <string name="addresses_select_location_from_map_hint">Tap to open the map and choose your delivery location.</string>
+    <string name="addresses_address_details_title">Address Details</string>
+    <string name="addresses_address_nickname_label">Address Nickname</string>
+    <string name="addresses_address_nickname_placeholder">Home, Office, Apartment…</string>
+    <string name="addresses_full_address_label">Full Address</string>
+    <string name="addresses_full_address_placeholder">Enter your full address…</string>
+    <string name="addresses_city_label">City</string>
+    <string name="addresses_city_placeholder">Cairo</string>
+    <string name="addresses_province_label">Province</string>
+    <string name="addresses_province_placeholder">Cairo</string>
+    <string name="addresses_country_label">Country</string>
+    <string name="addresses_country_placeholder">Egypt</string>
+    <string name="addresses_zip_label">ZIP Code</string>
+    <string name="addresses_zip_placeholder">11511</string>
+    <string name="addresses_make_default_address">Make this as a default address</string>
+    <string name="addresses_add_button">Add</string>
+
+    <string name="addresses_success_dialog_title">Congratulations!</string>
+    <string name="addresses_success_dialog_message">Your new address has been added.</string>
+    <string name="addresses_success_dialog_button">Thanks</string>
+
+    <string name="addresses_success_address_added">Address added successfully.</string>
+    <string name="addresses_success_address_removed">Address removed successfully.</string>
+    <string name="addresses_success_default_address_updated">Default address updated.</string>
+    <string name="addresses_error_default_address_deletion">Default address cannot be removed</string>
+    <string name="addresses_error_missing_customer">Please login again before managing addresses.</string>
+    <string name="addresses_error_validation">Please complete the required address details.</string>
+    <string name="addresses_error_not_found">We couldn\'t find this address.</string>
+    <string name="addresses_error_network">Check your connection and try again.</string>
+    <string name="addresses_error_unauthorized">Please login again before managing addresses.</string>
+    <string name="addresses_error_server">Something went wrong. Try again later.</string>
+    <string name="addresses_error_invalid_province">Please enter a valid province.</string>
+    <string name="addresses_error_address_already_exists">This address already exists.</string>
+    <string name="addresses_error_invalid_country">Please enter a valid country.</string>
+    <string name="addresses_error_unknown">Something went wrong. Try again later.</string>
+    <string name="addresses_remove_dialog_title">Remove address?</string>
+    <string name="addresses_remove_dialog_message">Are you sure you want to remove this address?</string>
+    <string name="addresses_swipe_or_long_press_remove">Swipe or long press to remove</string>
+    <string name="addresses_select_address_on_map">Select address on Map</string>
+
+    <string name="map_back_content_description">Back</string>
+    <string name="map_my_location_content_description">My location</string>
+    <string name="map_use_this_location">Use this location</string>
+    <string name="map_cancel">Cancel</string>
+    <string name="map_open_app_settings">Open settings</string>
+    <string name="map_open_location_settings">Open location settings</string>
+    <string name="map_location_permission_dialog_title">Location permission needed</string>
+    <string name="map_location_permission_dialog_message">Please allow location permission from settings so we can find your current location.</string>
+    <string name="map_gps_dialog_title">Turn on location</string>
+    <string name="map_gps_dialog_message">Location services are turned off. Please enable GPS to get your current location.</string>
+    <string name="map_error_location_unavailable">We couldn\'t get your location. Select a point manually or try again.</string>
+    <string name="map_error_location_selected_missing_details">Location selected. Add missing address details manually.</string>
+    <string name="map_error_search_failed">We couldn\'t search for this address. Try again.</string>
+    <string name="map_error_address_resolve_failed">We couldn\'t read this address. Please complete it manually.</string>
+    <string name="map_error_unknown">Something went wrong. Try again later.</string>
+    <string name="map_search_placeholder">Search for an address</string>
+    <string name="map_clear_search_content_description">Clear search</string>
+
+    <string name="splash_app_name">Carto</string>
+    <string name="splash_logo_content_description">Carto logo</string>
+    <string name="register_phone_number_country_code">+20</string>
+
 </resources>
