@@ -34,6 +34,7 @@ import kotlin.time.Duration.Companion.milliseconds
 fun SettingsScreen(
     onBackClick: () -> Unit = {},
     onNavigateToAddressesClick: () -> Unit = {},
+    onNavigateToPaymentMethodsClick: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     var isScreenVisible by remember { mutableStateOf(false) }
@@ -112,7 +113,9 @@ fun SettingsScreen(
                             SettingsItem(
                                 title = "Payment Methods",
                                 icon = Icons.Outlined.Payment,
-                                onClick = { }
+                                onClick = {
+                                    onNavigateToPaymentMethodsClick()
+                                }
                             )
                         }
                     }

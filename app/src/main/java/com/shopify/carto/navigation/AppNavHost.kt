@@ -12,13 +12,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+
 import com.shopify.carto.feature.addresses.presentation.view.AddressesScreen
 import com.shopify.carto.feature.addresses.presentation.view.NewAddressScreen
 import com.shopify.carto.feature.favorite.presentation.FavoriteToastViewModel
@@ -32,6 +36,9 @@ import com.shopify.carto.feature.map.domain.model.MapPoint
 import com.shopify.carto.feature.map.domain.model.SelectedMapAddress
 import com.shopify.carto.feature.map.presentation.view.MapPickerScreen
 import com.shopify.carto.feature.map.utils.MapResultKeys
+import com.shopify.carto.feature.payment.presentation.view.CheckoutScreen
+import com.shopify.carto.feature.payment.presentation.view.PaymentResultScreen
+import com.shopify.carto.feature.payment.presentation.viewmodel.CheckoutViewModel
 import com.shopify.carto.feature.profile.presentation.ProfileEffect
 import com.shopify.carto.feature.profile.presentation.ProfileScreen
 import com.shopify.carto.feature.profile.presentation.ProfileViewModel
@@ -214,6 +221,71 @@ fun AppNavHost(
                 CartPlaceholderScreen()
             }
 
+            composable(Screen.Checkout.route) { backStackEntry ->
+                val checkoutViewModel: CheckoutViewModel = hiltViewModel(backStackEntry)
+
+                CheckoutScreen(
+                    viewModel = checkoutViewModel,
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onPaymentSuccess = { transactionId, orderId ->
+                        navController.navigate(
+                            Screen.PaymentResult.createRoute(
+                                success = true,
+                                transactionId = orderId.ifBlank { transactionId },
+                            )
+                        ) {
+                            popUpTo(Screen.Checkout.route) {
+                                inclusive = true
+                            }
+                        }
+                    },
+                    onPaymentFailed = { message ->
+                        navController.navigate(
+                            Screen.PaymentResult.createRoute(
+                                success = false,
+                                transactionId = message,
+                            )
+                        ) {
+                            popUpTo(Screen.Checkout.route) {
+                                inclusive = true
+                            }
+                        }
+                    },
+                )
+            }
+
+            composable(
+                route = Screen.PaymentResult.route,
+                arguments = listOf(
+                    navArgument("success") { type = NavType.BoolType },
+                    navArgument("transactionId") { type = NavType.StringType },
+                ),
+            ) { backStackEntry ->
+                val isSuccess = backStackEntry.arguments?.getBoolean("success") ?: false
+                val transactionId = backStackEntry.arguments?.getString("transactionId").orEmpty()
+
+                PaymentResultScreen(
+                    isSuccess = isSuccess,
+                    transactionId = transactionId,
+                    onContinueShopping = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(0) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onRetryPayment = {
+                        navController.navigate(Screen.Checkout.route) {
+                            popUpTo(Screen.PaymentResult.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    },
+                )
+            }
+
             composable(Screen.Account.route) {
                 val profileViewModel: ProfileViewModel = hiltViewModel()
                 val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
@@ -252,6 +324,9 @@ fun AppNavHost(
                     },
                     onNavigateToAddressesClick = {
                         navController.navigate(Screen.Addresses.route)
+                    },
+                    onNavigateToPaymentMethodsClick = {
+                        navController.navigate(Screen.Checkout.route)
                     }
                 )
             }
