@@ -26,29 +26,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.shopify.carto.R
+import com.shopify.carto.feature.home.presentation.HomeUiState
+import com.shopify.carto.feature.home.presentation.HomeViewModel
+import com.shopify.carto.feature.home.presentation.screens.components.CategoriesGridShimmer
 import com.shopify.carto.feature.home.presentation.screens.components.CategoryCard
+import com.shopify.carto.feature.home.presentation.screens.components.ErrorBox
 import com.shopify.carto.feature.home.presentation.screens.components.SearchTextField
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AllCategoriesScreen(
-    categories: List<Category>,
+    viewModel: HomeViewModel,
     onBackClick: () -> Unit,
     onCategoryClick: (Category) -> Unit
 ) {
 
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     var query by rememberSaveable {
         mutableStateOf("")
-    }
-
-    val filteredCategories = remember(query, categories) {
-        if (query.isBlank()) {
-            categories
-        } else {
-            categories.filter {
-                it.title.contains(query, ignoreCase = true)
-            }
-        }
     }
 
     Scaffold(
@@ -58,7 +58,7 @@ fun AllCategoriesScreen(
             CenterAlignedTopAppBar(
 
                 title = {
-                    Text("Categories")
+                    Text(stringResource(R.string.categoriesScreenTitle))
                 },
 
                 navigationIcon = {
@@ -76,43 +76,83 @@ fun AllCategoriesScreen(
 
     ) { padding ->
 
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .padding(horizontal = 16.dp)
-        ) {
+        when (val state = uiState) {
 
-            SearchTextField(
-                query = query,
-                onQueryChange = { query = it },
-                placeholder = "Search categories"
+            HomeUiState.Loading -> CategoriesGridShimmer(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(horizontal = 16.dp)
             )
 
-            Spacer(Modifier.height(16.dp))
+            is HomeUiState.Error -> ErrorBox(
+                error = state.error,
+                onRetry = viewModel::fetchHomeData,
+                modifier = Modifier.padding(padding),
+            )
 
-            if (filteredCategories.isEmpty()) {
+            is HomeUiState.Success -> {
 
-                EmptyCategoryView(
-                    mainMsg = "No categories found",
-                    subMsg = "Try another keyword.",
-                    Icons.Default.Category
-                )
+                val categories = state.content.categories
 
-            } else {
+                val filteredCategories = remember(query, categories) {
+                    if (query.isBlank()) {
+                        categories
+                    } else {
+                        categories.filter {
+                            it.title.contains(query, ignoreCase = true)
+                        }
+                    }
+                }
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                Column(
+                    modifier = Modifier
+                        .padding(padding)
+                        .padding(horizontal = 16.dp)
                 ) {
 
-                    items(filteredCategories) {
+                    SearchTextField(
+                        query = query,
+                        onQueryChange = { query = it },
+                        placeholder = stringResource(R.string.categoriesSearchHint)
+                    )
 
-                        CategoryCard(
-                            category = it,
-                            onClick = onCategoryClick
-                        )
+                    Spacer(Modifier.height(16.dp))
 
+                    when {
+
+                        query.isNotBlank() && filteredCategories.isEmpty() -> {
+                            EmptyCategoryView(
+                                mainMsg = stringResource(R.string.categoriesEmptySearchTitle),
+                                subMsg = stringResource(R.string.categoriesEmptySearchSubtitle),
+                                image = Icons.Default.Category
+                            )
+                        }
+
+                        query.isBlank() && filteredCategories.isEmpty() -> {
+                            EmptyCategoryView(
+                                mainMsg = stringResource(R.string.categoriesEmptyDataTitle),
+                                subMsg = stringResource(R.string.categoriesEmptyDataSubtitle),
+                                image = Icons.Default.Category
+                            )
+                        }
+
+                        else -> {
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+
+                                items(filteredCategories) {
+
+                                    CategoryCard(
+                                        category = it,
+                                        onClick = onCategoryClick
+                                    )
+
+                                }
+                            }
+                        }
                     }
                 }
             }
