@@ -7,6 +7,8 @@ data class ShopifyCustomerBody(
     val firstName: String,
     @SerializedName("last_name")
     val lastName: String,
+    @SerializedName("phone")
+    val phoneNumber: String,
     val email: String,
     @SerializedName("verified_email")
     val verifiedEmail: Boolean,

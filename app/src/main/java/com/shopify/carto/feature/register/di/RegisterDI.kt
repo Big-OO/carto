@@ -12,6 +12,7 @@ import com.shopify.carto.feature.register.domain.usecases.RegisterUserUseCase
 import com.shopify.carto.feature.register.domain.usecases.ValidateEmailUseCase
 import com.shopify.carto.feature.register.domain.usecases.ValidateFullNameUseCase
 import com.shopify.carto.feature.register.domain.usecases.ValidatePasswordUseCase
+import com.shopify.carto.feature.register.domain.usecases.ValidatePhoneNumber
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +28,12 @@ object RegisterDIModule {
     @Singleton
     fun provideValidateEmailUseCase(): ValidateEmailUseCase {
         return ValidateEmailUseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideValidatePhoneUseCase(): ValidatePhoneNumber {
+        return ValidatePhoneNumber()
     }
 
     @Provides

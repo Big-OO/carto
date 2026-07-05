@@ -32,6 +32,7 @@ class RegisterRepositoryImpl @Inject constructor(
             val shopifyResult = shopifyRemoteDataSource.getOrCreateCustomerId(
                 fullName = request.fullName,
                 email = request.email,
+                phoneNumber = request.phoneNumber
             )
         ) {
             is RegisterDataResult.Success -> shopifyResult.data
@@ -47,6 +48,7 @@ class RegisterRepositoryImpl @Inject constructor(
                 fullName = request.fullName,
                 email = request.email,
                 shopifyCustomerId = shopifyCustomerId,
+                phoneNumber = request.phoneNumber,
             )
         ) {
             is RegisterDataResult.Success -> RegisterResult.Success(

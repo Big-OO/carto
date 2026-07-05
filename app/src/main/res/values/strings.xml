@@ -13,6 +13,18 @@
     <string name="login_as_guest">Continue as guest</string>
     <string name="settings">Settings</string>
 
+    <string name="register_title">Create an account</string>
+    <string name="register_subtitle">Let\'s create your account.</string>
+    <string name="register_full_name_label">Full Name</string>
+    <string name="register_email_label">Email</string>
+    <string name="register_phone_number_label">Phone Number</string>
+    <string name="register_password_label">Password</string>
+    <string name="register_password_rules">Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.</string>
+    <string name="register_create_account_btn">Create an Account</string>
+    <string name="register_create_account_btn_loading">Creating account…</string>
+    <string name="register_already_have_an_account">Already have an account? </string>
+    <string name="register_login_btn">Log In</string>
+
     <string name="addresses_title">Address</string>
     <string name="addresses_new_address_title">New Address</string>
     <string name="addresses_saved_address_title">Saved Address</string>
@@ -85,5 +97,6 @@
 
     <string name="splash_app_name">Carto</string>
     <string name="splash_logo_content_description">Carto logo</string>
+    <string name="register_phone_number_country_code">+20</string>
 
 </resources>
