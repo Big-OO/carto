@@ -1,8 +1,11 @@
 package com.shopify.carto.feature.ai_integration.ui
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
@@ -26,6 +29,7 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -35,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
@@ -49,6 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.shopify.carto.feature.ai_integration.voice.SpeechRecognizerManager
+import com.shopify.carto.feature.ai_integration.voice.VoiceRecognitionState
 import com.shopify.carto.feature.home.domain.model.Product
 import com.shopify.carto.feature.home.presentation.screens.components.ProductCard
 import com.shopify.carto.feature.search.domain.model.SearchProduct
@@ -69,6 +76,43 @@ fun AIChatScreen(
     val context = LocalContext.current
 
     var textInput by remember { mutableStateOf("") }
+    var voiceState by remember { mutableStateOf<VoiceRecognitionState>(VoiceRecognitionState.Idle) }
+
+    // ── SpeechRecognizerManager lifecycle wired to composition ─────────────
+    // DisposableEffect: registered once, destroyed on leave — correct pattern per compose-side-effects
+    val manager = remember {
+        SpeechRecognizerManager(context) { state ->
+            voiceState = state
+            // On final result: populate the text field and immediately send
+            if (state is VoiceRecognitionState.Result && state.text.isNotBlank()) {
+                textInput = state.text
+            }
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose { manager.destroy() }
+    }
+
+    // On partial result, keep updating text field live so user sees transcription
+    LaunchedEffect(voiceState) {
+        when (val s = voiceState) {
+            is VoiceRecognitionState.Partial -> textInput = s.text
+            is VoiceRecognitionState.Error   -> voiceState = VoiceRecognitionState.Idle
+            else -> Unit
+        }
+    }
+
+    // ── Runtime permission launcher ─────────────────────────────────────────
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            voiceState = VoiceRecognitionState.ReadyForSpeech
+            manager.startListening()
+        } else {
+            scope.launch { snackbarHostState.showSnackbar("Microphone permission denied") }
+        }
+    }
 
     LaunchedEffect(uiState.messages.size) {
         if (uiState.messages.isNotEmpty()) {
@@ -134,10 +178,24 @@ fun AIChatScreen(
             // Input Area
             ChatInput(
                 textInput = textInput,
+                voiceState = voiceState,
                 onValueChange = { textInput = it },
                 onSendClick = {
                     viewModel.sendMessage(textInput)
                     textInput = ""
+                    voiceState = VoiceRecognitionState.Idle
+                },
+                onMicClick = {
+                    // Already listening? stop. Otherwise request permission then start.
+                    if (voiceState is VoiceRecognitionState.Listening ||
+                        voiceState is VoiceRecognitionState.ReadyForSpeech ||
+                        voiceState is VoiceRecognitionState.Partial
+                    ) {
+                        manager.stopListening()
+                        voiceState = VoiceRecognitionState.Idle
+                    } else {
+                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                    }
                 },
                 isProcessing = uiState.isProcessing
             )
@@ -587,114 +645,241 @@ fun CopyActionRow(
 
 // ─── Chat Input Redesign ────────────────────────────────────────────────────
 
+/**
+ * WhatsApp-style input bar:
+ * - Text field empty  →  mic button (start voice input)
+ * - Text field has content OR processing  →  send button
+ * - Voice active  →  placeholder shows listening state, trailing button = stop (■)
+ *
+ * Button morphs with [AnimatedContent] (fade cross-dissolve, 180 ms) — compose-animations rule:
+ * "swap between different composable content → AnimatedContent".
+ */
 @Composable
 fun ChatInput(
     textInput: String,
+    voiceState: VoiceRecognitionState,
     onValueChange: (String) -> Unit,
     onSendClick: () -> Unit,
+    onMicClick: () -> Unit,
     isProcessing: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val isListening = voiceState is VoiceRecognitionState.ReadyForSpeech
+        || voiceState is VoiceRecognitionState.Listening
+        || voiceState is VoiceRecognitionState.Partial
+
+    // Derive which trailing action to show:
+    //  hasText or isProcessing → send  |  else → mic/stop
+    val hasText = textInput.isNotBlank()
+    val showSend = hasText && !isListening
+    val showStop = isListening
+    // "stop" or "mic" share the same slot; send occupies it when text is present
+
+    // Waveform-like pulse scale for the mic button while listening
+    val infiniteTransition = rememberInfiniteTransition(label = "micPulse")
+    val micScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.20f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "micScale"
+    )
+    // Only use the pulse scale when actually listening
+    val trailingScale = if (isListening) micScale else 1f
+
     Surface(
         tonalElevation = 4.dp,
         shadowElevation = 8.dp,
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            IconButton(
-                onClick = { /* Placeholder attachment */ },
-                modifier = Modifier.size(36.dp),
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+        Column {
+            // Live transcription hint strip (shown while voice active)
+            AnimatedVisibility(
+                visible = isListening,
+                enter = fadeIn(tween(200)) + expandVertically(),
+                exit  = fadeOut(tween(200)) + shrinkVertically()
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add attachment"
-                )
-            }
-
-            IconButton(
-                onClick = { /* Placeholder mic */ },
-                modifier = Modifier.size(36.dp),
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Mic,
-                    contentDescription = "Voice search"
-                )
-            }
-
-            OutlinedTextField(
-                value = textInput,
-                onValueChange = onValueChange,
-                placeholder = {
-                    Text(
-                        "Message Carto AI...",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f))
+                        .padding(horizontal = 20.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Animated dots to signal active listening
+                    val dotTransition = rememberInfiniteTransition(label = "listenDots")
+                    val dot1 by dotTransition.animateFloat(
+                        0.3f, 1f,
+                        infiniteRepeatable(tween(500, delayMillis = 0), RepeatMode.Reverse),
+                        label = "d1"
                     )
-                },
-                modifier = Modifier.weight(1f),
-                maxLines = 5,
-                shape = RoundedCornerShape(24.dp),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                keyboardActions = KeyboardActions(
-                    onSend = {
-                        if (textInput.isNotBlank() && !isProcessing) {
-                            onSendClick()
+                    val dot2 by dotTransition.animateFloat(
+                        0.3f, 1f,
+                        infiniteRepeatable(tween(500, delayMillis = 150), RepeatMode.Reverse),
+                        label = "d2"
+                    )
+                    val dot3 by dotTransition.animateFloat(
+                        0.3f, 1f,
+                        infiniteRepeatable(tween(500, delayMillis = 300), RepeatMode.Reverse),
+                        label = "d3"
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                        listOf(dot1, dot2, dot3).forEach { alpha ->
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .background(
+                                        MaterialTheme.colorScheme.primary.copy(alpha = alpha),
+                                        CircleShape
+                                    )
+                            )
                         }
                     }
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                )
-            )
+                    Text(
+                        text = if (textInput.isNotBlank()) textInput else "Listening…",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
 
-            val canSend = textInput.isNotBlank() && !isProcessing
-            AnimatedContent(
-                targetState = canSend,
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(150)) togetherWith fadeOut(animationSpec = tween(150))
-                },
-                label = "sendButton"
-            ) { targetCanSend ->
-                FilledIconButton(
-                    onClick = {
-                        if (targetCanSend) {
-                            onSendClick()
-                        }
-                    },
-                    enabled = targetCanSend,
-                    modifier = Modifier.size(40.dp),
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Attachment button (left side)
+                IconButton(
+                    onClick = { /* Placeholder attachment */ },
+                    modifier = Modifier.size(36.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Send,
-                        contentDescription = "Send",
-                        modifier = Modifier.size(18.dp)
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add attachment"
                     )
+                }
+
+                // Text field — placeholder adapts when listening
+                OutlinedTextField(
+                    value = textInput,
+                    onValueChange = onValueChange,
+                    placeholder = {
+                        Text(
+                            text = when {
+                                isListening -> "🎙 Listening…"
+                                else        -> "Message Carto AI…"
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        )
+                    },
+                    modifier = Modifier.weight(1f),
+                    maxLines = 5,
+                    shape = RoundedCornerShape(24.dp),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    keyboardActions = KeyboardActions(
+                        onSend = {
+                            if (textInput.isNotBlank() && !isProcessing) onSendClick()
+                        }
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = if (isListening)
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                        else
+                            Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                    )
+                )
+
+                // ── Trailing action button: Mic | Stop | Send ────────────────
+                // Three visual states keyed to a simple enum so AnimatedContent
+                // only transitions on shape-change, not data-change.
+                val trailingKey = when {
+                    showSend -> "send"
+                    showStop -> "stop"
+                    else     -> "mic"
+                }
+                AnimatedContent(
+                    targetState = trailingKey,
+                    transitionSpec = {
+                        (fadeIn(tween(180)) + scaleIn(tween(180), initialScale = 0.75f))
+                            .togetherWith(fadeOut(tween(120)) + scaleOut(tween(120), targetScale = 0.75f))
+                    },
+                    contentKey = { it }, // shape-based key per compose-animations rule
+                    label = "trailingButton"
+                ) { key ->
+                    when (key) {
+                        "send" -> FilledIconButton(
+                            onClick = { if (!isProcessing) onSendClick() },
+                            enabled = !isProcessing,
+                            modifier = Modifier.size(40.dp),
+                            shape = CircleShape,
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Send,
+                                contentDescription = "Send message",
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        "stop" -> FilledIconButton(
+                            onClick = onMicClick, // stops listening
+                            modifier = Modifier
+                                .size(40.dp)
+                                // scale animated via trailingScale (pulse while listening)
+                                .graphicsLayer { scaleX = trailingScale; scaleY = trailingScale },
+                            shape = CircleShape,
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Stop,
+                                contentDescription = "Stop listening",
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        else -> FilledIconButton(
+                            onClick = onMicClick, // requests permission + starts listening
+                            modifier = Modifier.size(40.dp),
+                            shape = CircleShape,
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Mic,
+                                contentDescription = "Start voice input",
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
