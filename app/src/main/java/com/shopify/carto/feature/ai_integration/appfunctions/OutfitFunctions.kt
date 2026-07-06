@@ -23,24 +23,94 @@ class OutfitFunctions @Inject constructor(
         appFunctionContext: AppFunctionContext,
         preference: String
     ): String {
-        val topResult = searchProductsUseCase(if (preference.contains("sport", ignoreCase = true)) "t-shirt" else "hoodie")
-        val bottomResult = searchProductsUseCase(if (preference.contains("sport", ignoreCase = true)) "pants" else "jeans")
-        val shoeResult = searchProductsUseCase("shoes")
+        // Fetch all initial products in the store by performing a broad search
+        val allProductsResult = searchProductsUseCase("")
+        val products = if (allProductsResult is SearchResult.Success) allProductsResult.data else emptyList()
 
-        val tops = if (topResult is SearchResult.Success) topResult.data else emptyList()
-        val bottoms = if (bottomResult is SearchResult.Success) bottomResult.data else emptyList()
-        val shoes = if (shoeResult is SearchResult.Success) shoeResult.data else emptyList()
+        if (products.isEmpty()) {
+            return "Could not find any items in the store right now to generate an outfit."
+        }
 
-        val chosenTop = tops.firstOrNull()
-        val chosenBottom = bottoms.firstOrNull()
-        val chosenShoe = shoes.firstOrNull()
+        // Determine gender preference
+        val isWomen = preference.contains("women", ignoreCase = true) || 
+                       preference.contains("woman", ignoreCase = true) ||
+                       preference.contains("female", ignoreCase = true) ||
+                       preference.contains("girl", ignoreCase = true) ||
+                       preference.contains("lady", ignoreCase = true)
+                       
+        val isMen = !isWomen && (
+            preference.contains("men", ignoreCase = true) ||
+            preference.contains("man", ignoreCase = true) ||
+            preference.contains("male", ignoreCase = true) ||
+            preference.contains("boy", ignoreCase = true)
+        )
+
+        // Filter products based on gender preference using available properties (title, productType, vendor)
+        val genderedProducts = products.filter { product ->
+            val title = product.title.lowercase()
+            val type = product.productType.lowercase()
+            val vendor = product.vendor.lowercase()
+            
+            val matchesWomen = title.contains("women") || title.contains("woman") || title.contains("lady") || title.contains("dress") ||
+                               type.contains("women") || type.contains("woman") || type.contains("lady") ||
+                               vendor.contains("women") || vendor.contains("woman")
+                               
+            val matchesMen = title.contains("men") || title.contains("man") || title.contains("boy") ||
+                             type.contains("men") || type.contains("man") || type.contains("boy") ||
+                             vendor.contains("men") || vendor.contains("man")
+
+            if (isWomen) {
+                matchesWomen && !title.contains("men's")
+            } else if (isMen) {
+                matchesMen && !matchesWomen
+            } else {
+                true
+            }
+        }
+
+        val sourceProducts = if (genderedProducts.isNotEmpty()) genderedProducts else products
+
+        // Categorize items by checking title and productType
+        val tops = sourceProducts.filter { product ->
+            val title = product.title.lowercase()
+            val type = product.productType.lowercase()
+            title.contains("shirt") || title.contains("top") || title.contains("hoodie") || 
+            title.contains("jacket") || title.contains("coat") || title.contains("blouse") || 
+            title.contains("pullover") || title.contains("cardigan") || title.contains("sweater") ||
+            type.contains("shirt") || type.contains("top") || type.contains("hoodie") || type.contains("jacket")
+        }
+
+        val bottoms = sourceProducts.filter { product ->
+            val title = product.title.lowercase()
+            val type = product.productType.lowercase()
+            title.contains("pant") || title.contains("jeans") || title.contains("trouser") || 
+            title.contains("shorts") || title.contains("skirt") || title.contains("leggings") || 
+            title.contains("sweatpants") ||
+            type.contains("pant") || type.contains("jeans") || type.contains("trouser") || type.contains("shorts")
+        }
+
+        val shoes = sourceProducts.filter { product ->
+            val title = product.title.lowercase()
+            val type = product.productType.lowercase()
+            title.contains("shoe") || title.contains("sneaker") || title.contains("boot") || 
+            title.contains("sandal") || title.contains("slide") || title.contains("loafer") ||
+            title.contains("footwear") ||
+            type.contains("shoe") || type.contains("sneaker") || type.contains("footwear")
+        }
+
+        // Randomly pick one item from each category
+        val chosenTop = tops.shuffled().firstOrNull()
+        val chosenBottom = bottoms.shuffled().firstOrNull()
+        val chosenShoe = shoes.shuffled().firstOrNull()
 
         if (chosenTop == null && chosenBottom == null && chosenShoe == null) {
             return "Could not find matching clothing items for the '$preference' style right now."
         }
 
+        val genderLabel = if (isWomen) "Women's " else if (isMen) "Men's " else ""
+
         return buildString {
-            appendLine("Curated '$preference' Outfit Recommendation:")
+            appendLine("Curated ${genderLabel}'$preference' Outfit Recommendation:")
             if (chosenTop != null) {
                 appendLine("- Top: ${chosenTop.title} (ID: ${chosenTop.id}) by ${chosenTop.vendor} - ${chosenTop.price} EGP")
             }

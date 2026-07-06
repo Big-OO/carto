@@ -114,13 +114,13 @@ android {
         )
         buildConfigField(
             "String",
-            "GEMINI_API_BASE_URL",
-            localProperty("gemini.api.base.url").asBuildConfigString()
+            "AI_API_BASE_URL",
+            localProperty("ai.api.base.url").asBuildConfigString()
         )
         buildConfigField(
             "String",
-            "GEMINI_API_KEY",
-            localProperty("gemini.api.key").asBuildConfigString()
+            "AI_API_KEY",
+            localProperty("ai.api.key").asBuildConfigString()
         )
 
     }
@@ -221,7 +221,6 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-    implementation(libs.generativeai)
 
     implementation(libs.hilt.android)
     implementation(libs.hilt.lifecycle.viewmodel.compose)
