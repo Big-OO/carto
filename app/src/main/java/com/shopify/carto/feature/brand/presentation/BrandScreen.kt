@@ -17,7 +17,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.shopify.carto.feature.brand.presentation.components.BrandHeader
 import com.shopify.carto.feature.brand.presentation.components.FilterSection
-import com.shopify.carto.feature.brand.presentation.components.ProductCard
+import com.shopify.carto.core.components.ProductCard
 import com.shopify.carto.feature.brand.presentation.components.BrandShimmerLoading
 import com.shopify.carto.feature.home.presentation.screens.components.ErrorBox
 import com.shopify.carto.feature.favorite.presentation.FavoriteViewModel
@@ -132,20 +132,28 @@ fun BrandScreen(
                             contentType = { "product" }
                         ) { product ->
                             ProductCard(
-                                product = product,
+                                name = product.name,
+                                price = product.priceAsDouble(),
+                                imageUrl = product.imageUrl,
+                                productType = product.type,
                                 modifier = Modifier.clickable {
                                     viewModel.onEvent(BrandEvent.ClickProduct(product.id))
                                 },
                                 isGuest = session?.isGuest ?: true,
                                 isFavorite = product.id.toLongOrNull()
                                     ?.let(favoriteIds::contains) ?: false,
-                                onFavoriteClick = { clicked ->
-                                    clicked.id.toLongOrNull()?.let { productId ->
+                                onClick = {
+                                    onProductClick(
+                                        product.id.toLongOrNull() ?: favoriteIds.first()
+                                    )
+                                },
+                                onFavoriteClick = {
+                                    product.id.toLongOrNull()?.let { productId ->
                                         favoriteViewModel.toggleFavorite(
                                             productId = productId,
-                                            name = clicked.name,
-                                            imageUrl = clicked.imageUrl,
-                                            price = clicked.priceAsDouble(),
+                                            name = product.name,
+                                            imageUrl = product.imageUrl,
+                                            price = product.priceAsDouble(),
                                         )
                                     }
                                 },
