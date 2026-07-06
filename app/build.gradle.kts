@@ -112,6 +112,17 @@ android {
             "PAYMOB_FLASH_BASE_URL",
             localProperty("paymob.flash.base.url").asBuildConfigString()
         )
+        buildConfigField(
+            "String",
+            "GEMINI_API_BASE_URL",
+            localProperty("gemini.api.base.url").asBuildConfigString()
+        )
+        buildConfigField(
+            "String",
+            "GEMINI_API_KEY",
+            localProperty("gemini.api.key").asBuildConfigString()
+        )
+
     }
 
     buildTypes {
@@ -210,7 +221,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-    implementation(libs.firebase.ai)
+    implementation(libs.generativeai)
 
     implementation(libs.hilt.android)
     implementation(libs.hilt.lifecycle.viewmodel.compose)
