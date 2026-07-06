@@ -8,10 +8,14 @@ import com.shopify.carto.feature.search.domain.model.SearchProduct
 import com.shopify.carto.feature.shopping_cart.domain.usecase.AddToCartUseCase
 import com.shopify.carto.feature.favorite.domain.usecase.ToggleFavoriteUseCase
 import com.shopify.carto.feature.product_details.domain.model.merchandiseId
+import com.shopify.carto.feature.settings.domain.model.Currency as AppCurrency
+import com.shopify.carto.feature.settings.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -41,11 +45,15 @@ class AIChatViewModel @Inject constructor(
     private val aiShoppingAgent: AIShoppingAgent,
     private val getProductDetailsUseCase: GetProductDetailsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    private val addToCartUseCase: AddToCartUseCase
+    private val addToCartUseCase: AddToCartUseCase,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AIChatUiState())
     val uiState: StateFlow<AIChatUiState> = _uiState.asStateFlow()
+
+    val selectedCurrency: StateFlow<AppCurrency> = settingsRepository.currency
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppCurrency.EGP)
 
     init {
         _uiState.update {
@@ -102,19 +110,47 @@ class AIChatViewModel @Inject constructor(
                     .replace(Regex("""\s*Product ID:\s*\d+""", RegexOption.IGNORE_CASE), "")
                     .trim()
 
+                val targetText = cleanedText.ifBlank { "I found these items for you:" }
+                val aiMessageId = UUID.randomUUID().toString()
+
                 val aiMessage = ChatMessage(
-                    text = cleanedText.ifBlank { "I found these items for you:" },
+                    id = aiMessageId,
+                    text = "",
                     isUser = false,
                     type = if (recommendedProducts.isNotEmpty()) MessageType.PRODUCT_LIST else MessageType.TEXT,
                     products = recommendedProducts
                 )
 
+                // Add empty response bubble and clear the progress status message loader,
+                // but keep isProcessing = true to keep the typing area locked during streaming.
                 _uiState.update {
                     it.copy(
                         messages = it.messages + aiMessage,
-                        isProcessing = false,
                         statusMessage = null
                     )
+                }
+
+                // Typewriter/streaming animation word-by-word
+                val words = targetText.split(" ")
+                var currentText = ""
+                for (i in words.indices) {
+                    currentText += (if (i == 0) "" else " ") + words[i]
+                    _uiState.update { state ->
+                        state.copy(
+                            messages = state.messages.map { msg ->
+                                if (msg.id == aiMessageId) {
+                                    msg.copy(text = currentText)
+                                } else {
+                                    msg
+                                }
+                            }
+                        )
+                    }
+                    kotlinx.coroutines.delay(35) // 35ms delay per word
+                }
+
+                _uiState.update {
+                    it.copy(isProcessing = false)
                 }
             } catch (e: Exception) {
                 val errorMessage = ChatMessage(

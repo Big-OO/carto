@@ -31,10 +31,15 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -42,6 +47,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.shopify.carto.feature.search.domain.model.SearchProduct
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,18 +58,19 @@ fun AIChatScreen(
     viewModel: AIChatViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val selectedCurrency by viewModel.selectedCurrency.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
     var textInput by remember { mutableStateOf("") }
 
     val suggestedPrompts = listOf(
-        "\uD83D\uDC5F Find running shoes",
-        "\uD83D\uDD0D Compare two products",
-        "\uD83D\uDC57 Summer outfit ideas",
-        "\uD83D\uDED2 Show my cart",
-        "❤\uFE0F My wishlist",
-        "\uD83C\uDF1F Trending picks"
+        "👟 Find running shoes",
+        "🔍 Compare two products",
+        "👗 Summer outfit ideas",
+        "🛒 Show my cart",
+        "❤️ My wishlist",
+        "🌟 Trending picks"
     )
 
     LaunchedEffect(uiState.messages.size) {
@@ -158,7 +166,7 @@ fun AIChatScreen(
                                 color = Color.White
                             )
                             Text(
-                                text = "Powered by Gemini ✨",
+                                text = "Online ⚡",
                                 fontSize = 12.sp,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
@@ -185,15 +193,17 @@ fun AIChatScreen(
                 items(uiState.messages, key = { it.id }) { message ->
                     ChatBubble(
                         message = message,
+                        currency = selectedCurrency,
                         onProductClick = onProductClick,
                         onFavoriteClick = { viewModel.toggleProductFavorite(it) },
                         onAddToCartClick = { viewModel.addProductToCart(it.id) }
                     )
                 }
 
-                if (uiState.isProcessing) {
+                val statusMsg = uiState.statusMessage
+                if (uiState.isProcessing && statusMsg != null) {
                     item {
-                        ThinkingBubble(statusMessage = uiState.statusMessage ?: "Thinking...")
+                        ThinkingBubble(statusMessage = statusMsg)
                     }
                 }
             }
@@ -312,6 +322,7 @@ fun AIChatScreen(
 @Composable
 fun ChatBubble(
     message: ChatMessage,
+    currency: com.shopify.carto.feature.settings.domain.model.Currency,
     onProductClick: (Long) -> Unit,
     onFavoriteClick: (SearchProduct) -> Unit,
     onAddToCartClick: (SearchProduct) -> Unit
@@ -384,7 +395,7 @@ fun ChatBubble(
                         )
                     }
 
-                    Text(
+                    MarkdownText(
                         text = message.text,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
@@ -404,6 +415,7 @@ fun ChatBubble(
                     items(message.products, key = { it.id }) { product ->
                         ProductChatCard(
                             product = product,
+                            currency = currency,
                             onClick = { onProductClick(product.id) },
                             onFavoriteClick = { onFavoriteClick(product) },
                             onAddToCartClick = { onAddToCartClick(product) }
@@ -420,6 +432,7 @@ fun ChatBubble(
 @Composable
 fun ProductChatCard(
     product: SearchProduct,
+    currency: com.shopify.carto.feature.settings.domain.model.Currency,
     onClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onAddToCartClick: () -> Unit
@@ -543,14 +556,14 @@ fun ProductChatCard(
                 ) {
                     Column {
                         Text(
-                            text = "EGP ${"%,.0f".format(product.price)}",
+                            text = formatPrice(product.price, currency),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         if (product.compareAtPrice != null && product.compareAtPrice > product.price) {
                             Text(
-                                text = "EGP ${"%,.0f".format(product.compareAtPrice)}",
+                                text = formatPrice(product.compareAtPrice, currency),
                                 fontSize = 10.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textDecoration = TextDecoration.LineThrough
@@ -675,6 +688,90 @@ fun ThinkingBubble(
                     )
                 }
             }
+        }
+    }
+}
+
+// ─── Markdown Rendering Helper ──────────────────────────────────────────────
+
+@Composable
+fun MarkdownText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onSurface,
+    fontSize: TextUnit = 14.sp,
+    lineHeight: TextUnit = 20.sp
+) {
+    val lines = text.split("\n")
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        lines.forEach { line ->
+            val trimmedLine = line.trim()
+            if (trimmedLine.startsWith("-") || trimmedLine.startsWith("*")) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(start = 8.dp),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Text(
+                        text = "• ",
+                        color = color,
+                        fontSize = fontSize,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = parseMarkdownInline(trimmedLine.substring(1).trim()),
+                        color = color,
+                        fontSize = fontSize,
+                        lineHeight = lineHeight
+                    )
+                }
+            } else {
+                Text(
+                    text = parseMarkdownInline(line),
+                    color = color,
+                    fontSize = fontSize,
+                    lineHeight = lineHeight
+                )
+            }
+        }
+    }
+}
+
+private fun parseMarkdownInline(text: String): AnnotatedString {
+    return buildAnnotatedString {
+        var cursor = 0
+        val boldRegex = Regex("""\*\*(.*?)\*\*""")
+        val matches = boldRegex.findAll(text).toList()
+
+        for (match in matches) {
+            val range = match.groups[0]!!.range
+            if (range.first > cursor) {
+                append(text.substring(cursor, range.first))
+            }
+            val boldContent = match.groups[1]!!.value
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append(boldContent)
+            }
+            cursor = range.last + 1
+        }
+
+        if (cursor < text.length) {
+            append(text.substring(cursor))
+        }
+    }
+}
+
+private fun formatPrice(priceInEgp: Double, currency: com.shopify.carto.feature.settings.domain.model.Currency): String {
+    return when (currency) {
+        com.shopify.carto.feature.settings.domain.model.Currency.USD -> {
+            val usdPrice = priceInEgp / 50.0
+            "$ ${"%,.2f".format(usdPrice)}"
+        }
+        com.shopify.carto.feature.settings.domain.model.Currency.EUR -> {
+            val eurPrice = priceInEgp / 55.0
+            "€ ${"%,.2f".format(eurPrice)}"
+        }
+        com.shopify.carto.feature.settings.domain.model.Currency.EGP -> {
+            "EGP ${"%,.0f".format(priceInEgp)}"
         }
     }
 }
