@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.shopify.carto.feature.home.domain.model.Product
+import com.shopify.carto.feature.settings.domain.model.Currency
 import com.shopify.carto.ui.theme.CartoTheme
 
 
@@ -43,6 +44,7 @@ fun ProductCard(
     modifier: Modifier = Modifier,
     isGuest: Boolean = false,
     isFavorite: Boolean = false,
+    currency: Currency = Currency.USD,
     onClick: (Product) -> Unit = {},
     onFavoriteClick: (Product) -> Unit = {},
     onGuestFavoriteClick: () -> Unit = {},
@@ -199,7 +201,7 @@ fun ProductCard(
 
                         if (product.price > 0.0) {
                             Text(
-                                text = "$${"%.2f".format(product.price)}",
+                                text = formatPrice(product.price, currency),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = CartoTheme.colors.primary
@@ -213,7 +215,7 @@ fun ProductCard(
                             Spacer(Modifier.width(6.dp))
 
                             Text(
-                                "$${"%.2f".format(product.compareAtPrice)}",
+                                text = formatPrice(product.compareAtPrice, currency),
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     textDecoration = TextDecoration.LineThrough
                                 ),
@@ -246,4 +248,20 @@ fun ProductCard(
 
     }
 
+}
+
+private fun formatPrice(priceInEgp: Double, currency: Currency): String {
+    return when (currency) {
+        Currency.USD -> {
+            val usdPrice = priceInEgp / 50.0
+            "$${"%,.2f".format(usdPrice)}"
+        }
+        Currency.EUR -> {
+            val eurPrice = priceInEgp / 55.0
+            "€${"%,.2f".format(eurPrice)}"
+        }
+        Currency.EGP -> {
+            "EGP ${"%,.0f".format(priceInEgp)}"
+        }
+    }
 }

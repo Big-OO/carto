@@ -80,6 +80,27 @@ class AIChatViewModel @Inject constructor(
             )
         }
 
+        executeMessageQuery(text)
+    }
+
+    fun regenerateLastResponse() {
+        if (_uiState.value.isProcessing) return
+
+        val lastUserMessage = _uiState.value.messages.lastOrNull { it.isUser } ?: return
+        val indexOfLastUser = _uiState.value.messages.lastIndexOf(lastUserMessage)
+
+        _uiState.update {
+            it.copy(
+                messages = it.messages.subList(0, indexOfLastUser + 1),
+                isProcessing = true,
+                statusMessage = "Thinking..."
+            )
+        }
+
+        executeMessageQuery(lastUserMessage.text)
+    }
+
+    private fun executeMessageQuery(text: String) {
         viewModelScope.launch {
             try {
                 val agentResponse = aiShoppingAgent.sendMessage(text) { step ->
