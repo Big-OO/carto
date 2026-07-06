@@ -31,44 +31,52 @@ class OutfitFunctions @Inject constructor(
             return "Could not find any items in the store right now to generate an outfit."
         }
 
-        // Determine gender preference
-        val isWomen = preference.contains("women", ignoreCase = true) || 
-                       preference.contains("woman", ignoreCase = true) ||
-                       preference.contains("female", ignoreCase = true) ||
-                       preference.contains("girl", ignoreCase = true) ||
-                       preference.contains("lady", ignoreCase = true)
+        // Determine target gender to strictly prevent mixing styles (e.g. men's shirt with women's footwear)
+        val isWomenPreferred = preference.contains("women", ignoreCase = true) || 
+                               preference.contains("woman", ignoreCase = true) ||
+                               preference.contains("female", ignoreCase = true) ||
+                               preference.contains("girl", ignoreCase = true) ||
+                               preference.contains("lady", ignoreCase = true)
                        
-        val isMen = !isWomen && (
+        val isMenPreferred = !isWomenPreferred && (
             preference.contains("men", ignoreCase = true) ||
             preference.contains("man", ignoreCase = true) ||
             preference.contains("male", ignoreCase = true) ||
             preference.contains("boy", ignoreCase = true)
         )
 
-        // Filter products based on gender preference using available properties (title, productType, vendor)
-        val genderedProducts = products.filter { product ->
+        val targetGender = if (isWomenPreferred) {
+            "women"
+        } else if (isMenPreferred) {
+            "men"
+        } else {
+            // Coherent styling: pick a single target gender randomly if none specified
+            if (Math.random() < 0.5) "men" else "women"
+        }
+
+        // Filter products strictly based on target gender
+        val sourceProducts = products.filter { product ->
             val title = product.title.lowercase()
             val type = product.productType.lowercase()
             val vendor = product.vendor.lowercase()
             
-            val matchesWomen = title.contains("women") || title.contains("woman") || title.contains("lady") || title.contains("dress") ||
-                               type.contains("women") || type.contains("woman") || type.contains("lady") ||
-                               vendor.contains("women") || vendor.contains("woman")
+            val isExplicitlyWomen = title.contains("women") || title.contains("woman") || title.contains("lady") || title.contains("dress") || title.contains("skirt") ||
+                                    type.contains("women") || type.contains("woman") || type.contains("lady") ||
+                                    vendor.contains("women") || vendor.contains("woman")
                                
-            val matchesMen = title.contains("men") || title.contains("man") || title.contains("boy") ||
-                             type.contains("men") || type.contains("man") || type.contains("boy") ||
-                             vendor.contains("men") || vendor.contains("man")
+            val isExplicitlyMen = (title.contains("men") || title.contains("man") || title.contains("boy") ||
+                                   type.contains("men") || type.contains("man") || type.contains("boy") ||
+                                   vendor.contains("men") || vendor.contains("man")) && 
+                                  !title.contains("women") && !type.contains("women")
 
-            if (isWomen) {
-                matchesWomen && !title.contains("men's")
-            } else if (isMen) {
-                matchesMen && !matchesWomen
+            if (targetGender == "women") {
+                // For women outfit, allow explicit women items or unisex items, but strictly exclude explicit men items
+                isExplicitlyWomen || (!isExplicitlyMen)
             } else {
-                true
+                // For men outfit, allow explicit men items or unisex items, but strictly exclude explicit women items
+                isExplicitlyMen || (!isExplicitlyWomen)
             }
         }
-
-        val sourceProducts = if (genderedProducts.isNotEmpty()) genderedProducts else products
 
         // Categorize items by checking title and productType
         val tops = sourceProducts.filter { product ->
@@ -107,7 +115,7 @@ class OutfitFunctions @Inject constructor(
             return "Could not find matching clothing items for the '$preference' style right now."
         }
 
-        val genderLabel = if (isWomen) "Women's " else if (isMen) "Men's " else ""
+        val genderLabel = if (targetGender == "women") "Women's " else "Men's "
 
         return buildString {
             appendLine("Curated ${genderLabel}'$preference' Outfit Recommendation:")
