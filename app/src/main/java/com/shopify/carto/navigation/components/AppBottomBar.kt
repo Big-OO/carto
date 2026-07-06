@@ -1,15 +1,23 @@
 package com.shopify.carto.navigation.components
 
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -28,6 +36,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,8 +63,9 @@ fun AppBottomBar(
     val navItems = listOf(
         NavItem(Screen.Home.route, stringResource(id = R.string.homeNavTitle), Icons.Filled.Home),
         NavItem(Screen.Saved.route, stringResource(id = R.string.savedNavTitle), Icons.Outlined.FavoriteBorder),
+        NavItem(Screen.AIAssistant.route, "", Icons.Filled.Home), // Placeholder
         NavItem(Screen.Cart.route, stringResource(id = R.string.cartNavTitle), Icons.Outlined.ShoppingCart),
-        NavItem(Screen.Account.route,stringResource(id = R.string.accountNavTitle) , Icons.Outlined.AccountCircle)
+        NavItem(Screen.Account.route, stringResource(id = R.string.accountNavTitle), Icons.Outlined.AccountCircle)
     )
     Box(
         modifier = modifier
@@ -78,49 +89,159 @@ fun AppBottomBar(
                 tonalElevation = 0.dp,
                 windowInsets = WindowInsets(0.dp)
             ) {
-                navItems.forEach { item ->
+                navItems.forEachIndexed { index, item ->
                     val selected = currentRoute == item.route
 
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            val needsAuth = item.route in authRequiredRoutes && isGuest
-
-                            when {
-                                needsAuth -> showAuthDialog = true
-
-                                !selected -> navController.navigate(item.route) {
-                                    popUpTo(Screen.Home.route) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = item.icon,
-                                contentDescription = item.label,
-                                modifier = Modifier.size(22.dp)
+                    if (index == 2) {
+                        NavigationBarItem(
+                            selected = false,
+                            onClick = {},
+                            enabled = false,
+                            icon = { Spacer(modifier = Modifier.size(22.dp)) },
+                            colors = NavigationBarItemDefaults.colors(
+                                disabledIconColor = Color.Transparent,
+                                disabledTextColor = Color.Transparent,
+                                indicatorColor = Color.Transparent
                             )
-                        },
-                        label = {
-                            if (selected) {
-                                Text(
-                                    text = item.label,
-                                    fontSize = 11.sp,
-                                    maxLines = 1
-                                )
-                            }
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            indicatorColor = MaterialTheme.colorScheme.surface.copy(alpha = 0f)
                         )
+                    } else {
+                        NavigationBarItem(
+                            selected = selected,
+                            onClick = {
+                                val needsAuth = item.route in authRequiredRoutes && isGuest
+
+                                when {
+                                    needsAuth -> showAuthDialog = true
+
+                                    !selected -> navController.navigate(item.route) {
+                                        popUpTo(Screen.Home.route) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.label,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            },
+                            label = {
+                                if (selected) {
+                                    Text(
+                                        text = item.label,
+                                        fontSize = 11.sp,
+                                        maxLines = 1
+                                    )
+                                }
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                indicatorColor = MaterialTheme.colorScheme.surface.copy(alpha = 0f)
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        // Elevated Glowing Floating AI Sparkle Button in the center
+        val isAIOpen = currentRoute == Screen.AIAssistant.route
+        val infiniteTransition = rememberInfiniteTransition(label = "ai_glow")
+        val glowScale by infiniteTransition.animateFloat(
+            initialValue = 1f,
+            targetValue = 1.08f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1200, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "ai_glow"
+        )
+        val glowAlpha by infiniteTransition.animateFloat(
+            initialValue = 0.4f,
+            targetValue = 0.8f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1200, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "ai_glow_alpha"
+        )
+
+        val buttonScale by animateFloatAsState(
+            targetValue = if (isAIOpen) 1.15f else 1f,
+            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
+            label = "ai_select"
+        )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = (-18).dp)
+                .size(60.dp * buttonScale * glowScale)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary.copy(alpha = glowAlpha),
+                            Color.Transparent
+                        )
+                    )
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Surface(
+                modifier = Modifier
+                    .size(52.dp * buttonScale)
+                    .clickable {
+                        if (!isAIOpen) {
+                            navController.navigate(Screen.AIAssistant.route) {
+                                popUpTo(Screen.Home.route) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    },
+                shape = CircleShape,
+                color = Color.Transparent,
+                shadowElevation = 8.dp
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.secondary,
+                                    MaterialTheme.colorScheme.tertiary
+                                )
+                            )
+                        )
+                        .border(
+                            width = 2.dp,
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color.White,
+                                    Color.White.copy(alpha = 0.3f),
+                                    Color.White
+                                )
+                            ),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AutoAwesome,
+                        contentDescription = "AI Assistant",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }

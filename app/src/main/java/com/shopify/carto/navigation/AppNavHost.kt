@@ -217,6 +217,19 @@ fun AppNavHost(
                 )
             }
 
+            composable(Screen.AIAssistant.route) {
+                com.shopify.carto.feature.ai_integration.ui.AIChatScreen(
+                    onProductClick = { productId ->
+                        navController.navigate(
+                            Screen.ProductDetail.createRoute(productId),
+                        )
+                    },
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
             composable(
                 route = Screen.ProductDetail.route,
                 arguments = listOf(

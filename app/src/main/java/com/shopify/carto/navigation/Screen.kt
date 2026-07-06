@@ -32,6 +32,7 @@ sealed class Screen(val route: String) {
         fun createRoute(success: Boolean, transactionId: String = "") =
             "payment_result/$success/${android.net.Uri.encode(transactionId)}"
     }
+    data object AIAssistant : Screen("ai_assistant")
 }
 
 val bottomBarRoutes = setOf(
