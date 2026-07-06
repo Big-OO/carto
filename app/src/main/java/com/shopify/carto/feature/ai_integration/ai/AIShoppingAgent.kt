@@ -2,188 +2,425 @@ package com.shopify.carto.feature.ai_integration.ai
 
 import android.util.Log
 import com.shopify.carto.BuildConfig
-import com.google.ai.client.generativeai.Chat
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.FunctionDeclaration
-import com.google.ai.client.generativeai.type.FunctionResponsePart
-import com.google.ai.client.generativeai.type.Schema
-import com.google.ai.client.generativeai.type.Tool
-import com.google.ai.client.generativeai.type.content
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.addJsonObject
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import java.util.concurrent.TimeUnit
 
 class AIShoppingAgent(
     private val appFunctionRunner: ShoppingAppFunctionRunner,
 ) {
-    private val chat: Chat by lazy {
-        GenerativeModel(
-            modelName = MODEL_NAME,
-            apiKey = BuildConfig.GEMINI_API_KEY,
-            tools = listOf(Tool(functionDeclarations())),
-            systemInstruction = content {
-                text(
-                    "You are Carto's premium AI Shopping Assistant. " +
-                    "Help users search products, compare products, generate outfits, manage cart/wishlist, and discover insights. " +
-                    "Always call appropriate App Functions rather than guessing or making up data. " +
-                    "When listing products, display their details clearly and cleanly. " +
-                    "Keep your responses friendly, helpful, and concise."
-                )
+    private val chatHistory = mutableListOf<JsonObject>()
+
+    init {
+        chatHistory.add(
+            buildJsonObject {
+                put("role", "system")
+                put("content", "You are Carto's premium AI Shopping Assistant. " +
+                        "Help users search products, compare products, generate outfits, manage cart/wishlist, and discover insights. " +
+                        "Always call appropriate App Functions rather than guessing or making up data. " +
+                        "When listing products, display their details clearly and cleanly. " +
+                        "Keep your responses friendly, helpful, and concise.")
             }
-        ).startChat()
+        )
     }
 
     suspend fun sendMessage(userMessage: String, onStep: (String) -> Unit): String {
-        Log.d(TAG, "Sending message to AI: $userMessage")
-        var response = chat.sendMessage(userMessage)
+        Log.d(TAG, "Sending message to Custom AI: $userMessage")
+        chatHistory.add(
+            buildJsonObject {
+                put("role", "user")
+                put("content", userMessage)
+            }
+        )
 
-        while (response.functionCalls.isNotEmpty()) {
-            val resultParts = response.functionCalls.map { call ->
-                val stepMessage = when (call.name) {
-                    "searchProducts" -> "Searching products..."
-                    "getProductDetails" -> "Fetching product details..."
-                    "addToCart" -> "Adding product to cart..."
-                    "removeFromCart" -> "Removing product from cart..."
-                    "updateQuantity" -> "Updating quantity..."
-                    "showCart" -> "Loading cart..."
-                    "addToWishlist" -> "Adding product to wishlist..."
-                    "removeFromWishlist" -> "Removing product from wishlist..."
-                    "showWishlist" -> "Loading wishlist..."
-                    "compareProducts" -> "Comparing products..."
-                    "generateOutfit" -> "Generating outfit..."
-                    else -> "Processing request..."
-                }
-                onStep(stepMessage)
+        var finished = false
+        var assistantContent = ""
 
-                val mappedArgs: Map<String, JsonElement> = call.args.mapValues { (_, value) ->
-                    if (value == null) {
-                        JsonNull
-                    } else {
-                        val intValue = value.toIntOrNull()
-                        if (intValue != null) {
-                            JsonPrimitive(intValue)
-                        } else {
-                            val longValue = value.toLongOrNull()
-                            if (longValue != null) {
-                                JsonPrimitive(longValue)
-                            } else {
-                                val booleanValue = value.toBooleanStrictOrNull()
-                                if (booleanValue != null) {
-                                    JsonPrimitive(booleanValue)
-                                } else {
-                                    JsonPrimitive(value)
-                                }
+        while (!finished) {
+            val requestBody = buildJsonObject {
+                put("model", "gpt-oss:120b")
+                put("messages", buildJsonArray { chatHistory.forEach { add(it) } })
+                put("tools", getToolsJson())
+                put("stream", false)
+            }
+
+            val responseString = callCustomApi(requestBody)
+            Log.d(TAG, "Response from Custom AI: $responseString")
+
+            val responseObj = Json.parseToJsonElement(responseString).jsonObject
+            val messageObj = responseObj["message"]?.jsonObject 
+                ?: responseObj["choices"]?.jsonArray?.firstOrNull()?.jsonObject?.get("message")?.jsonObject
+                ?: throw IllegalStateException("Could not parse message from response: $responseString")
+
+            val toolCalls = messageObj["tool_calls"]?.jsonArray
+
+            if (toolCalls != null && toolCalls.isNotEmpty()) {
+                // Append the assistant message with tool calls to history
+                chatHistory.add(messageObj)
+
+                for (toolCall in toolCalls) {
+                    val callObj = toolCall.jsonObject
+                    val functionObj = callObj["function"]?.jsonObject ?: continue
+                    val functionName = functionObj["name"]?.jsonPrimitive?.content ?: continue
+
+                    // Parse arguments safely (supporting both JSON Object and String-encoded JSON)
+                    val argsElement = functionObj["arguments"] ?: buildJsonObject {}
+                    val rawArgsMap = when (argsElement) {
+                        is JsonObject -> argsElement
+                        is JsonPrimitive -> {
+                            try {
+                                Json.parseToJsonElement(argsElement.content).jsonObject
+                            } catch (e: Exception) {
+                                buildJsonObject {}
                             }
+                        }
+                        else -> buildJsonObject {}
+                    }
+
+                    val sanitizedArgs = sanitizeJsonMap(rawArgsMap)
+
+                    val stepMessage = when (functionName) {
+                        "searchProducts" -> "Searching products..."
+                        "getProductDetails" -> "Fetching product details..."
+                        "addToCart" -> "Adding product to cart..."
+                        "removeFromCart" -> "Removing product from cart..."
+                        "updateQuantity" -> "Updating quantity..."
+                        "showCart" -> "Loading cart..."
+                        "addToWishlist" -> "Adding product to wishlist..."
+                        "removeFromWishlist" -> "Removing product from wishlist..."
+                        "showWishlist" -> "Loading wishlist..."
+                        "compareProducts" -> "Comparing products..."
+                        "generateOutfit" -> "Generating outfit..."
+                        else -> "Processing request..."
+                    }
+                    onStep(stepMessage)
+
+                    val result = appFunctionRunner.execute(functionName, sanitizedArgs)
+
+                    val toolCallId = callObj["id"]?.jsonPrimitive?.content ?: ""
+                    chatHistory.add(
+                        buildJsonObject {
+                            put("role", "tool")
+                            put("name", functionName)
+                            put("tool_call_id", toolCallId)
+                            put("content", result)
+                        }
+                    )
+                }
+            } else {
+                assistantContent = messageObj["content"]?.jsonPrimitive?.content ?: ""
+                chatHistory.add(messageObj)
+                finished = true
+            }
+        }
+
+        return if (assistantContent.isNotBlank()) assistantContent else "(The assistant did not return any text.)"
+    }
+
+    private suspend fun callCustomApi(body: JsonObject): String = withContext(Dispatchers.IO) {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+        val baseUrl = if (BuildConfig.AI_API_BASE_URL.isNotBlank()) {
+            BuildConfig.AI_API_BASE_URL.trimEnd('/')
+        } else {
+            "https://ollama.com"
+        }
+        val url = "$baseUrl/api/chat"
+
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val requestBody = body.toString().toRequestBody(mediaType)
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .addHeader("Authorization", "Bearer ${BuildConfig.AI_API_KEY}")
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            val bodyString = response.body?.string() ?: ""
+            if (!response.isSuccessful) {
+                throw IllegalStateException("API error: ${response.code} ${response.message}\n$bodyString")
+            }
+            bodyString
+        }
+    }
+
+    private fun sanitizeJsonMap(map: Map<String, JsonElement>): Map<String, JsonElement> {
+        return map.mapValues { (_, value) ->
+            if (value is JsonPrimitive && value.isString) {
+                val strContent = value.content
+                val intValue = strContent.toIntOrNull()
+                if (intValue != null) {
+                    JsonPrimitive(intValue)
+                } else {
+                    val longValue = strContent.toLongOrNull()
+                    if (longValue != null) {
+                        JsonPrimitive(longValue)
+                    } else {
+                        val booleanValue = strContent.toBooleanStrictOrNull()
+                        if (booleanValue != null) {
+                            JsonPrimitive(booleanValue)
+                        } else {
+                            value
                         }
                     }
                 }
-
-                val result = appFunctionRunner.execute(call.name, mappedArgs)
-                FunctionResponsePart(call.name, org.json.JSONObject().put("result", result))
+            } else {
+                value
             }
-
-            response = chat.sendMessage(
-                content(role = "function") { resultParts.forEach { part(it) } },
-            )
         }
-
-        return response.text ?: "(The assistant did not return any text.)"
     }
 
-    private fun functionDeclarations(): List<FunctionDeclaration> = listOf(
-        FunctionDeclaration(
-            name = "searchProducts",
-            description = "Search for products in the store by keyword, category, vendor, brand, or query.",
-            parameters = listOf(
-                Schema.str("query", "The query or keyword to search for.")
-            ),
-            requiredParameters = listOf("query")
-        ),
-        FunctionDeclaration(
-            name = "getProductDetails",
-            description = "Retrieve details for a single product by its unique product ID.",
-            parameters = listOf(
-                Schema.int("productId", "The numeric ID of the product.")
-            ),
-            requiredParameters = listOf("productId")
-        ),
-        FunctionDeclaration(
-            name = "addToCart",
-            description = "Add a product variant to the shopping cart by product ID, with size and color (pass empty or 'none' if unspecified).",
-            parameters = listOf(
-                Schema.int("productId", "The numeric ID of the product."),
-                Schema.int("quantity", "The quantity to add."),
-                Schema.str("size", "The size preference (e.g. S, M, L, or 'none')."),
-                Schema.str("color", "The color preference (e.g. Black, White, or 'none').")
-            ),
-            requiredParameters = listOf("productId", "quantity", "size", "color")
-        ),
-        FunctionDeclaration(
-            name = "removeFromCart",
-            description = "Remove a line item from the shopping cart using its unique line ID.",
-            parameters = listOf(
-                Schema.str("lineId", "The unique line ID of the item in the cart.")
-            ),
-            requiredParameters = listOf("lineId")
-        ),
-        FunctionDeclaration(
-            name = "updateQuantity",
-            description = "Update the quantity of a product in the shopping cart.",
-            parameters = listOf(
-                Schema.str("lineId", "The unique line ID of the item in the cart."),
-                Schema.int("quantity", "The new quantity.")
-            ),
-            requiredParameters = listOf("lineId", "quantity")
-        ),
-        FunctionDeclaration(
-            name = "showCart",
-            description = "Retrieve and list all products currently in the user's shopping cart.",
-            parameters = emptyList(),
-            requiredParameters = emptyList()
-        ),
-        FunctionDeclaration(
-            name = "addToWishlist",
-            description = "Add a product to the user's wishlist/favorites using its product ID.",
-            parameters = listOf(
-                Schema.int("productId", "The numeric ID of the product.")
-            ),
-            requiredParameters = listOf("productId")
-        ),
-        FunctionDeclaration(
-            name = "removeFromWishlist",
-            description = "Remove a product from the user's wishlist/favorites using its product ID.",
-            parameters = listOf(
-                Schema.int("productId", "The numeric ID of the product.")
-            ),
-            requiredParameters = listOf("productId")
-        ),
-        FunctionDeclaration(
-            name = "showWishlist",
-            description = "Retrieve and list all products in the user's wishlist/favorites.",
-            parameters = emptyList(),
-            requiredParameters = emptyList()
-        ),
-        FunctionDeclaration(
-            name = "compareProducts",
-            description = "Compare details, price, vendor, stock, sizes, and colors between two products using their IDs.",
-            parameters = listOf(
-                Schema.int("productId1", "The ID of the first product."),
-                Schema.int("productId2", "The ID of the second product.")
-            ),
-            requiredParameters = listOf("productId1", "productId2")
-        ),
-        FunctionDeclaration(
-            name = "generateOutfit",
-            description = "Generate a matching style outfit recommendation containing top, bottom, and shoes based on a preference.",
-            parameters = listOf(
-                Schema.str("preference", "The style preference, e.g. casual, sporty, formal.")
-            ),
-            requiredParameters = listOf("preference")
-        )
-    )
+    private fun getToolsJson(): JsonArray {
+        return buildJsonArray {
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "searchProducts")
+                    put("description", "Search for products in the store by keyword, category, vendor, brand, or query.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("query") {
+                                put("type", "string")
+                                put("description", "The query or keyword to search for.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("query")
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "getProductDetails")
+                    put("description", "Retrieve details for a single product by its unique product ID.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("productId") {
+                                put("type", "integer")
+                                put("description", "The numeric ID of the product.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("productId")
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "addToCart")
+                    put("description", "Add a product variant to the shopping cart by product ID, with size and color (pass empty or 'none' if unspecified).")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("productId") {
+                                put("type", "integer")
+                                put("description", "The numeric ID of the product.")
+                            }
+                            putJsonObject("quantity") {
+                                put("type", "integer")
+                                put("description", "The quantity to add.")
+                            }
+                            putJsonObject("size") {
+                                put("type", "string")
+                                put("description", "The size preference (e.g. S, M, L, or 'none').")
+                            }
+                            putJsonObject("color") {
+                                put("type", "string")
+                                put("description", "The color preference (e.g. Black, White, or 'none').")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("productId")
+                            add("quantity")
+                            add("size")
+                            add("color")
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "removeFromCart")
+                    put("description", "Remove a line item from the shopping cart using its unique line ID.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("lineId") {
+                                put("type", "string")
+                                put("description", "The unique line ID of the item in the cart.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("lineId")
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "updateQuantity")
+                    put("description", "Update the quantity of a product in the shopping cart.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("lineId") {
+                                put("type", "string")
+                                put("description", "The unique line ID of the item in the cart.")
+                            }
+                            putJsonObject("quantity") {
+                                put("type", "integer")
+                                put("description", "The new quantity.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("lineId")
+                            add("quantity")
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "showCart")
+                    put("description", "Retrieve and list all products currently in the user's shopping cart.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") { }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "addToWishlist")
+                    put("description", "Add a product to the user's wishlist/favorites using its product ID.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("productId") {
+                                put("type", "integer")
+                                put("description", "The numeric ID of the product.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("productId")
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "removeFromWishlist")
+                    put("description", "Remove a product from the user's wishlist/favorites using its product ID.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("productId") {
+                                put("type", "integer")
+                                put("description", "The numeric ID of the product.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("productId")
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "showWishlist")
+                    put("description", "Retrieve and list all products in the user's wishlist/favorites.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") { }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "compareProducts")
+                    put("description", "Compare details, price, vendor, stock, sizes, and colors between two products using their IDs.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("productId1") {
+                                put("type", "integer")
+                                put("description", "The ID of the first product.")
+                            }
+                            putJsonObject("productId2") {
+                                put("type", "integer")
+                                put("description", "The ID of the second product.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("productId1")
+                            add("productId2")
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "generateOutfit")
+                    put("description", "Generate a matching style outfit recommendation containing top, bottom, and shoes based on a preference.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("preference") {
+                                put("type", "string")
+                                put("description", "The style preference, e.g. casual, sporty, formal.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("preference")
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     companion object {
-        const val MODEL_NAME = "gemini-1.5-flash"
         private const val TAG = "AIShoppingAgent"
     }
 }

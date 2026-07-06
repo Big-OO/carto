@@ -1,6 +1,5 @@
 [versions]
 appfunctions = "1.0.0-alpha09"
-generativeai = "0.9.0"
 compileSdk = "37"
 kotlinxSerializationJson = "1.11.0"
 minSdk = "24"
@@ -98,7 +97,6 @@ hilt-lifecycle-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-view
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
-generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
