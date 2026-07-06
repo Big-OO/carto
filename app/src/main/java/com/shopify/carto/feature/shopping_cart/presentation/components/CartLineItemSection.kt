@@ -93,8 +93,9 @@ fun CartLineItemSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val formatter = com.shopify.carto.feature.currency.presentation.format.LocalCurrencyFormatter.current
                 Text(
-                    text = formatPrice(line.price, currency),
+                    text = formatter.format(line.price),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -145,13 +146,4 @@ private fun StepperIcon(icon: ImageVector, onClick: () -> Unit) {
         Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(14.dp))
     }
 }
-
-private fun formatPrice(price: Double, currencyCode: String): String {
-    return try {
-        val format = NumberFormat.getCurrencyInstance(Locale.getDefault())
-        format.currency = Currency.getInstance(currencyCode)
-        format.format(price)
-    } catch (exception: IllegalArgumentException) {
-        "$currencyCode ${"%.2f".format(price)}"
-    }
-}
+
