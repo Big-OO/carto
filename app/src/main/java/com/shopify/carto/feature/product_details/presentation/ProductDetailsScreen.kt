@@ -1,6 +1,7 @@
 package com.shopify.carto.feature.product_details.presentation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,10 +37,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.shopify.carto.R
 import com.shopify.carto.feature.product_details.presentation.components.FavoriteToggleButton
 import com.shopify.carto.feature.product_details.presentation.components.ProductDetailsColorSection
 import com.shopify.carto.feature.product_details.presentation.components.ProductDetailsDescriptionSection
@@ -204,12 +207,20 @@ private fun ProductDetailsContent(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
         )
     }
+    val removeTitle = stringResource(R.string.productDetailsRemoveFromCart)
+    val removeMessage = stringResource(R.string.productDetailsRemoveFromCartConfirmation)
+    val removeButton = stringResource(R.string.cartRemove)
+    val cancelButton = stringResource(R.string.cartCancel)
 
     if (showRemoveDialog) {
         AlertDialog(
             onDismissRequest = { showRemoveDialog = false },
-            title = { Text(text = "Remove from Cart") },
-            text = { Text(text = "Are you sure you want to remove this item from your cart?") },
+            title = {
+                Text(removeTitle)
+            },
+            text = {
+                Text(removeMessage)
+            },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -217,16 +228,43 @@ private fun ProductDetailsContent(
                         showRemoveDialog = false
                     }
                 ) {
-                    Text("Remove")
+                    Text(removeButton)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showRemoveDialog = false }) {
-                    Text("Cancel")
+                TextButton(
+                    onClick = { showRemoveDialog = false }
+                ) {
+                    Text(cancelButton)
                 }
             }
         )
     }
+//
+//    if (showRemoveDialog) {
+//        AlertDialog(
+//            onDismissRequest = { showRemoveDialog = false },
+//            title = { Text(text = stringResource(id = R.string.productDetailsRemoveFromCart)) },
+//            text = { Text(text = stringResource(id = R.string.productDetailsRemoveFromCartConfirmation)) },
+//            confirmButton = {
+//                TextButton(
+//                    onClick = {
+//                        onEvent(ProductDetailsEvent.OnRemoveFromCartConfirm)
+//                        showRemoveDialog = false
+//                    }
+//                ) {
+//                    Text(stringResource(id = R.string.cartRemove))
+//                    // add log here to print the current value of string
+//                    Log.d("TAG", "ProductDetailsContent: ${R.string.cartRemove}")
+//                }
+//            },
+//            dismissButton = {
+//                TextButton(onClick = { showRemoveDialog = false }) {
+//                    Text(stringResource(id = R.string.cartCancel))
+//                }
+//            }
+//        )
+//    }
 }
 
 @Composable
@@ -260,7 +298,7 @@ private fun ErrorState(
                 textAlign = TextAlign.Center
             )
             TextButton(onClick = onRetryClick) {
-                Text(text = "Try Again")
+                Text(text = stringResource(id = R.string.productDetailsTryAgain))
             }
         }
     }
