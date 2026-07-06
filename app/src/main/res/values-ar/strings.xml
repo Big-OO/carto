@@ -194,5 +194,56 @@
     <string name="register_phone_number_country_code">+٢٠</string>
 
     <string name="snackbar_message_product_added_to_favorites_guest">من فضلك سجل دخول للاضافه في المحفوظات</string>
+    <string name="order_history_screen_title">My Orders</string>
+    <string name="order_history_no_orders_title">No %1$s Orders!</string>
+    <string name="order_histroy_no_orders_subtitle">You don\'t have any %1$s orders at this time.</string>
+
+
+    <string name="order_history_ongoing_tab">جارية</string>
+    <string name="order_history_completed_tab">مكتملة</string>
+    <string name="order_history_see_details">عرض التفاصيل</string>
+    <string name="order_history_before_discount">قبل الخصم: %1$s</string>
+    <string name="order_history_back_content_description">رجوع</string>
+    <string name="order_history_notifications_content_description">الإشعارات</string>
+    <string name="order_history_error_missing_customer">يرجى تسجيل الدخول مرة أخرى لعرض طلباتك.</string>
+    <string name="order_history_error_configuration">إعدادات طلبات شوبيفاي غير مكتملة.</string>
+    <string name="order_history_error_unauthorized">يرجى تسجيل الدخول مرة أخرى لعرض طلباتك.</string>
+    <string name="order_history_error_network">تحقق من اتصالك بالإنترنت وحاول مرة أخرى.</string>
+    <string name="order_history_error_server">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="order_history_error_not_found">لم نتمكن من العثور على طلباتك.</string>
+    <string name="order_history_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="order_details_title">تفاصيل الطلب</string>
+    <string name="order_details_back_content_description">رجوع</string>
+    <string name="order_details_products_title">المنتجات</string>
+    <string name="order_details_payment_summary_title">ملخص الدفع</string>
+    <string name="order_details_extra_info_title">تفاصيل إضافية</string>
+    <string name="order_details_shipping_title">الشحن</string>
+    <string name="order_details_subtotal">المجموع الفرعي</string>
+    <string name="order_details_discount">الخصم</string>
+    <string name="order_details_shipping">الشحن</string>
+    <string name="order_details_tax">الضريبة</string>
+    <string name="order_details_total">الإجمالي</string>
+    <string name="order_details_payment_method">طريقة الدفع</string>
+    <string name="order_details_coupons">الكوبونات</string>
+    <string name="order_details_confirmation_number">رقم التأكيد</string>
+    <string name="order_details_lifecycle">حالة الطلب</string>
+    <string name="order_details_variant_and_quantity">%1$s · الكمية %2$s</string>
+    <string name="order_details_sku">SKU: %1$s</string>
+    <string name="order_details_cancel_order">إلغاء الطلب</string>
+    <string name="order_details_remove_from_history">إزالة من السجل</string>
+    <string name="order_details_cancel_dialog_title">إلغاء الطلب؟</string>
+    <string name="order_details_cancel_dialog_message">سيتم طلب إلغاء الطلب في شوبيفاي. لا يمكن التراجع عن هذا الإجراء من التطبيق.</string>
+    <string name="order_details_remove_dialog_title">إزالة الطلب؟</string>
+    <string name="order_details_remove_dialog_message">سيتم إخفاء الطلب من سجل التطبيق فقط، ولن يتم حذفه من شوبيفاي.</string>
+    <string name="order_details_confirm_negative_action">تأكيد</string>
+    <string name="order_details_order_cancelled_success">تم إلغاء الطلب بنجاح.</string>
+    <string name="order_details_order_removed_success">تمت إزالة الطلب من السجل.</string>
+    <string name="order_details_error_configuration">إعدادات طلبات شوبيفاي غير مكتملة.</string>
+    <string name="order_details_error_unauthorized">يرجى تسجيل الدخول مرة أخرى لعرض هذا الطلب.</string>
+    <string name="order_details_error_network">تحقق من اتصالك بالإنترنت وحاول مرة أخرى.</string>
+    <string name="order_details_error_server">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="order_details_error_not_found">لم نتمكن من العثور على هذا الطلب.</string>
+    <string name="order_details_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="accountMyOrdersTitle">طلباتي</string>
 
 </resources>
