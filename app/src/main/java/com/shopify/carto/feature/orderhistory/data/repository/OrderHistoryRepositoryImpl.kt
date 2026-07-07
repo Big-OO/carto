@@ -3,7 +3,7 @@ package com.shopify.carto.feature.orderhistory.data.repository
 import com.shopify.carto.core.network.config.ShopifyConfig
 import com.shopify.carto.feature.orderhistory.data.local.HiddenOrdersLocalDataSource
 import com.shopify.carto.feature.orderhistory.data.mapper.toDomain
-import com.shopify.carto.feature.orderhistory.data.remote.network.OrderHistoryNetworkDataSource
+import com.shopify.carto.feature.orderhistory.data.remote.datasource.OrderHistoryRemoteDataSource
 import com.shopify.carto.feature.orderhistory.domain.model.OrderHistoryFailure
 import com.shopify.carto.feature.orderhistory.domain.model.OrderHistoryFailureType
 import com.shopify.carto.feature.orderhistory.domain.model.OrderHistoryItem
@@ -14,13 +14,13 @@ import java.io.IOException
 import javax.inject.Inject
 
 class OrderHistoryRepositoryImpl @Inject constructor(
-    private val networkDataSource: OrderHistoryNetworkDataSource,
+    private val remoteDataSource: OrderHistoryRemoteDataSource,
     private val hiddenOrdersLocalDataSource: HiddenOrdersLocalDataSource,
     private val config: ShopifyConfig,
 ) : OrderHistoryRepository {
 
     override suspend fun getCustomerOrders(customerId: Long): OrderHistoryResult<List<OrderHistoryItem>> {
-        if (!config.isAdminRestValid) {
+        if (!config.isAdminGraphQlValid) {
             return OrderHistoryResult.Failure(
                 OrderHistoryFailure(
                     type = OrderHistoryFailureType.ShopifyConfigurationMissing,
@@ -30,23 +30,11 @@ class OrderHistoryRepositoryImpl @Inject constructor(
         }
 
         return try {
-            val response = networkDataSource.getCustomerOrders(
-                version = config.apiVersion,
+            val body = remoteDataSource.getCustomerOrders(
                 customerGid = "gid://shopify/Customer/$customerId",
                 first = ORDER_LIMIT,
             )
-
-            if (!response.isSuccessful) {
-                return OrderHistoryResult.Failure(
-                    OrderHistoryFailure(
-                        type = response.code().toFailureType(),
-                        message = "Failed to load customer orders. code=${response.code()}, body=${response.errorBody()?.string().orEmpty()}",
-                    )
-                )
-            }
-
-            val body = response.body()
-            val graphQlError = body?.errors.orEmpty().firstOrNull()?.message
+            val graphQlError = body.errors.orEmpty().firstOrNull()?.message
             if (!graphQlError.isNullOrBlank()) {
                 return OrderHistoryResult.Failure(
                     OrderHistoryFailure(
@@ -57,7 +45,7 @@ class OrderHistoryRepositoryImpl @Inject constructor(
             }
 
             val orders = body
-                ?.data
+                .data
                 ?.customer
                 ?.orders
                 ?.nodes
@@ -97,15 +85,6 @@ class OrderHistoryRepositoryImpl @Inject constructor(
                     message = "Failed to hide order locally: ${exception::class.java.name}. ${exception.message.orEmpty()}",
                 )
             )
-        }
-    }
-
-    private fun Int.toFailureType(): OrderHistoryFailureType {
-        return when (this) {
-            401, 403 -> OrderHistoryFailureType.Unauthorized
-            404 -> OrderHistoryFailureType.NotFound
-            in 500..599 -> OrderHistoryFailureType.Server
-            else -> OrderHistoryFailureType.Unknown
         }
     }
 
