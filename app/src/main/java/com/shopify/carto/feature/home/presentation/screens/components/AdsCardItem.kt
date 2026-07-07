@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.shopify.carto.feature.home.presentation.screens.model.AdUi
@@ -51,7 +52,7 @@ fun AdsCardItem(
                 ) {
 
                     Text(
-                        ad.title,
+                        text = stringResource(ad.title),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
@@ -60,7 +61,7 @@ fun AdsCardItem(
                     Spacer(Modifier.height(6.dp))
 
                     Text(
-                        ad.subtitle,
+                        text = stringResource(ad.subtitle),
                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -78,7 +79,7 @@ fun AdsCardItem(
                         )
                     ) {
                         Text(
-                            ad.buttonText,
+                            text = stringResource(ad.buttonText),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }

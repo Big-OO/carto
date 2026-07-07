@@ -43,7 +43,7 @@ fun ProductDetailsPriceSection(
     ) {
         Column {
             Text(
-                text = "Price",
+                text = stringResource(id = R.string.productDetailsPrice),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -88,13 +88,13 @@ fun ProductDetailsPriceSection(
 
             Text(
                 text = when {
-                    isOutOfStock -> "Out of Stock"
-                    isInCart -> "In Cart"
-                    else -> "Add to Cart"
+                    isOutOfStock -> stringResource(id = R.string.productDetailsOutOfStock)
+                    isInCart -> stringResource(id = R.string.productDetailsInCart)
+                    else -> stringResource(id = R.string.productDetailsAddToCart)
                 },
                 fontWeight = FontWeight.SemiBold
             )
         }
     }
 }
-
+

@@ -25,9 +25,14 @@ import com.shopify.carto.core.components.ProductCard
 import com.shopify.carto.feature.favorite.presentation.components.FavoriteProductCardPlaceholder
 import com.shopify.carto.feature.home.presentation.screens.EmptyCategoryView
 import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import com.shopify.carto.R
+import com.shopify.carto.feature.favorite.domain.model.FavoriteProduct
+import com.shopify.carto.core.utils.ConfirmationDialog
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,6 +43,7 @@ fun SavedScreen(
 ) {
     val favorites by viewModel.favorites.collectAsStateWithLifecycle()
     val isInitialLoading by viewModel.isInitialLoading.collectAsStateWithLifecycle()
+    var productPendingRemoval by remember { mutableStateOf<FavoriteProduct?>(null) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -82,17 +88,27 @@ fun SavedScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(favorites, key = { it.productId }) { product ->
-                        ProductCard(
-                            name = product.name,
-                            price = product.price,
-                            imageUrl = product.imageUrl,
-                            isFavorite = true,
-                            onClick = { onProductClick(product.productId) },
-                            onFavoriteClick = { viewModel.removeFavorite(product) },
+                        FavoriteProductCard(
+                            product = product,
+                            onClick = { onProductClick(it.productId) },
+                            onRemoveClick = { productPendingRemoval = it },
                         )
                     }
                 }
             }
+        }
+        productPendingRemoval?.let { product ->
+            ConfirmationDialog(
+                title = stringResource(id = R.string.removeFavoriteTitle),
+                message = stringResource(id = R.string.removeFavoriteMessage),
+                confirmText = stringResource(id = R.string.removeFavoriteConfirm),
+                cancelText = stringResource(id = R.string.removeFavoriteCancel),
+                onConfirm = {
+                    viewModel.removeFavorite(product)
+                    productPendingRemoval = null
+                },
+                onDismiss = { productPendingRemoval = null },
+            )
         }
     }
 }

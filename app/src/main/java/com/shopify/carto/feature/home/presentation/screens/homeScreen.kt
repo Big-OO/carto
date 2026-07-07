@@ -1,5 +1,3 @@
-//package com.shopify.carto.feature.home.presentation.screens
-//
 package com.shopify.carto.feature.home.presentation.screens
 
 import androidx.compose.foundation.background

@@ -13,8 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.shopify.carto.R
 
 @Composable
 fun CartSummarySection(
@@ -29,12 +31,12 @@ fun CartSummarySection(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        SummaryRow(label = "Sub-total", value = subtotal, currency = currency)
-        SummaryRow(label = "Shipping fee", value = shippingFee, currency = currency)
+        SummaryRow(label = stringResource(id = R.string.cartSubTotal), value = subtotal, currency = currency)
+        SummaryRow(label = stringResource(id = R.string.cartShippingFee), value = shippingFee, currency = currency)
 
         HorizontalDivider()
 
-        SummaryRow(label = "Total", value = total, currency = currency, emphasize = true)
+        SummaryRow(label = stringResource(id = R.string.cartTotal), value = total, currency = currency, emphasize = true)
 
         Button(
             onClick = onCheckoutClick,
@@ -42,7 +44,7 @@ fun CartSummarySection(
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black, contentColor = Color.White),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Go To Checkout", fontWeight = FontWeight.SemiBold)
+            Text(text = stringResource(id = R.string.cartGoToCheckout), fontWeight = FontWeight.SemiBold)
         }
     }
 }
