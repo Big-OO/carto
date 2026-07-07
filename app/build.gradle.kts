@@ -1,4 +1,18 @@
 import java.util.Properties
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use(::load)
+    }
+}
+
+fun localProperty(key: String, defaultValue: String = ""): String {
+    return localProperties.getProperty(key) ?: defaultValue
+}
+
+fun String.asBuildConfigString(): String = "\"${replace("\\", "\\\\").replace("\"", "\\\"")}\""
+
 val packageName: String = "com.shopify.carto"
 
 
@@ -19,20 +33,24 @@ apollo {
         schemaFile.set(file("src/main/graphql/shopify/schema.json"))
         packageNamesFromFilePaths()
     }
-}
 
-val localProperties = Properties().apply {
-    val file = rootProject.file("local.properties")
-    if (file.exists()) {
-        file.inputStream().use(::load)
+    service("shopifyAdmin") {
+        packageName.set("com.shopify.carto.core.graphql.admin")
+        srcDir("src/main/graphql/admin")
+        schemaFile.set(file("src/main/graphql/admin/schema.json"))
+
+        introspection {
+            endpointUrl.set("https://mad46-and7.myshopify.com/admin/api/2026-01/graphql.json")
+            schemaFile.set(file("src/main/graphql/admin/schema.json"))
+            headers.put(
+                "X-Shopify-Access-Token",
+                localProperty("shopify.admin.access.token")
+            )
+        }
+
+        packageNamesFromFilePaths()
     }
 }
-
-fun localProperty(key: String, defaultValue: String = ""): String {
-    return localProperties.getProperty(key) ?: defaultValue
-}
-
-fun String.asBuildConfigString(): String = "\"${replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")

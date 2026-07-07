@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.LocalMall
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Payments
+import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -175,6 +177,14 @@ fun ProfileSuccessContent(
             }
 
             Spacer(Modifier.height(24.dp))
+
+            SecondaryButton(
+                text = stringResource(R.string.accountMyOrdersTitle),
+                icon = Icons.AutoMirrored.Outlined.ReceiptLong,
+                color = CartoTheme.colors.primary,
+            ) { onEvent(ProfileEvent.OrdersClicked) }
+
+            Spacer(Modifier.height(12.dp))
 
             SecondaryButton(
                 text = stringResource(R.string.accountLogoutBtnTitle),

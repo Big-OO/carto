@@ -110,12 +110,6 @@ fun SettingsScreen(
                             )
                             HorizontalDivider(color = CartoTheme.colors.outline)
                             SettingsItem(
-                                title = stringResource(R.string.settingsOrderHistory),
-                                icon = Icons.Outlined.History,
-                                onClick = { }
-                            )
-                            HorizontalDivider(color = CartoTheme.colors.outline)
-                            SettingsItem(
                                 title = stringResource(R.string.settingsPaymentMethods),
                                 icon = Icons.Outlined.Payment,
                                 onClick = {
