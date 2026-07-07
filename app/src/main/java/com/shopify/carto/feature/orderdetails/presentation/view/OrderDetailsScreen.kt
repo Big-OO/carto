@@ -50,9 +50,19 @@ fun OrderDetailsScreen(
         viewModel.effects.collect { effect ->
             when (effect) {
                 OrderDetailsEffect.NavigateBack -> onBackClick()
-                is OrderDetailsEffect.ShowError -> snackbarHostState.showSnackbar(resources.getString(effect.type.messageRes()))
-                OrderDetailsEffect.ShowOrderCancelled -> snackbarHostState.showSnackbar(orderCancelledMessage)
-                OrderDetailsEffect.ShowOrderRemoved -> snackbarHostState.showSnackbar(orderRemovedMessage)
+                is OrderDetailsEffect.ShowError -> snackbarHostState.showSnackbar(
+                    resources.getString(
+                        effect.type.messageRes()
+                    )
+                )
+
+                OrderDetailsEffect.ShowOrderCancelled -> snackbarHostState.showSnackbar(
+                    orderCancelledMessage
+                )
+
+                OrderDetailsEffect.ShowOrderRemoved -> snackbarHostState.showSnackbar(
+                    orderRemovedMessage
+                )
             }
         }
     }
@@ -65,8 +75,7 @@ fun OrderDetailsScreen(
         OrderDetailsContent(
             state = state,
             interactionListener = viewModel,
-            modifier = Modifier
-                .padding(paddingValues),
+            modifier = Modifier.padding(paddingValues),
         )
     }
 }
@@ -88,40 +97,45 @@ private fun OrderDetailsContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 24.dp),
+            .background(MaterialTheme.colorScheme.background),
     ) {
         OrderDetailsTopBar(onBackClick = interactionListener::onBackClicked)
 
-        AnimatedContent(
-            targetState = Triple(state.isLoading, state.error, state.order),
-            label = "orderDetailsContent",
-            modifier = Modifier.fillMaxSize(),
-        ) { (isLoading, error, order) ->
-            when {
-                isLoading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+        ) {
+            AnimatedContent(
+                targetState = Triple(state.isLoading, state.error, state.order),
+                label = "orderDetailsContent",
+                modifier = Modifier.fillMaxSize(),
+            ) { (isLoading, error, order) ->
+                when {
+                    isLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                        }
                     }
-                }
 
-                error != null -> {
-                    OrderDetailsErrorContent(
-                        error = error,
-                        onRetryClick = interactionListener::onRetryClicked,
-                    )
-                }
+                    error != null -> {
+                        OrderDetailsErrorContent(
+                            error = error,
+                            onRetryClick = interactionListener::onRetryClicked,
+                        )
+                    }
 
-                order != null -> {
-                    OrderDetailsSuccessContent(
-                        order = order,
-                        isProcessingAction = state.isProcessingAction,
-                        onCancelOrderClick = interactionListener::onCancelOrderClicked,
-                        onHideOrderClick = interactionListener::onHideOrderClicked,
-                    )
+                    order != null -> {
+                        OrderDetailsSuccessContent(
+                            order = order,
+                            isProcessingAction = state.isProcessingAction,
+                            onCancelOrderClick = interactionListener::onCancelOrderClicked,
+                            onHideOrderClick = interactionListener::onHideOrderClicked,
+                        )
+                    }
                 }
             }
         }
