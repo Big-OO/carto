@@ -33,8 +33,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.shopify.carto.R
 import com.shopify.carto.feature.shopping_cart.domain.model.Cart
 import com.shopify.carto.feature.shopping_cart.presentation.components.CartEmptyState
 import com.shopify.carto.feature.shopping_cart.presentation.components.CartLineItemSection
@@ -62,7 +64,7 @@ fun CartScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "My Cart") }
+                title = { Text(text = stringResource(id = R.string.cartMyCart)) }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -130,8 +132,8 @@ private fun CartContent(
     if (itemToDeleteId != null) {
         AlertDialog(
             onDismissRequest = { itemToDeleteId = null },
-            title = { Text(text = "Remove Item") },
-            text = { Text(text = "Are you sure you want to remove this item from your cart?") },
+            title = { Text(text = stringResource(id = R.string.cartRemoveItem)) },
+            text = { Text(text = stringResource(id = R.string.cartRemoveItemConfirmation)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -141,14 +143,14 @@ private fun CartContent(
                         itemToDeleteId = null
                     }
                 ) {
-                    Text("Remove")
+                    Text(text = stringResource(id = R.string.cartRemove))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { itemToDeleteId = null }
                 ) {
-                    Text("Cancel")
+                    Text(text = stringResource(id = R.string.cartCancel))
                 }
             }
         )

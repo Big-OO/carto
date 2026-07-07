@@ -36,10 +36,12 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun EditProfileBottomSheetContent(
     currentName: String,
+    strings: EditProfileStrings,
     effectFlow: Flow<ProfileEffect>,
     onDismiss: () -> Unit,
     onEvent: (ProfileEvent) -> Unit
 ) {
+
     var name by remember { mutableStateOf(currentName) }
     var nameError by remember { mutableStateOf<String?>(null) }
     
@@ -70,23 +72,23 @@ fun EditProfileBottomSheetContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = stringResource(id = R.string.accountUpdateProfileTitle),
+            text = strings.updateProfileTitle,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = CartoTheme.colors.onSurface
         )
 
         TextField(
-            title = stringResource(id = R.string.accountFullNameTitle),
+            title = strings.fullNameTitle,
             value = name,
-            placeholder = stringResource(id = R.string.accountEnterYourFullNamePlaceHolder),
+            placeholder = strings.fullNamePlaceholder,
             errorMessage = nameError,
             onValueChange = { newValue ->
                 name = newValue
                 val trimmed = newValue.trim()
                 nameError = when {
-                    trimmed.length < 3 -> "Name must be at least 3 characters long"
-                    trimmed.split(Regex("\\s+")).filter { it.isNotEmpty() }.size < 2 -> "Please enter both first and last name"
+                    trimmed.length < 3 -> strings.nameTooShort
+                    trimmed.split(Regex("\\s+")).filter { it.isNotEmpty() }.size < 2 -> strings.firstLastMissing
                     else -> null
                 }
             }
@@ -112,11 +114,11 @@ fun EditProfileBottomSheetContent(
             ) {
                 CircularProgressIndicator(color = CartoTheme.colors.primary)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = stringResource(id = R.string.accountSaveChangesLoadingTitle), fontSize = 14.sp, color = Color.Gray)
+                Text(text = strings.savingChanges, fontSize = 14.sp, color = Color.Gray)
             }
         } else {
             PrimaryButton(
-                text = stringResource(id = R.string.accountSaveChangesTitle),
+                text = strings.saveChanges,
                 enabled = isSaveEnabled,
                 onCLick = {
                     isSaving = true
@@ -136,7 +138,7 @@ fun EditProfileBottomSheetContent(
                 )
             ) {
                 Text(
-                    text = stringResource(id = R.string.accountCancelTitle),
+                    text = strings.cancel,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )
@@ -146,3 +148,14 @@ fun EditProfileBottomSheetContent(
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
+
+data class EditProfileStrings(
+    val updateProfileTitle: String,
+    val fullNameTitle: String,
+    val fullNamePlaceholder: String,
+    val saveChanges: String,
+    val savingChanges: String,
+    val cancel: String,
+    val nameTooShort: String,
+    val firstLastMissing: String
+)
