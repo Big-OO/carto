@@ -136,7 +136,6 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
-        dataBinding = true
     }
 
     testOptions {
@@ -210,6 +209,15 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.lifecycle.viewmodel.compose)
     ksp(libs.hilt.compiler)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
+
+    implementation(libs.paymob.sdk)
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
@@ -233,8 +241,6 @@ dependencies {
     androidTestImplementation(libs.turbine)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
-
-    implementation(libs.paymob.sdk)
 
     implementation(libs.mapbox.android.maps)
     implementation(libs.mapbox.maps.compose)
