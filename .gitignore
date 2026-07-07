@@ -34,3 +34,4 @@ app/google-services.json
 *.hprof
 
 AGENTS.md
+.kotlin/

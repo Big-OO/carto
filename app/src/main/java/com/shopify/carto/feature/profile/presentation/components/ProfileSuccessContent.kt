@@ -57,6 +57,29 @@ fun ProfileSuccessContent(
     var visible by remember { mutableStateOf(false) }
     var showEditBottomSheet by remember { mutableStateOf(false) }
 
+    val updateProfileTitle = stringResource(R.string.accountUpdateProfileTitle)
+    val fullNameTitle = stringResource(R.string.accountFullNameTitle)
+    val fullNamePlaceholder = stringResource(R.string.accountEnterYourFullNamePlaceHolder)
+    val saveChanges = stringResource(R.string.accountSaveChangesTitle)
+    val savingChanges = stringResource(R.string.accountSaveChangesLoadingTitle)
+    val cancel = stringResource(R.string.accountCancelTitle)
+    val nameTooShort =
+        stringResource(R.string.accountErrorMsgWhenLT3WordsTitle)
+    val firstLastMissing =
+        stringResource(R.string.accountErrorMsgWhenFASNameAreMissingTitle)
+
+    val editProfileStrings = remember {
+        EditProfileStrings(
+            updateProfileTitle = updateProfileTitle,
+            fullNameTitle = fullNameTitle,
+            fullNamePlaceholder = fullNamePlaceholder,
+            saveChanges = saveChanges,
+            savingChanges = savingChanges,
+            cancel = cancel,
+            nameTooShort = nameTooShort,
+            firstLastMissing = firstLastMissing
+        )
+    }
     LaunchedEffect(Unit) {
         visible = true
     }
@@ -69,6 +92,7 @@ fun ProfileSuccessContent(
         ) {
             EditProfileBottomSheetContent(
                 currentName = profile.name,
+                strings = editProfileStrings,
                 effectFlow = effectFlow,
                 onDismiss = { showEditBottomSheet = false },
                 onEvent = onEvent

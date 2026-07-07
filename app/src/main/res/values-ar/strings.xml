@@ -196,7 +196,7 @@
     <string name="snackbar_message_product_added_to_favorites_guest">من فضلك سجل دخول للاضافه في المحفوظات</string>
     <string name="order_history_screen_title">My Orders</string>
     <string name="order_history_no_orders_title">No %1$s Orders!</string>
-    <string name="order_histroy_no_orders_subtitle">You don\'t have any %1$s orders at this time.</string>
+    <string name="order_history_no_orders_subtitle">You don\'t have any %1$s orders at this time.</string>
 
 
     <string name="order_history_ongoing_tab">جارية</string>
@@ -246,5 +246,64 @@
     <string name="order_details_error_not_found">لم نتمكن من العثور على هذا الطلب.</string>
     <string name="order_details_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
     <string name="accountMyOrdersTitle">طلباتي</string>
+
+    <string name="error_product_not_found">المنتج غير موجود</string>
+    <string name="error_network_connection">لا يوجد اتصال بالانترنت</string>
+    <string name="error_server_down">خطأ في خادم الخدمة</string>
+    <string name="error_unknown">خطأ غير معروف</string>
+    <string name="login_required">من فضلك سجل دخول أولا</string>
+
+    <!-- cart screen -->
+
+    <string name="cartMyCart">سلة التسوق</string>
+    <string name="cartRemoveItem">إزالة العنصر</string>
+    <string name="cartRemoveItemConfirmation">هل أنت متأكد أنك تريد إزالة هذا العنصر من سلة التسوق؟</string>
+    <string name="cartRemove">إزالة</string>
+    <string name="cartCancel">إلغاء</string>
+    <string name="cartSubTotal">المجموع الفرعي</string>
+    <string name="cartShippingFee">رسوم الشحن</string>
+    <string name="cartTotal">الإجمالي</string>
+    <string name="cartGoToCheckout">الانتقال إلى الدفع</string>
+    <string name="cartEmptyTitle">سلة التسوق فارغة</string>
+    <string name="cartEmptyDescription">عند إضافة المنتجات، ستظهر هنا.</string>
+
+    <!-- product details screen -->
+
+    <string name="productDetailsRemoveFromCart">إزالة من سلة التسوق</string>
+    <string name="productDetailsRemoveFromCartConfirmation">هل أنت متأكد أنك تريد إزالة هذا العنصر من سلة التسوق؟</string>
+    <string name="productDetailsTryAgain">حاول مرة أخرى</string>
+    <string name="productDetailsPrice">السعر</string>
+    <string name="productDetailsAddToCart">أضف إلى سلة التسوق</string>
+    <string name="productDetailsInCart">في سلة التسوق</string>
+    <string name="productDetailsOutOfStock">نفدت الكمية</string>
+
+    <!-- Ads sections -->
+
+    <string name="homeAdBigSaleTitle">تخفيضات كبرى</string>
+    <string name="homeAdBigSaleSubtitle">خصم يصل إلى 30٪</string>
+    <string name="homeAdBigSaleButton">تسوّق الآن</string>
+
+    <string name="homeAdNewArrivalsTitle">وصلت منتجات جديدة</string>
+    <string name="homeAdNewArrivalsSubtitle">منتجات جديدة ومميزة</string>
+    <string name="homeAdNewArrivalsButton">استكشف</string>
+
+    <string name="homeAdFreeDeliveryTitle">توصيل مجاني</string>
+    <string name="homeAdFreeDeliverySubtitle">للطلبات التي تزيد عن 50 دولارًا</string>
+    <string name="homeAdFreeDeliveryButton">احصل عليها</string>
+
+    <!-- Profile Guest Screen -->
+    <string name="profileGuestIconContentDescription">جلسة ضيف</string>
+    <string name="profileGuestTitle">الوصول إلى ملفك الشخصي</string>
+    <string name="profileGuestDescription">
+    أنت تتصفح التطبيق كضيف حالياً. يرجى تسجيل الدخول أو إنشاء حساب لعرض بيانات ملفك الشخصي، وسجل طلباتك، والعناوين المحفوظة.
+</string>
+    <string name="profileGuestLoginButton">تسجيل الدخول</string>
+    <string name="profileGuestSomethingWentWrong">حدث خطأ ما</string>
+    <string name="profileGuestRetry">إعادة المحاولة</string>
+
+    <string name="removeFavoriteTitle">إزالة العنصر؟</string>
+    <string name="removeFavoriteMessage">هل أنت متأكد أنك تريد إزالة هذا العنصر من المفضلة؟</string>
+    <string name="removeFavoriteConfirm">نعم، إزالة</string>
+    <string name="removeFavoriteCancel">لا، احتفظ به</string>
 
 </resources>

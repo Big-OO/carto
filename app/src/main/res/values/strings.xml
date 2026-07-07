@@ -25,7 +25,7 @@
 
     <!--   Search SCREEN   -->
     <string name="searchScreenTitle">Search</string>
-    <string name="searchHintTitle">Search for clothes...</string>
+    <string name="searchHintTitle">Search for clothes…</string>
 
     <!--   ERRORS   -->
     <string name="errorNoInternetTitle">No Internet Connection</string>
@@ -87,7 +87,7 @@
     <string name="accountLogoutBtnTitle">Logout</string>
     <string name="accountNotProvidedPhoneTitle">Not provided</string>
     <string name="accountSaveChangesTitle">Save Changes</string>
-    <string name="accountSaveChangesLoadingTitle">Saving updates...</string>
+    <string name="accountSaveChangesLoadingTitle">Saving updates…</string>
     <string name="accountEnterYourFullNamePlaceHolder">Enter your full name</string>
     <string name="accountErrorMsgWhenLT3WordsTitle">Name must be at least 3 characters long</string>
     <string name="accountErrorMsgWhenFASNameAreMissingTitle">Please enter both first and last name</string>
@@ -203,7 +203,7 @@
     <string name="login_required">please log in first</string>
     <string name="order_history_screen_title">My Orders</string>
     <string name="order_history_no_orders_title">No %1$s Orders!</string>
-    <string name="order_histroy_no_orders_subtitle">You don\'t have any %1$s orders at this time.</string>
+    <string name="order_history_no_orders_subtitle">You don\'t have any %1$s orders at this time.</string>
 
     <string name="order_history_ongoing_tab">Ongoing</string>
     <string name="order_history_order_label">Order %1$s</string>
@@ -252,5 +252,60 @@
     <string name="order_details_error_not_found">We could not find this order.</string>
     <string name="order_details_error_unknown">Something went wrong. Please try again later.</string>
     <string name="accountMyOrdersTitle">My Orders</string>
+
+
+    <!-- cart screen -->
+
+    <string name="cartMyCart">My Cart</string>
+    <string name="cartRemoveItem">Remove Item</string>
+    <string name="cartRemoveItemConfirmation">Are you sure you want to remove this item from your cart?</string>
+    <string name="cartRemove">Remove</string>
+    <string name="cartCancel">Cancel</string>
+    <string name="cartSubTotal">Sub-total</string>
+    <string name="cartShippingFee">Shipping fee</string>
+    <string name="cartTotal">Total</string>
+    <string name="cartGoToCheckout">Go To Checkout</string>
+    <string name="cartEmptyTitle">Your Cart Is Empty</string>
+    <string name="cartEmptyDescription">When you add products, they will appear here.</string>
+
+    <!-- product details screen -->
+
+    <string name="productDetailsRemoveFromCart">Remove from Cart</string>
+    <string name="productDetailsRemoveFromCartConfirmation">Are you sure you want to remove this item from your cart?</string>
+    <string name="productDetailsTryAgain">Try Again</string>
+    <string name="productDetailsPrice">Price</string>
+    <string name="productDetailsAddToCart">Add to Cart</string>
+    <string name="productDetailsInCart">In Cart</string>
+    <string name="productDetailsOutOfStock">Out of Stock</string>
+
+    <!-- Ads sections -->
+
+    <string name="homeAdBigSaleTitle">Big Sale</string>
+    <string name="homeAdBigSaleSubtitle">Up to 30% OFF</string>
+    <string name="homeAdBigSaleButton">Shop</string>
+
+    <string name="homeAdNewArrivalsTitle">New Arrivals</string>
+    <string name="homeAdNewArrivalsSubtitle">Fresh products</string>
+    <string name="homeAdNewArrivalsButton">Explore</string>
+
+    <string name="homeAdFreeDeliveryTitle">Free Delivery</string>
+    <string name="homeAdFreeDeliverySubtitle">Orders above $50</string>
+    <string name="homeAdFreeDeliveryButton">Grab</string>
+
+    <!-- Profile Guest Screen -->
+    <string name="profileGuestIconContentDescription">Guest Session</string>
+    <string name="profileGuestTitle">Access Your Profile</string>
+    <string name="profileGuestDescription">
+    You are currently browsing as a guest. Please log in or create an account to view your profile details, order history, and saved addresses.
+</string>
+    <string name="profileGuestLoginButton">Log In</string>
+    <string name="profileGuestSomethingWentWrong">Something went wrong</string>
+    <string name="profileGuestRetry">Retry</string>
+
+    <string name="removeFavoriteTitle">Remove item?</string>
+    <string name="removeFavoriteMessage">Are you sure you want to remove this item from your favorites?</string>
+    <string name="removeFavoriteConfirm">Yes, Remove</string>
+    <string name="removeFavoriteCancel">No, Keep it</string>
+
 
 </resources>

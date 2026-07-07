@@ -96,9 +96,9 @@ fun SearchProductResultItem(
 
 @Composable
 private fun SearchProduct.priceWithDiscountLabel() = buildAnnotatedString {
+    val formatter = com.shopify.carto.feature.currency.presentation.format.LocalCurrencyFormatter.current
     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
-        append("$ ")
-        append(price.formatPrice())
+        append(formatter.format(price))
     }
 
     val discount = discountPercentage()
@@ -120,6 +120,3 @@ private fun SearchProduct.discountPercentage(): Int? {
     return (((oldPrice - price) / oldPrice) * 100).roundToInt()
 }
 
-private fun Double.formatPrice(): String {
-    return DecimalFormat("#,###.##").format(this)
-}
