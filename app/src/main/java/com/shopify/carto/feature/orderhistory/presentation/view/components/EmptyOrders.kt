@@ -47,7 +47,7 @@ fun EmptyOrders(
         )
 
         Text(
-            text = stringResource(R.string.order_histroy_no_orders_subtitle, type),
+            text = stringResource(R.string.order_history_no_orders_subtitle, type),
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.Normal,
                 color = MaterialTheme.colorScheme.secondary,
