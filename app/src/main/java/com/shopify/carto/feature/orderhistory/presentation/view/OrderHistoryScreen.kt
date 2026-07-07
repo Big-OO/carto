@@ -43,7 +43,6 @@ import com.shopify.carto.feature.orderhistory.util.messageRes
 
 @Composable
 fun OrderHistoryScreen(
-    onBackClick: () -> Unit,
     onOrderDetailsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OrderHistoryViewModel = hiltViewModel(),
@@ -55,7 +54,6 @@ fun OrderHistoryScreen(
     LaunchedEffect(Unit) {
         viewModel.effects.collect { effect ->
             when (effect) {
-                OrderHistoryEffect.NavigateBack -> onBackClick()
                 is OrderHistoryEffect.NavigateToOrderDetails -> onOrderDetailsClick(effect.orderId)
                 is OrderHistoryEffect.ShowError -> snackbarHostState.showSnackbar(resources.getString(effect.type.messageRes()))
             }
@@ -89,7 +87,7 @@ private fun OrderHistoryContent(
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        OrderHistoryTopBar(onBackClick = interactionListener::onBackClicked)
+        OrderHistoryTopBar()
 
         Spacer(modifier = Modifier.height(10.dp))
 

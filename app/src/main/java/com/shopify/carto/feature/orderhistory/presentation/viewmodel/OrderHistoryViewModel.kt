@@ -1,6 +1,5 @@
 package com.shopify.carto.feature.orderhistory.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shopify.carto.core.session.domain.usecase.ObserveAppSessionUseCase
@@ -42,12 +41,6 @@ class OrderHistoryViewModel @Inject constructor(
     init {
         observeHiddenOrders()
         loadOrders()
-    }
-
-    override fun onBackClicked() {
-        viewModelScope.launch {
-            _effects.emit(OrderHistoryEffect.NavigateBack)
-        }
     }
 
     override fun onTabClicked(tab: OrderHistoryTabUi) {
@@ -94,7 +87,6 @@ class OrderHistoryViewModel @Inject constructor(
                 }
 
                 is OrderHistoryResult.Failure -> {
-                    Log.e(TAG, result.failure.message)
                     val errorType = result.failure.type.toUiError()
                     _state.update { it.copy(isLoading = false, error = errorType, orders = emptyList()) }
                     _effects.emit(OrderHistoryEffect.ShowError(errorType))
@@ -120,9 +112,5 @@ class OrderHistoryViewModel @Inject constructor(
             OrderHistoryFailureType.GraphQl,
             OrderHistoryFailureType.Unknown -> OrderHistoryErrorType.Unknown
         }
-    }
-
-    private companion object {
-        const val TAG = "OrderHistoryViewModel"
     }
 }

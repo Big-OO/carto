@@ -374,9 +374,6 @@ fun AppNavHost(
 
             composable(Screen.OrderHistory.route) {
                 OrderHistoryScreen(
-                    onBackClick = {
-                        navController.popBackStack()
-                    },
                     onOrderDetailsClick = { orderId ->
                         navController.navigate(Screen.OrderDetails.createRoute(orderId))
                     },
