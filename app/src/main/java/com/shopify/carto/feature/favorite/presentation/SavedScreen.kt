@@ -88,10 +88,13 @@ fun SavedScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(favorites, key = { it.productId }) { product ->
-                        FavoriteProductCard(
-                            product = product,
-                            onClick = { onProductClick(it.productId) },
-                            onRemoveClick = { productPendingRemoval = it },
+                        ProductCard(
+                            name = product.name,
+                            price = product.price,
+                            imageUrl = product.imageUrl,
+                            isFavorite = true,
+                            onClick = { onProductClick(product.productId) },
+                            onFavoriteClick = { productPendingRemoval = product },
                         )
                     }
                 }
