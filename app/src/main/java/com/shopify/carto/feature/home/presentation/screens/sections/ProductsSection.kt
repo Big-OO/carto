@@ -60,11 +60,11 @@ fun ProductsSection(
                     isGuest = isGuest,
                     isFavorite = isFavorite,
                     onClick = { onProductClick(product) },
-                    onFavoriteClick = { clicked ->
-                        if (isFavorite) {
-                            productPendingRemoval = clicked
+                    onFavoriteClick = {
+                        if (isGuest) {
+                            onGuestFavoriteClick()
                         } else {
-                            onFavoriteClick(clicked)
+                            onFavoriteClick(product)
                         }
                     },
                     onGuestFavoriteClick = onGuestFavoriteClick,
