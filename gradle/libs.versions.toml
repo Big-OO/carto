@@ -23,7 +23,7 @@ coroutines = "1.11.0"
 retrofit = "3.0.0"
 okhttp = "5.4.0"
 room = "2.8.4"
-hilt = "2.60"
+hilt = "2.60.1"
 firebaseBom = "34.15.0"
 coil = "3.5.0"
 
@@ -40,6 +40,8 @@ apollo = "5.0.1"
 mapboxMaps = "11.19.0"
 mapboxSearch = "2.18.2"
 playServicesLocation = "21.4.0"
+workRuntimeKtx = "2.11.2"
+hiltWork = "1.4.0"
 
 
 [libraries]
@@ -113,6 +115,9 @@ mapbox-android-maps = { module = "com.mapbox.maps:android-ndk27", version.ref = 
 mapbox-maps-compose = { module = "com.mapbox.extension:maps-compose", version.ref = "mapboxMaps" }
 mapbox-search-android = { module = "com.mapbox.search:mapbox-search-android-ndk27", version.ref = "mapboxSearch" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
+androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltWork" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
