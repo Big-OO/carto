@@ -127,12 +127,19 @@ class AIChatViewModel @Inject constructor(
                     }
                 }
 
+                // Strip Product ID markers
                 val cleanedText = agentResponse
                     .replace(Regex("""\(\s*Product ID:\s*\d+\s*\)""", RegexOption.IGNORE_CASE), "")
                     .replace(Regex("""\s*Product ID:\s*\d+""", RegexOption.IGNORE_CASE), "")
                     .trim()
 
-                val targetText = cleanedText.ifBlank { "I found these items for you:" }
+                // When products are found, keep ONLY the intro sentence so product info
+                // never leaks into the text bubble — it's shown exclusively in cards.
+                val targetText = if (recommendedProducts.isNotEmpty()) {
+                    extractIntroText(cleanedText)
+                } else {
+                    cleanedText.ifBlank { "Here you go!" }
+                }
                 val aiMessageId = UUID.randomUUID().toString()
 
                 val aiMessage = ChatMessage(
@@ -220,5 +227,40 @@ class AIChatViewModel @Inject constructor(
             .map { it.groupValues[1].toLong() }
             .distinct()
             .toList()
+    }
+
+    /**
+     * Extract a short intro sentence from AI response when products will be shown in cards.
+     * Strips everything after product lists start (numbered lines, bullet items, headings
+     * that describe individual products). Keeps the first human-friendly sentence only.
+     */
+    private fun extractIntroText(fullText: String): String {
+        val lines = fullText.lines()
+        val introLines = mutableListOf<String>()
+
+        // Patterns that signal start of product-detail content
+        val productDetailPatterns = listOf(
+            Regex("""^\d+[\.\)]\s+.{3,}"""),           // 1. Product name ...
+            Regex("""^[-*•]\s+\*\*.+\*\*"""),           // - **Product Name**
+            Regex("""^[-*•]\s+.+(price|EGP|USD|\$|£)""", RegexOption.IGNORE_CASE),
+            Regex("""^\*\*.+\*\*\s*[-–:]\s*"""),        // **Product**: ...
+            Regex("""^#+\s+(here|product|item|result|option|suggestion)""", RegexOption.IGNORE_CASE)
+        )
+
+        for (line in lines) {
+            val trimmed = line.trim()
+            if (trimmed.isBlank()) {
+                // Allow one blank line in intro
+                if (introLines.isNotEmpty()) break
+                continue
+            }
+            if (productDetailPatterns.any { it.containsMatchIn(trimmed) }) break
+            introLines.add(trimmed)
+            // Stop after 2 meaningful intro lines
+            if (introLines.size >= 2) break
+        }
+
+        return introLines.joinToString(" ").trim()
+            .ifBlank { "Here are some items I found for you:" }
     }
 }

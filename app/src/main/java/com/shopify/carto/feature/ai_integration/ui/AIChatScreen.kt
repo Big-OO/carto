@@ -405,98 +405,122 @@ fun MessageBubble(
     val scope = rememberCoroutineScope()
     val userShape = RoundedCornerShape(20.dp, 20.dp, 4.dp, 20.dp)
     val aiShape   = RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp)
+    val hasProducts = message.products.isNotEmpty()
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = if (isUser) Alignment.End else Alignment.Start
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            // AI avatar
-            if (!isUser) {
-                Surface(
-                    modifier = Modifier.padding(end = 6.dp, bottom = 2.dp).size(26.dp),
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primaryContainer
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AutoAwesome,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(5.dp)
-                    )
-                }
-            }
 
-            Column(modifier = Modifier.weight(1f, fill = false).then(
-                if (isUser) Modifier.padding(start = 52.dp) else Modifier.padding(end = 52.dp)
-            )) {
-                when {
-                    // ── Error bubble ──────────────────────────────────────────
-                    message.type == MessageType.ERROR -> {
-                        ErrorCard(
-                            errorMessage = message.text,
-                            onRetryClick = onRegenerateClick
+        // ── AI product response: cards FIRST at full width ──────────────────
+        // Products are never described in text — always shown exclusively as cards.
+        if (!isUser && hasProducts) {
+            ProductsCarousel(
+                products = message.products,
+                currency = currency,
+                onProductClick = onProductClick,
+                onFavoriteClick = onFavoriteClick,
+                onAddToCartClick = onAddToCartClick
+            )
+        }
+
+        // ── Message bubble row ────────────────────────────────────────────────
+        // Skip text bubble entirely when: AI has products but no meaningful text
+        val skipTextBubble = !isUser && hasProducts && message.text.isBlank()
+
+        if (!skipTextBubble) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                // AI avatar
+                if (!isUser) {
+                    Surface(
+                        modifier = Modifier.padding(end = 6.dp, bottom = 2.dp).size(26.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(5.dp)
                         )
                     }
-                    // ── Voice message bubble (user only) ──────────────────────
-                    message.isVoiceMessage && isUser -> {
-                        VoiceMessageBubble()
-                    }
-                    // ── Normal text bubble ────────────────────────────────────
-                    else -> {
-                        Surface(
-                            color = if (isUser)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.surfaceVariant,
-                            shape = if (isUser) userShape else aiShape,
-                            // No border on AI bubble (removed per user request)
-                        ) {
-                            Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
-                                MarkdownRenderer(
-                                    text = message.text,
-                                    color = if (isUser) Color.White
-                                            else MaterialTheme.colorScheme.onSurface
-                                )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f, fill = false)
+                        .then(
+                            if (isUser) Modifier.padding(start = 52.dp)
+                            else Modifier.padding(end = 52.dp)
+                        )
+                ) {
+                    when {
+                        // Error bubble
+                        message.type == MessageType.ERROR -> {
+                            ErrorCard(
+                                errorMessage = message.text,
+                                onRetryClick = onRegenerateClick
+                            )
+                        }
+                        // Voice message bubble (user)
+                        message.isVoiceMessage && isUser -> {
+                            VoiceMessageBubble()
+                        }
+                        // Normal or product-intro text bubble
+                        else -> {
+                            if (message.text.isNotBlank()) {
+                                Surface(
+                                    color = if (isUser)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = if (isUser) userShape else aiShape
+                                ) {
+                                    Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
+                                        MarkdownRenderer(
+                                            text = message.text,
+                                            color = if (isUser) Color.White
+                                                    else MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
+
+                    // Action row — AI only, no Share
+                    if (!isUser && message.type != MessageType.ERROR) {
+                        CopyActionRow(
+                            showRegenerate = isLastAiMessage,
+                            onCopyClick = {
+                                val cb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                cb.setPrimaryClip(ClipData.newPlainText("Carto AI", message.text))
+                                scope.launch { snackbarHostState.showSnackbar("Copied") }
+                            },
+                            onRegenerateClick = onRegenerateClick
+                        )
+                    }
                 }
 
-                // ── Action row (AI messages only, no Share) ───────────────────
-                if (!isUser && message.type != MessageType.ERROR) {
-                    CopyActionRow(
-                        showRegenerate = isLastAiMessage,
-                        onCopyClick = {
-                            val cb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            cb.setPrimaryClip(ClipData.newPlainText("Carto AI", message.text))
-                            scope.launch { snackbarHostState.showSnackbar("Copied") }
-                        },
-                        onRegenerateClick = onRegenerateClick
-                    )
-                }
-
-                // ── Product cards — always LazyRow, every card is a card ──────
-                if (message.products.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    ProductsCarousel(
-                        products = message.products,
-                        currency = currency,
-                        onProductClick = onProductClick,
-                        onFavoriteClick = onFavoriteClick,
-                        onAddToCartClick = onAddToCartClick
-                    )
-                }
+                // User side spacer
+                if (isUser) Spacer(modifier = Modifier.size(6.dp))
             }
+        }
 
-            // User avatar spacer (keeps alignment symmetric)
-            if (isUser) {
-                Spacer(modifier = Modifier.size(6.dp))
-            }
+        // ── User messages with products (edge case) ───────────────────────────
+        // Not expected, but guard anyway
+        if (isUser && hasProducts) {
+            ProductsCarousel(
+                products = message.products,
+                currency = currency,
+                onProductClick = onProductClick,
+                onFavoriteClick = onFavoriteClick,
+                onAddToCartClick = onAddToCartClick
+            )
         }
     }
 }
@@ -562,7 +586,7 @@ fun ProductsCarousel(
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(horizontal = 2.dp)
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp)
     ) {
         items(products, key = { it.id }) { product ->
             ProductChatCardWrapper(
