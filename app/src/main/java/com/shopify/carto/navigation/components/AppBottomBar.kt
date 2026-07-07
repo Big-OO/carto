@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -153,50 +154,87 @@ fun AppBottomBar(
 
         // Elevated Glowing Floating AI Sparkle Button in the center
         val isAIOpen = currentRoute == Screen.AIAssistant.route
-        val infiniteTransition = rememberInfiniteTransition(label = "ai_glow")
-        val glowScale by infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = 1.08f,
+        val infiniteTransition = rememberInfiniteTransition(label = "ai_float_glow")
+
+        // 1. Float translation up/down
+        val floatTranslationY by infiniteTransition.animateFloat(
+            initialValue = -5f,
+            targetValue = 5f,
             animationSpec = infiniteRepeatable(
-                animation = tween(1200, easing = FastOutSlowInEasing),
+                animation = tween(1800, easing = FastOutSlowInEasing),
                 repeatMode = RepeatMode.Reverse
             ),
-            label = "ai_glow"
-        )
-        val glowAlpha by infiniteTransition.animateFloat(
-            initialValue = 0.4f,
-            targetValue = 0.8f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(1200, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "ai_glow_alpha"
+            label = "floatTranslationY"
         )
 
+        // 2. Glow pulsing scale
+        val glowScale by infiniteTransition.animateFloat(
+            initialValue = 0.90f,
+            targetValue = 1.15f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1500, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "glowScale"
+        )
+
+        // 3. Glow opacity pulsing
+        val glowAlpha by infiniteTransition.animateFloat(
+            initialValue = 0.20f,
+            targetValue = 0.60f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1500, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "glowAlpha"
+        )
+
+        // Selected scale state
         val buttonScale by animateFloatAsState(
-            targetValue = if (isAIOpen) 1.15f else 1f,
-            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
-            label = "ai_select"
+            targetValue = if (isAIOpen) 1.12f else 1.0f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow
+            ),
+            label = "buttonScale"
         )
 
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(y = (-18).dp)
-                .size(60.dp * buttonScale * glowScale)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = glowAlpha),
-                            Color.Transparent
-                        )
-                    )
-                ),
+                .graphicsLayer {
+                    translationY = floatTranslationY.dp.toPx()
+                }
+                .size(72.dp),
             contentAlignment = Alignment.Center
         ) {
+            // Radial glow behind the button
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = glowScale * buttonScale
+                        scaleY = glowScale * buttonScale
+                        alpha = glowAlpha
+                    }
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                Color.Transparent
+                            )
+                        )
+                    )
+            )
+
             Surface(
                 modifier = Modifier
-                    .size(52.dp * buttonScale)
+                    .size(52.dp)
+                    .graphicsLayer {
+                        scaleX = buttonScale
+                        scaleY = buttonScale
+                    }
                     .clickable {
                         if (!isAIOpen) {
                             navController.navigate(Screen.AIAssistant.route) {
