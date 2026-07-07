@@ -63,8 +63,9 @@ private fun SummaryRow(
             fontWeight = if (emphasize) FontWeight.Bold else FontWeight.Normal,
             color = if (emphasize) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
         )
+        val formatter = com.shopify.carto.feature.currency.presentation.format.LocalCurrencyFormatter.current
         Text(
-            text = "$currency ${"%.2f".format(value)}",
+            text = formatter.format(value),
             style = if (emphasize) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
             fontWeight = if (emphasize) FontWeight.Bold else FontWeight.Normal
         )

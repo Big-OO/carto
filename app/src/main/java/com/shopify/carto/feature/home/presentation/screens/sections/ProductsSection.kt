@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.shopify.carto.R
 import com.shopify.carto.core.utils.ConfirmationDialog
 import com.shopify.carto.feature.home.domain.model.Product
-import com.shopify.carto.feature.home.presentation.screens.components.ProductCard
+import com.shopify.carto.core.components.ProductCard
 import com.shopify.carto.feature.home.presentation.screens.components.SectionHeader
 
 @Composable
@@ -48,8 +48,15 @@ fun ProductsSection(
                 val isFavorite = favoriteIds.contains(product.id)
 
                 ProductCard(
-                    product = product,
+                    name = product.name,
+                    price = product.price,
+                    imageUrl = product.imageUrl,
                     modifier = Modifier.width(190.dp),
+                    compareAtPrice = product.compareAtPrice,
+                    isNew = product.isNew,
+                    isOnSale = product.isOnSale,
+                    productType = product.productType,
+                    imageCount = product.imageCount,
                     isGuest = isGuest,
                     isFavorite = isFavorite,
                     onClick = { onProductClick(product) },

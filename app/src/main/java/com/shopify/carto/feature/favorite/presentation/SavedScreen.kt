@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.shopify.carto.feature.favorite.presentation.components.FavoriteProductCard
+import com.shopify.carto.core.components.ProductCard
 import com.shopify.carto.feature.favorite.presentation.components.FavoriteProductCardPlaceholder
 import com.shopify.carto.feature.home.presentation.screens.EmptyCategoryView
 import androidx.compose.foundation.layout.Box
