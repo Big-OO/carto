@@ -206,6 +206,7 @@
     <string name="order_histroy_no_orders_subtitle">You don\'t have any %1$s orders at this time.</string>
 
     <string name="order_history_ongoing_tab">Ongoing</string>
+    <string name="order_history_order_label">Order %1$s</string>
     <string name="order_history_completed_tab">Completed</string>
     <string name="order_history_see_details">See Details</string>
     <string name="order_history_before_discount">Before discount: %1$s</string>

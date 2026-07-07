@@ -201,6 +201,7 @@
 
     <string name="order_history_ongoing_tab">جارية</string>
     <string name="order_history_completed_tab">مكتملة</string>
+    <string name="order_history_order_label">طلب %1$s</string>
     <string name="order_history_see_details">عرض التفاصيل</string>
     <string name="order_history_before_discount">قبل الخصم: %1$s</string>
     <string name="order_history_back_content_description">رجوع</string>

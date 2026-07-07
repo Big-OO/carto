@@ -1,5 +1,7 @@
 package com.shopify.carto.feature.orderhistory.presentation.mapper
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.shopify.carto.feature.orderhistory.domain.model.Money
 import com.shopify.carto.feature.orderhistory.domain.model.OrderHistoryItem
 import com.shopify.carto.feature.orderhistory.domain.model.OrderHistoryStatus
@@ -11,6 +13,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Currency
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun OrderHistoryItem.toUi(): OrderHistoryItemUi {
     return OrderHistoryItemUi(
         id = id,
@@ -51,6 +54,7 @@ private fun Money.format(): String {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 private fun String.toDisplayDate(): String {
     if (isBlank()) return ""
     return runCatching {

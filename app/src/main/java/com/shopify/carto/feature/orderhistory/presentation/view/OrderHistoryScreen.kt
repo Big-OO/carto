@@ -45,8 +45,8 @@ import com.shopify.carto.feature.orderhistory.util.messageRes
 fun OrderHistoryScreen(
     onOrderDetailsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: OrderHistoryViewModel = hiltViewModel(),
 ) {
+    val viewModel = hiltViewModel<OrderHistoryViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val resources = LocalResources.current
@@ -85,18 +85,18 @@ private fun OrderHistoryContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.Start,
     ) {
         OrderHistoryTopBar()
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         OrderHistoryTabs(
             selectedTab = state.selectedTab,
             onTabClick = interactionListener::onTabClicked,
         )
 
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         AnimatedContent(
             targetState = Triple(state.isLoading, state.error, state.visibleOrders),

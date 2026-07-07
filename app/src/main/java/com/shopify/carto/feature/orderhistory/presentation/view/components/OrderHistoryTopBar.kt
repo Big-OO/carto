@@ -17,7 +17,7 @@ fun OrderHistoryTopBar(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Start
     ) {
         Text(
             text = stringResource(R.string.order_history_screen_title),

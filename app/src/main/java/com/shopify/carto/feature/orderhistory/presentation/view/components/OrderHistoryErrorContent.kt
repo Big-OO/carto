@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.shopify.carto.R
 import com.shopify.carto.feature.orderhistory.presentation.state.OrderHistoryErrorType
-import com.shopify.carto.feature.orderhistory.presentation.view.localizedMessage
+import com.shopify.carto.feature.orderhistory.util.localizedMessage
 
 
 @Composable
