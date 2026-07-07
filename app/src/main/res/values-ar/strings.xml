@@ -195,4 +195,34 @@
 
     <string name="snackbar_message_product_added_to_favorites_guest">من فضلك سجل دخول للاضافه في المحفوظات</string>
 
+    <!-- Notification -->
+    <string name="notification_default_title">كارتو مستنيك</string>
+    <string name="notification_default_subtitle">افتح التطبيق واكتشف ستايلات جديدة اليوم.</string>
+
+    <string name="notification_cart_title">خلّي اختياراتك ليك</string>
+    <string name="notification_cart_subtitle">كمّل الشراء الآن قبل ما منتجاتك المفضلة تخلص.</string>
+
+    <string-array name="notification_general_titles">
+        <item>لسه بتفكر؟</item>
+        <item>وصلت ستايلات جديدة</item>
+        <item>تنبيه لوك جديد</item>
+        <item>إطلالتك الجاية هنا</item>
+        <item>الأكثر رواجًا الآن</item>
+        <item>قائمة المفضلة بتناديك</item>
+        <item>وصلت المنتجات الجديدة</item>
+        <item>جاهز للوك جديد؟</item>
+        <item>منتجك المفضل الجاي</item>
+    </string-array>
+
+    <string-array name="notification_general_subtitles">
+        <item>المنتج اللي عجبك لسه مستنيك.</item>
+        <item>اكتشف أحدث المنتجات المختارة ليك.</item>
+        <item>جدّد ستايلك مع أحدث كوليكشن.</item>
+        <item>اختار ستايلات تناسب ذوقك اليوم.</item>
+        <item>شوف المنتجات اللي الكل بيتصفحها دلوقتي.</item>
+        <item>بعض المنتجات المحفوظة عندك لسه مستنية.</item>
+        <item>كن أول واحد يشوف أحدث الستايلات.</item>
+        <item>في ستايلات جديدة مستنياك.</item>
+        <item>افتح التطبيق واكتشفه النهارده.</item>
+    </string-array>
 </resources>
