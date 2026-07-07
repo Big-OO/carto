@@ -54,20 +54,22 @@ class OutfitFunctions @Inject constructor(
             if (Math.random() < 0.5) "men" else "women"
         }
 
+        val womenRegex = Regex("""\b(women|woman|female|girl|girls|lady|ladies|dress|skirt|blouse|heel|heels|womens)\b""", RegexOption.IGNORE_CASE)
+        val menRegex = Regex("""\b(men|man|male|boy|boys|mens|gentleman)\b""", RegexOption.IGNORE_CASE)
+
         // Filter products strictly based on target gender
         val sourceProducts = products.filter { product ->
-            val title = product.title.lowercase()
-            val type = product.productType.lowercase()
-            val vendor = product.vendor.lowercase()
+            val title = product.title
+            val type = product.productType
+            val vendor = product.vendor
             
-            val isExplicitlyWomen = title.contains("women") || title.contains("woman") || title.contains("lady") || title.contains("dress") || title.contains("skirt") ||
-                                    type.contains("women") || type.contains("woman") || type.contains("lady") ||
-                                    vendor.contains("women") || vendor.contains("woman")
+            val isExplicitlyWomen = womenRegex.containsMatchIn(title) || 
+                                    womenRegex.containsMatchIn(type) || 
+                                    womenRegex.containsMatchIn(vendor)
                                
-            val isExplicitlyMen = (title.contains("men") || title.contains("man") || title.contains("boy") ||
-                                   type.contains("men") || type.contains("man") || type.contains("boy") ||
-                                   vendor.contains("men") || vendor.contains("man")) && 
-                                  !title.contains("women") && !type.contains("women")
+            val isExplicitlyMen = menRegex.containsMatchIn(title) || 
+                                  menRegex.containsMatchIn(type) || 
+                                  menRegex.containsMatchIn(vendor)
 
             if (targetGender == "women") {
                 // For women outfit, allow explicit women items or unisex items, but strictly exclude explicit men items
@@ -78,17 +80,18 @@ class OutfitFunctions @Inject constructor(
             }
         }
 
-        // Categorize items by checking title and productType
-        val tops = sourceProducts.filter { product ->
+        // Categorize items into mutually exclusive buckets
+        val shoes = sourceProducts.filter { product ->
             val title = product.title.lowercase()
             val type = product.productType.lowercase()
-            title.contains("shirt") || title.contains("top") || title.contains("hoodie") || 
-            title.contains("jacket") || title.contains("coat") || title.contains("blouse") || 
-            title.contains("pullover") || title.contains("cardigan") || title.contains("sweater") ||
-            type.contains("shirt") || type.contains("top") || type.contains("hoodie") || type.contains("jacket")
+            title.contains("shoe") || title.contains("sneaker") || title.contains("boot") || 
+            title.contains("sandal") || title.contains("slide") || title.contains("loafer") ||
+            title.contains("footwear") ||
+            type.contains("shoe") || type.contains("sneaker") || type.contains("footwear")
         }
 
         val bottoms = sourceProducts.filter { product ->
+            if (shoes.contains(product)) return@filter false
             val title = product.title.lowercase()
             val type = product.productType.lowercase()
             title.contains("pant") || title.contains("jeans") || title.contains("trouser") || 
@@ -97,13 +100,14 @@ class OutfitFunctions @Inject constructor(
             type.contains("pant") || type.contains("jeans") || type.contains("trouser") || type.contains("shorts")
         }
 
-        val shoes = sourceProducts.filter { product ->
+        val tops = sourceProducts.filter { product ->
+            if (shoes.contains(product) || bottoms.contains(product)) return@filter false
             val title = product.title.lowercase()
             val type = product.productType.lowercase()
-            title.contains("shoe") || title.contains("sneaker") || title.contains("boot") || 
-            title.contains("sandal") || title.contains("slide") || title.contains("loafer") ||
-            title.contains("footwear") ||
-            type.contains("shoe") || type.contains("sneaker") || type.contains("footwear")
+            title.contains("shirt") || title.contains("top") || title.contains("hoodie") || 
+            title.contains("jacket") || title.contains("coat") || title.contains("blouse") || 
+            title.contains("pullover") || title.contains("cardigan") || title.contains("sweater") ||
+            type.contains("shirt") || type.contains("top") || type.contains("hoodie") || type.contains("jacket")
         }
 
         // Randomly pick one item from each category
