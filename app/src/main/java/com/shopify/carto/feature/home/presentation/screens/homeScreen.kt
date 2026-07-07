@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.ui.res.stringResource
 import com.shopify.carto.R
+import com.shopify.carto.core.notification.util.NotificationPermissionEffect
 import com.shopify.carto.feature.favorite.presentation.FavoriteViewModel
 
 @Composable
@@ -49,6 +50,8 @@ fun HomeScreen(
     onBrandClick: (String) -> Unit,
     favoriteViewModel: FavoriteViewModel = hiltViewModel(),
 ) {
+    NotificationPermissionEffect()
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val session by viewModel.session.collectAsStateWithLifecycle()
     val favoriteIds by favoriteViewModel.favoriteIds.collectAsStateWithLifecycle()

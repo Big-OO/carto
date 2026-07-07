@@ -136,6 +136,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        dataBinding = true
     }
 
     testOptions {
@@ -241,6 +242,8 @@ dependencies {
     androidTestImplementation(libs.turbine)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
+    implementation(libs.paymob.sdk)
 
     implementation(libs.mapbox.android.maps)
     implementation(libs.mapbox.maps.compose)

@@ -25,7 +25,7 @@
 
     <!--   Search SCREEN   -->
     <string name="searchScreenTitle">Search</string>
-    <string name="searchHintTitle">Search for clothes...</string>
+    <string name="searchHintTitle">Search for clothes…</string>
 
     <!--   ERRORS   -->
     <string name="errorNoInternetTitle">No Internet Connection</string>
@@ -201,6 +201,37 @@
     <string name="error_server_down">Server Down Error</string>
     <string name="error_unknown">UnKnown Error</string>
     <string name="login_required">please log in first</string>
+
+    <!--  Notification  -->
+    <string name="notification_default_title">Carto is waiting</string>
+    <string name="notification_default_subtitle">Open the app and discover fresh styles today.</string>
+
+    <string name="notification_cart_title">Make them yours</string>
+    <string name="notification_cart_subtitle">Checkout now before your favorites disappear.</string>
+
+    <string-array name="notification_general_titles">
+        <item>Still thinking about it?</item>
+        <item>Fresh styles just landed</item>
+        <item>New drip alert</item>
+        <item>Your next outfit is here</item>
+        <item>Trending now</item>
+        <item>Your wishlist is calling</item>
+        <item>New arrivals are live</item>
+        <item>Ready for a new look?</item>
+        <item>Your next favorite item</item>
+    </string-array>
+
+    <string-array name="notification_general_subtitles">
+        <item>That item you liked is waiting for you.</item>
+        <item>Explore the latest arrivals picked for you.</item>
+        <item>Upgrade your look with our newest collection.</item>
+        <item>Find styles that match your vibe today.</item>
+        <item>See what everyone is checking out today.</item>
+        <item>Some of your saved items are waiting.</item>
+        <item>Be the first to shop the latest styles.</item>
+        <item>Fresh styles are waiting for you.</item>
+        <item>Open the app and find it today.</item>
+    </string-array>
 
     <!-- cart screen -->
 
