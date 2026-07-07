@@ -50,14 +50,12 @@ class OutfitFunctions @Inject constructor(
         } else if (isMenPreferred) {
             "men"
         } else {
-            // Coherent styling: pick a single target gender randomly if none specified
             if (Math.random() < 0.5) "men" else "women"
         }
 
         val womenRegex = Regex("""\b(women|woman|female|girl|girls|lady|ladies|dress|skirt|blouse|heel|heels|womens)\b""", RegexOption.IGNORE_CASE)
         val menRegex = Regex("""\b(men|man|male|boy|boys|mens|gentleman)\b""", RegexOption.IGNORE_CASE)
 
-        // Filter products strictly based on target gender
         val sourceProducts = products.filter { product ->
             val title = product.title
             val type = product.productType
@@ -72,15 +70,12 @@ class OutfitFunctions @Inject constructor(
                                   menRegex.containsMatchIn(vendor)
 
             if (targetGender == "women") {
-                // For women outfit, allow explicit women items or unisex items, but strictly exclude explicit men items
                 isExplicitlyWomen || (!isExplicitlyMen)
             } else {
-                // For men outfit, allow explicit men items or unisex items, but strictly exclude explicit women items
                 isExplicitlyMen || (!isExplicitlyWomen)
             }
         }
 
-        // Categorize items into mutually exclusive buckets
         val shoes = sourceProducts.filter { product ->
             val title = product.title.lowercase()
             val type = product.productType.lowercase()
@@ -110,7 +105,6 @@ class OutfitFunctions @Inject constructor(
             type.contains("shirt") || type.contains("top") || type.contains("hoodie") || type.contains("jacket")
         }
 
-        // Randomly pick one item from each category
         val chosenTop = tops.shuffled().firstOrNull()
         val chosenBottom = bottoms.shuffled().firstOrNull()
         val chosenShoe = shoes.shuffled().firstOrNull()

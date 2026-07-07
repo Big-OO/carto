@@ -1,7 +1,9 @@
 package com.shopify.carto.feature.ai_integration.ai
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.appfunctions.AppFunctionData
 import androidx.appfunctions.AppFunctionManager
 import androidx.appfunctions.AppFunctionSearchSpec
@@ -27,6 +29,7 @@ class ShoppingAppFunctionRunner(
 ) {
     private val packageName: String = context.packageName
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     suspend fun execute(simpleName: String, args: Map<String, JsonElement>): String {
         Log.d(TAG, "Executing App Function: $simpleName with args: $args")
         val manager = AppFunctionManager.getInstance(context)
@@ -70,6 +73,7 @@ class ShoppingAppFunctionRunner(
             .flatMap { it.appFunctions }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun buildParameters(metadata: AppFunctionMetadata, args: Map<String, JsonElement>): AppFunctionData {
         val builder = AppFunctionData.Builder(metadata.parameters, metadata.components)
         metadata.parameters.forEach { parameter ->
@@ -86,6 +90,7 @@ class ShoppingAppFunctionRunner(
         return builder.build()
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun readReturnValue(metadata: AppFunctionMetadata, data: AppFunctionData): String {
         val key = ExecuteAppFunctionResponse.Success.PROPERTY_RETURN_VALUE
         return when (metadata.response.valueType) {

@@ -25,8 +25,9 @@ object AIDIModule {
     @Provides
     @Singleton
     fun provideAIShoppingAgent(
+        @ApplicationContext context: Context,
         appFunctionRunner: ShoppingAppFunctionRunner
     ): AIShoppingAgent {
-        return AIShoppingAgent(appFunctionRunner)
+        return AIShoppingAgent(context, appFunctionRunner)
     }
 }

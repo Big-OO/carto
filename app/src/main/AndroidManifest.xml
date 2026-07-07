@@ -32,6 +32,10 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".feature.ai_integration.appfunctions.CartoAppFunctionProxyReceiver"
+            android:exported="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

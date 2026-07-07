@@ -1,5 +1,6 @@
 package com.shopify.carto.feature.ai_integration.ai
 
+import android.content.Context
 import android.util.Log
 import com.shopify.carto.BuildConfig
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +30,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import java.util.concurrent.TimeUnit
 
 class AIShoppingAgent(
+    private val context: Context,
     private val appFunctionRunner: ShoppingAppFunctionRunner,
 ) {
     private val chatHistory = mutableListOf<JsonObject>()
@@ -37,19 +39,82 @@ class AIShoppingAgent(
         chatHistory.add(
             buildJsonObject {
                 put("role", "system")
-                put("content", "You are Carto's premium AI Shopping Assistant. " +
-                        "Help users search products, compare products, generate outfits, manage cart/wishlist, and discover insights. " +
-                        "Always call appropriate App Functions rather than guessing or making up data. " +
-                        "CRITICAL FOR OUTFITS: When asked for an outfit, you MUST call 'generateOutfit'. Never manually assemble outfits. Ensure outfits are strictly gender-segregated (fully men's or fully women's, never mixed) and contain exactly one top, one bottom, and one footwear item (no duplicate categories like two shoes or two jackets). " +
-                        "CRITICAL: For every product recommendation, list, search result, or comparison, you MUST explicitly include its 13-digit Product ID (e.g., 'Product ID: 8941908099126'). " +
-                        "If you generate a table or bullet list, you MUST include the Product ID column or label for each item. " +
-                        "Keep your responses friendly, helpful, and concise.")
+                put("content", "")
             }
         )
     }
 
+    private fun loadAssetFile(path: String): String {
+        return try {
+            context.assets.open(path).bufferedReader().use { it.readText() }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error loading asset $path", e)
+            ""
+        }
+    }
+
+    private fun determinePersonaPath(query: String): String {
+        val q = query.lowercase()
+        return when {
+            q.contains("outfit") || q.contains("wear") || q.contains("dress") || q.contains("suit") || q.contains("look") || q.contains("clothes for") || q.contains("attire") || q.contains("clothe") || q.contains("matching") -> "personas/outfit.md"
+            q.contains("compare") || q.contains("vs") || q.contains("versus") || q.contains("difference") || q.contains("better than") || q.contains("which one") -> "personas/comparison.md"
+            q.contains("style") || q.contains("trend") || q.contains("fashion") || q.contains("color") || q.contains("accessory") || q.contains("accessories") || q.contains("aesthetic") -> "personas/styling.md"
+            else -> "personas/shopping.md"
+        }
+    }
+
+    private fun buildSystemPrompt(personaPath: String): String {
+        val system = loadAssetFile("ai/system.md")
+        val responseRules = loadAssetFile("ai/response_rules.md")
+        val uiRules = if (!personaPath.contains("styling")) {
+            loadAssetFile("ai/ui_rules.md")
+        } else {
+            ""
+        }
+        val safety = loadAssetFile("ai/safety.md")
+        val tools = loadAssetFile("ai/tools.md")
+        val persona = loadAssetFile("ai/$personaPath")
+
+        return buildString {
+            if (system.isNotBlank()) {
+                append(system).append("\n\n")
+            }
+            if (responseRules.isNotBlank()) {
+                append("## Response Rules\n").append(responseRules).append("\n\n")
+            }
+            if (uiRules.isNotBlank()) {
+                append("## UI Presentation Rules\n").append(uiRules).append("\n\n")
+            }
+            if (safety.isNotBlank()) {
+                append("## Safety Constraints\n").append(safety).append("\n\n")
+            }
+            if (tools.isNotBlank()) {
+                append("## Orchestration and Tools\n").append(tools).append("\n\n")
+            }
+            if (persona.isNotBlank()) {
+                append("## Persona Specific Instructions\n").append(persona)
+            }
+        }.trim()
+    }
+
     suspend fun sendMessage(userMessage: String, onStep: (String) -> Unit): AgentResult {
         Log.d(TAG, "Sending message to Custom AI: $userMessage")
+
+        val personaPath = determinePersonaPath(userMessage)
+        val systemPrompt = buildSystemPrompt(personaPath)
+
+        if (chatHistory.isNotEmpty() && chatHistory[0]["role"]?.jsonPrimitive?.content == "system") {
+            chatHistory[0] = buildJsonObject {
+                put("role", "system")
+                put("content", systemPrompt)
+            }
+        } else {
+            chatHistory.add(0, buildJsonObject {
+                put("role", "system")
+                put("content", systemPrompt)
+            })
+        }
+
         chatHistory.add(
             buildJsonObject {
                 put("role", "user")

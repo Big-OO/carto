@@ -33,7 +33,9 @@ data class ChatMessage(
     val type: MessageType = MessageType.TEXT,
     val products: List<SearchProduct> = emptyList(),
     val isVoiceMessage: Boolean = false,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val options: List<String> = emptyList(),
+    val isTypingFinished: Boolean = true
 )
 
 data class AIChatUiState(
@@ -62,7 +64,7 @@ class AIChatViewModel @Inject constructor(
             it.copy(
                 messages = listOf(
                     ChatMessage(
-                        text = "Hi! I'm your AI Shopping Assistant. Ask me anything about searching products, comparing prices, managing your cart/wishlist, or generating outfit ideas!",
+                        text = "WELCOME_PLACEHOLDER",
                         isUser = false
                     )
                 )
@@ -135,7 +137,17 @@ class AIChatViewModel @Inject constructor(
                     }
                 }
 
-                val cleanedText = agentResponse
+                val optionsRegex = Regex("""\[Options:\s*([^\]]+)\]""", RegexOption.IGNORE_CASE)
+                val optionsMatch = optionsRegex.find(agentResponse)
+                val extractedOptions = if (optionsMatch != null) {
+                    optionsMatch.groupValues[1].split("|").map { it.trim() }.filter { it.isNotEmpty() }
+                } else {
+                    emptyList()
+                }
+
+                val responseWithoutOptions = agentResponse.replace(optionsRegex, "").trim()
+
+                val cleanedText = responseWithoutOptions
                     .replace(Regex("""\(\s*Product ID:\s*\d+\s*\)""", RegexOption.IGNORE_CASE), "")
                     .replace(Regex("""\s*Product ID:\s*\d+""", RegexOption.IGNORE_CASE), "")
                     .trim()
@@ -153,10 +165,10 @@ class AIChatViewModel @Inject constructor(
                     text = "",
                     isUser = false,
                     type = if (recommendedProducts.isNotEmpty()) MessageType.PRODUCT_LIST else MessageType.TEXT,
-                    products = recommendedProducts
+                    products = recommendedProducts,
+                    options = extractedOptions,
+                    isTypingFinished = false
                 )
-
-
 
                 _uiState.update {
                     it.copy(
@@ -183,8 +195,17 @@ class AIChatViewModel @Inject constructor(
                     kotlinx.coroutines.delay(55)
                 }
 
-                _uiState.update {
-                    it.copy(isProcessing = false)
+                _uiState.update { state ->
+                    state.copy(
+                        messages = state.messages.map { msg ->
+                            if (msg.id == aiMessageId) {
+                                msg.copy(isTypingFinished = true)
+                            } else {
+                                msg
+                            }
+                        },
+                        isProcessing = false
+                    )
                 }
             } catch (e: Exception) {
                 val errorMessage = ChatMessage(
@@ -236,7 +257,6 @@ class AIChatViewModel @Inject constructor(
         val lines = fullText.lines()
         val introLines = mutableListOf<String>()
 
-        // Patterns that signal start of product-detail content
         val productDetailPatterns = listOf(
             Regex("""^\d+[\.\)]\s+.{3,}"""),           // 1. Product name ...
             Regex("""^[-*•]\s+\*\*.+\*\*"""),           // - **Product Name**
@@ -248,13 +268,11 @@ class AIChatViewModel @Inject constructor(
         for (line in lines) {
             val trimmed = line.trim()
             if (trimmed.isBlank()) {
-                // Allow one blank line in intro
                 if (introLines.isNotEmpty()) break
                 continue
             }
             if (productDetailPatterns.any { it.containsMatchIn(trimmed) }) break
             introLines.add(trimmed)
-            // Stop after 2 meaningful intro lines
             if (introLines.size >= 2) break
         }
 

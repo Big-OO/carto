@@ -195,4 +195,19 @@
 
     <string name="snackbar_message_product_added_to_favorites_guest">من فضلك سجل دخول للاضافه في المحفوظات</string>
 
+    <!-- AI Chat Screen -->
+    <string name="ai_welcome_title">مرحباً بك في كارتو AI</string>
+    <string name="ai_welcome_subtitle">اسألني عن المنتجات، الموضة، تنسيق الملابس، المقارنات، أو نصائح التسوق!</string>
+    <string name="ai_try_asking">جرب أن تسأل:</string>
+    <string name="ai_suggestion_wear">ماذا يجب أن أرتدي اليوم؟ 👕</string>
+    <string name="ai_suggestion_shoes">اعرض أفضل أحذية الجري 👟</string>
+    <string name="ai_suggestion_compare">قارن بين نايكي وأديداس ⚔️</string>
+    <string name="ai_suggestion_cart">اعرض تفاصيل عربة التسوق الخاصة بي 🛒</string>
+    <string name="ai_chat_header_title">كارتو AI</string>
+    <string name="ai_chat_header_subtitle">مساعد التسوق الذكي الخاص بك</string>
+    <string name="ai_recording">جاري التسجيل…</string>
+    <string name="ai_listening">🎙 جاري الاستماع…</string>
+    <string name="ai_message_placeholder">اكتب رسالة إلى كارتو AI…</string>
+    <string name="ai_copied_toast">تم النسخ</string>
+    <string name="ai_welcome_assistant_message">مرحباً! أنا مساعد التسوق الذكي الخاص بك. اسألني عن أي شيء يخص البحث عن المنتجات، مقارنة الأسعار، إدارة العربة أو قائمة الأمنيات، أو تنسيق الملابس!</string>
 </resources>

@@ -12,6 +12,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -27,6 +28,10 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +60,8 @@ import com.shopify.carto.feature.home.domain.model.Product
 import com.shopify.carto.feature.home.presentation.screens.components.ProductCard
 import com.shopify.carto.feature.search.domain.model.SearchProduct
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.stringResource
+import com.shopify.carto.R
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 
@@ -168,6 +175,7 @@ fun AIChatScreen(
                                 onFavoriteClick = { viewModel.toggleProductFavorite(it) },
                                 onAddToCartClick = { viewModel.addProductToCart(it.id) },
                                 onRegenerateClick = { viewModel.regenerateLastResponse() },
+                                onOptionClick = { viewModel.sendMessage(it) },
                                 snackbarHostState = snackbarHostState,
                                 context = context
                             )
@@ -279,13 +287,13 @@ fun ChatHeader(
                 }
                 Column {
                     Text(
-                        text = "Carto AI",
+                        text = stringResource(id = R.string.ai_chat_header_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "Your smart shopping assistant",
+                        text = stringResource(id = R.string.ai_chat_header_subtitle),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -296,7 +304,7 @@ fun ChatHeader(
             IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = stringResource(id = R.string.commonBack)
                 )
             }
         },
@@ -326,21 +334,21 @@ fun EmptyState(
     ) {
         Text(text = "👋", fontSize = 56.sp, modifier = Modifier.padding(bottom = 16.dp))
         Text(
-            text = "Welcome to Carto AI",
+            text = stringResource(id = R.string.ai_welcome_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Text(
-            text = "Ask me anything about products, fashion, outfits, comparisons, or shopping advice!",
+            text = stringResource(id = R.string.ai_welcome_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp).padding(bottom = 32.dp)
         )
         Text(
-            text = "Try asking:",
+            text = stringResource(id = R.string.ai_try_asking),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -351,10 +359,10 @@ fun EmptyState(
             modifier = Modifier.fillMaxWidth()
         ) {
             listOf(
-                "What should I wear today? 👕",
-                "Show best running shoes 👟",
-                "Compare Nike vs Adidas ⚔️",
-                "Show my cart details 🛒"
+                stringResource(id = R.string.ai_suggestion_wear),
+                stringResource(id = R.string.ai_suggestion_shoes),
+                stringResource(id = R.string.ai_suggestion_compare),
+                stringResource(id = R.string.ai_suggestion_cart)
             ).forEach { suggestion ->
                 Card(
                     modifier = Modifier.fillMaxWidth().clickable { onSuggestionClick(suggestion) },
@@ -389,6 +397,7 @@ fun EmptyState(
 
 // ─── Message Bubble ───────────────────────────────────────────────────────────
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MessageBubble(
     message: ChatMessage,
@@ -398,6 +407,7 @@ fun MessageBubble(
     onFavoriteClick: (SearchProduct) -> Unit,
     onAddToCartClick: (SearchProduct) -> Unit,
     onRegenerateClick: () -> Unit,
+    onOptionClick: (String) -> Unit,
     snackbarHostState: SnackbarHostState,
     context: Context,
     modifier: Modifier = Modifier
@@ -408,131 +418,211 @@ fun MessageBubble(
     val aiShape   = RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp)
     val hasProducts = message.products.isNotEmpty()
     Log.d("Tago: ","hase products:-> $hasProducts")
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+
+    val animVisible = rememberSaveable(message.id) { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        animVisible.value = true
+    }
+
+    AnimatedVisibility(
+        visible = animVisible.value,
+        enter = fadeIn(animationSpec = tween(400, easing = FastOutSlowInEasing)) + 
+                slideInVertically(animationSpec = tween(400, easing = FastOutSlowInEasing)) { it / 3 },
+        exit = fadeOut(animationSpec = tween(200))
     ) {
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
 
-        // ── AI product response: cards FIRST at full width ──────────────────
-        // Products are never described in text — always shown exclusively as cards.
-        if (!isUser && hasProducts) {
-            ProductsCarousel(
-                products = message.products,
-                currency = currency,
-                onProductClick = onProductClick,
-                onFavoriteClick = onFavoriteClick,
-                onAddToCartClick = onAddToCartClick
-            )
-        }
+           if (!isUser && hasProducts) {
+                ProductsCarousel(
+                    products = message.products,
+                    currency = currency,
+                    onProductClick = onProductClick,
+                    onFavoriteClick = onFavoriteClick,
+                    onAddToCartClick = onAddToCartClick
+                )
+            }
 
-        // ── Message bubble row ────────────────────────────────────────────────
-        // Skip text bubble entirely when: AI has products but no meaningful text
-        val skipTextBubble = !isUser && hasProducts && message.text.isBlank()
+            val skipTextBubble = !isUser && hasProducts && message.text.isBlank()
 
-        if (!skipTextBubble) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                // AI avatar
-                if (!isUser) {
-                    Surface(
-                        modifier = Modifier.padding(end = 6.dp, bottom = 2.dp).size(26.dp),
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AutoAwesome,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.padding(5.dp)
-                        )
-                    }
-                }
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f, fill = false)
-                        .then(
-                            if (isUser) Modifier.padding(start = 52.dp)
-                            else Modifier.padding(end = 52.dp)
-                        )
+            if (!skipTextBubble) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
+                    verticalAlignment = Alignment.Bottom
                 ) {
-                    when {
-                        // Error bubble
-                        message.type == MessageType.ERROR -> {
-                            ErrorCard(
-                                errorMessage = message.text,
-                                onRetryClick = onRegenerateClick
+                    if (!isUser) {
+                        Surface(
+                            modifier = Modifier.padding(end = 6.dp, bottom = 2.dp).size(26.dp),
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primaryContainer
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.padding(5.dp)
                             )
                         }
-                        // Voice message bubble (user)
-                        message.isVoiceMessage && isUser -> {
-                            VoiceMessageBubble()
-                        }
-                        // Normal or product-intro text bubble
-                        else -> {
-                            if (message.text.isNotBlank()) {
-                                Surface(
-                                    color = if (isUser)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = if (isUser) userShape else aiShape
-                                ) {
-                                    Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
-                                        MarkdownRenderer(
-                                            text = message.text,
-                                            color = if (isUser) Color.White
-                                                    else MaterialTheme.colorScheme.onSurface
-                                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .then(
+                                if (isUser) Modifier.padding(start = 52.dp)
+                                else Modifier.padding(end = 52.dp)
+                            )
+                    ) {
+                        when {
+                            message.type == MessageType.ERROR -> {
+                                ErrorCard(
+                                    errorMessage = message.text,
+                                    onRetryClick = onRegenerateClick
+                                )
+                            }
+                            message.isVoiceMessage && isUser -> {
+                                VoiceMessageBubble()
+                            }
+                            else -> {
+                                if (message.text.isNotBlank()) {
+                                    Surface(
+                                        color = if (isUser)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.surfaceVariant,
+                                        shape = if (isUser) userShape else aiShape
+                                    ) {
+                                        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
+                                            MarkdownRenderer(
+                                                text = if (message.text == "WELCOME_PLACEHOLDER") {
+                                                    stringResource(id = R.string.ai_welcome_assistant_message)
+                                                } else {
+                                                    message.text
+                                                },
+                                                color = if (isUser) Color.White
+                                                        else MaterialTheme.colorScheme.onSurface
+                                            )
+                                        }
+                                    }
+                                }
+
+                                if (!isUser && message.options.isNotEmpty()) {
+                                    var optionsVisible by remember { mutableStateOf(false) }
+                                    LaunchedEffect(message.isTypingFinished) {
+                                        if (message.isTypingFinished) {
+                                            optionsVisible = true
+                                        }
+                                    }
+                                    AnimatedVisibility(
+                                        visible = optionsVisible,
+                                        enter = fadeIn(animationSpec = tween(300)),
+                                        exit = fadeOut(animationSpec = tween(300))
+                                    ) {
+                                        Column {
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                            FlowRow(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                val sortedOptions = remember(message.options) { message.options.sorted() }
+                                                sortedOptions.forEachIndexed { index, option ->
+                                                    var chipVisible by remember { mutableStateOf(false) }
+                                                    LaunchedEffect(Unit) {
+                                                        delay(index * 60L)
+                                                        chipVisible = true
+                                                    }
+                                                    AnimatedVisibility(
+                                                        visible = chipVisible,
+                                                        enter = fadeIn(tween(250)) + slideInVertically(tween(250)) { it / 2 },
+                                                        exit = fadeOut(tween(150))
+                                                    ) {
+                                                        val interactionSource = remember { MutableInteractionSource() }
+                                                        val isPressed by interactionSource.collectIsPressedAsState()
+                                                        val scale by animateFloatAsState(
+                                                            targetValue = if (isPressed) 0.95f else 1f,
+                                                            animationSpec = spring(
+                                                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                                                stiffness = Spring.StiffnessLow
+                                                            ),
+                                                            label = "chipScale"
+                                                        )
+                                                        Surface(
+                                                            onClick = { onOptionClick(option) },
+                                                            shape = RoundedCornerShape(20.dp),
+                                                            color = MaterialTheme.colorScheme.primaryContainer,
+                                                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                            border = BorderStroke(
+                                                                width = 1.dp,
+                                                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                                            ),
+                                                            shadowElevation = if (isPressed) 1.dp else 2.dp,
+                                                            interactionSource = interactionSource,
+                                                            modifier = Modifier
+                                                                .graphicsLayer {
+                                                                    scaleX = scale
+                                                                    scaleY = scale
+                                                                }
+                                                        ) {
+                                                            Text(
+                                                                text = option,
+                                                                style = MaterialTheme.typography.bodyMedium,
+                                                                fontWeight = FontWeight.SemiBold,
+                                                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+
+                        if (!isUser && message.type != MessageType.ERROR) {
+                            CopyActionRow(
+                                showRegenerate = isLastAiMessage,
+                                onCopyClick = {
+                                    val cb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                    val welcomeText = if (message.text == "WELCOME_PLACEHOLDER") {
+                                        context.getString(R.string.ai_welcome_assistant_message)
+                                    } else {
+                                        message.text
+                                    }
+                                    cb.setPrimaryClip(ClipData.newPlainText("Carto AI", welcomeText))
+                                    scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.ai_copied_toast)) }
+                                },
+                                onRegenerateClick = onRegenerateClick
+                            )
+                        }
                     }
 
-                    // Action row — AI only, no Share
-                    if (!isUser && message.type != MessageType.ERROR) {
-                        CopyActionRow(
-                            showRegenerate = isLastAiMessage,
-                            onCopyClick = {
-                                val cb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                cb.setPrimaryClip(ClipData.newPlainText("Carto AI", message.text))
-                                scope.launch { snackbarHostState.showSnackbar("Copied") }
-                            },
-                            onRegenerateClick = onRegenerateClick
-                        )
-                    }
+                    if (isUser) Spacer(modifier = Modifier.size(6.dp))
                 }
-
-                // User side spacer
-                if (isUser) Spacer(modifier = Modifier.size(6.dp))
             }
-        }
 
-        // ── User messages with products (edge case) ───────────────────────────
-        // Not expected, but guard anyway
-        if (isUser && hasProducts) {
-            ProductsCarousel(
-                products = message.products,
-                currency = currency,
-                onProductClick = onProductClick,
-                onFavoriteClick = onFavoriteClick,
-                onAddToCartClick = onAddToCartClick
-            )
+            if (isUser && hasProducts) {
+                ProductsCarousel(
+                    products = message.products,
+                    currency = currency,
+                    onProductClick = onProductClick,
+                    onFavoriteClick = onFavoriteClick,
+                    onAddToCartClick = onAddToCartClick
+                )
+            }
         }
     }
 }
 
-// ─── Voice Message Bubble ──────────────────────────────────────────────────────
 
 @Composable
 fun VoiceMessageBubble(
     modifier: Modifier = Modifier
 ) {
-    // Static decorative waveform (real rmsHistory not stored per-message for simplicity)
     val barHeights = remember {
         listOf(0.3f, 0.6f, 0.9f, 0.5f, 0.8f, 0.4f, 1.0f, 0.6f, 0.3f, 0.7f,
                0.5f, 0.9f, 0.4f, 0.8f, 0.6f, 0.3f, 0.7f, 1.0f, 0.5f, 0.4f)
@@ -553,7 +643,6 @@ fun VoiceMessageBubble(
                 tint = Color.White.copy(alpha = 0.9f),
                 modifier = Modifier.size(16.dp)
             )
-            // Waveform bars
             Row(
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -572,7 +661,6 @@ fun VoiceMessageBubble(
     }
 }
 
-// ─── Products Carousel ─────────────────────────────────────────────────────────
 
 @Composable
 fun ProductsCarousel(
@@ -583,7 +671,6 @@ fun ProductsCarousel(
     onAddToCartClick: (SearchProduct) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Always use LazyRow — single product gets full width card, multiple scroll
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -601,7 +688,6 @@ fun ProductsCarousel(
     }
 }
 
-// ─── Product Card Wrapper ──────────────────────────────────────────────────────
 
 @Composable
 fun ProductChatCardWrapper(
@@ -660,7 +746,6 @@ fun ProductChatCardWrapper(
     }
 }
 
-// ─── Copy Action Row (no Share) ────────────────────────────────────────────────
 
 @Composable
 fun CopyActionRow(
@@ -695,7 +780,6 @@ fun CopyActionRow(
     }
 }
 
-// ─── Voice Recording Bar (WhatsApp-style overlay above input) ─────────────────
 
 @Composable
 fun VoiceRecordingBar(
@@ -711,9 +795,12 @@ fun VoiceRecordingBar(
     )
 
     Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.95f),
-        tonalElevation = 2.dp
+        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f),
+        shape = RoundedCornerShape(24.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.15f))
     ) {
         Row(
             modifier = Modifier
@@ -729,12 +816,11 @@ fun VoiceRecordingBar(
                     .background(Color(0xFFE53935).copy(alpha = recAlpha), CircleShape)
             )
             Text(
-                text = "Recording…",
+                text = stringResource(id = R.string.ai_recording),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontWeight = FontWeight.Medium
             )
-            // Live waveform bars from rmsHistory
             Row(
                 modifier = Modifier.weight(1f),
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
@@ -752,13 +838,12 @@ fun VoiceRecordingBar(
                     )
                 }
             }
-            // Cancel button
             TextButton(
                 onClick = onCancelClick,
                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = "Cancel",
+                    text = stringResource(id = R.string.commonCancel),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -767,7 +852,6 @@ fun VoiceRecordingBar(
     }
 }
 
-// ─── Chat Input ───────────────────────────────────────────────────────────────
 
 /**
  * WhatsApp-style input:
@@ -798,18 +882,18 @@ fun ChatInput(
     }
 
     Surface(
-        tonalElevation = 4.dp,
-        shadowElevation = 8.dp,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
         color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .padding(horizontal = 10.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             // Text field — full width minus trailing button
             OutlinedTextField(
@@ -817,29 +901,28 @@ fun ChatInput(
                 onValueChange = onValueChange,
                 placeholder = {
                     Text(
-                        text = if (isListening) "🎙 Listening…" else "Message Carto AI…",
+                        text = if (isListening) stringResource(id = R.string.ai_listening) else stringResource(id = R.string.ai_message_placeholder),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 },
                 modifier = Modifier.weight(1f),
                 maxLines = 5,
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(28.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(
                     onSend = { if (textInput.isNotBlank() && !isProcessing) onSendClick() }
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Transparent,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                     unfocusedBorderColor = Color.Transparent,
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
                     focusedTextColor = MaterialTheme.colorScheme.onSurface,
                     unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                 )
             )
 
-            // Trailing animated button — Send | Mic | Recording indicator
             AnimatedContent(
                 targetState = trailingKey,
                 transitionSpec = {
@@ -870,7 +953,6 @@ fun ChatInput(
                     }
 
                     "recording" -> {
-                        // While actively recording, show an animated red mic (pulsing)
                         val recTransition = rememberInfiniteTransition(label = "micActive")
                         val recScale by recTransition.animateFloat(
                             1f, 1.18f,
@@ -897,22 +979,49 @@ fun ChatInput(
                     }
 
                     else -> {
-                        // Press-and-hold mic: detectTapGestures(onPress) gives us press/release
+                        var isPressed by remember { mutableStateOf(false) }
+                        val scale by animateFloatAsState(
+                            targetValue = if (isPressed) 1.2f else 1f,
+                            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                            label = "micScale"
+                        )
+                        val elevation by animateDpAsState(
+                            targetValue = if (isPressed) 8.dp else 2.dp,
+                            label = "micElevation"
+                        )
+                        val containerColor by animateColorAsState(
+                            targetValue = if (isPressed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer,
+                            label = "micColor"
+                        )
+                        val contentColor by animateColorAsState(
+                            targetValue = if (isPressed) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer,
+                            label = "micContentColor"
+                        )
+
                         Box(
                             modifier = Modifier
                                 .size(42.dp)
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .shadow(elevation, CircleShape)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.secondaryContainer)
+                                .background(containerColor)
                                 .pointerInput(Unit) {
                                     detectTapGestures(
                                         onPress = {
+                                            isPressed = true
                                             onMicPressStart()
-                                            // Suspend until finger lifts; tryAwaitRelease = true if no cancel
-                                            val released = tryAwaitRelease()
-                                            if (released) {
-                                                onMicPressEnd()
-                                            } else {
-                                                onMicCancel()
+                                            try {
+                                                val released = tryAwaitRelease()
+                                                if (released) {
+                                                    onMicPressEnd()
+                                                } else {
+                                                    onMicCancel()
+                                                }
+                                            } finally {
+                                                isPressed = false
                                             }
                                         }
                                     )
@@ -922,7 +1031,7 @@ fun ChatInput(
                             Icon(
                                 imageVector = Icons.Default.Mic,
                                 contentDescription = "Hold to record",
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                tint = contentColor,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -933,7 +1042,6 @@ fun ChatInput(
     }
 }
 
-// ─── Thinking Bubble (clean, no border) ───────────────────────────────────────
 
 @Composable
 fun ThinkingBubble(
@@ -950,7 +1058,6 @@ fun ThinkingBubble(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start
     ) {
-        // AI avatar
         Surface(
             modifier = Modifier.padding(end = 6.dp, bottom = 2.dp).size(26.dp),
             shape = CircleShape,
@@ -964,7 +1071,6 @@ fun ThinkingBubble(
             )
         }
 
-        // Bubble — no border, no shadow
         Surface(
             color = MaterialTheme.colorScheme.surfaceVariant,
             shape = RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp)
@@ -997,7 +1103,6 @@ fun ThinkingBubble(
     }
 }
 
-// ─── Error Card ───────────────────────────────────────────────────────────────
 
 @Composable
 fun ErrorCard(
@@ -1019,7 +1124,7 @@ fun ErrorCard(
         ) {
             Icon(
                 imageVector = Icons.Default.Warning,
-                contentDescription = "Error",
+                contentDescription = stringResource(id = R.string.errorUnknownTitle),
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(22.dp)
             )
@@ -1036,13 +1141,12 @@ fun ErrorCard(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp)
             ) {
-                Text("Retry", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onError)
+                Text(stringResource(id = R.string.commonRetry), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onError)
             }
         }
     }
 }
 
-// ─── Markdown Renderer ────────────────────────────────────────────────────────
 
 @Composable
 fun MarkdownRenderer(
@@ -1166,9 +1270,7 @@ fun TextSegmentRenderer(
     }
 }
 
-// Build inline AnnotatedString with bold, italic, and code spans
 private fun buildInlineStyledText(text: String, defaultColor: Color): AnnotatedString {
-    // Clean any stray markdown not handled elsewhere
     val cleaned = text
         .replace(Regex("^#{1,6}\\s+"), "")
         .trim()
@@ -1199,7 +1301,6 @@ private fun buildInlineStyledText(text: String, defaultColor: Color): AnnotatedS
     }
 }
 
-// ─── Comparison Table ─────────────────────────────────────────────────────────
 
 @Composable
 fun ComparisonTable(
@@ -1261,7 +1362,6 @@ fun ComparisonTable(
     }
 }
 
-// ─── Code Block ───────────────────────────────────────────────────────────────
 
 @Composable
 fun CodeBlock(
@@ -1312,7 +1412,6 @@ fun CodeBlock(
     }
 }
 
-// ─── Parser ───────────────────────────────────────────────────────────────────
 
 sealed class ChatSegment {
     data class Text(val content: String) : ChatSegment()

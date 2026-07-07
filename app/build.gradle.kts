@@ -38,6 +38,7 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
     arg("room.incremental", "true")
     arg("room.expandProjection", "true")
+    arg("appfunctions:aggregateAppFunctions", "true")
 }
 
 hilt {
