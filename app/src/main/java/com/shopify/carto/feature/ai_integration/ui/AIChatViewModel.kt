@@ -1,5 +1,6 @@
 package com.shopify.carto.feature.ai_integration.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shopify.carto.feature.ai_integration.ai.AIShoppingAgent
@@ -104,15 +105,22 @@ class AIChatViewModel @Inject constructor(
     private fun executeMessageQuery(text: String) {
         viewModelScope.launch {
             try {
-                val agentResponse = aiShoppingAgent.sendMessage(text) { step ->
+                val agentResult = aiShoppingAgent.sendMessage(text) { step ->
                     _uiState.update { it.copy(statusMessage = step) }
                 }
 
-                val productIds = extractProductIds(agentResponse)
+                val agentResponse = agentResult.responseText
+                val productIds = agentResult.productIds
                 val recommendedProducts = mutableListOf<SearchProduct>()
                 productIds.forEach { id ->
                     val detailsResult = getProductDetailsUseCase(id)
                     detailsResult.onSuccess { product ->
+
+                        Log.d(
+                            "AI_CHAT",
+                            """Product Loaded: id=${product.id}, title=${product.title}, vendor=${product.vendor}, image=${product.images.firstOrNull()}""".trimIndent()
+                        )
+
                         recommendedProducts.add(
                             SearchProduct(
                                 id = product.id,
@@ -127,19 +135,17 @@ class AIChatViewModel @Inject constructor(
                     }
                 }
 
-                // Strip Product ID markers
                 val cleanedText = agentResponse
                     .replace(Regex("""\(\s*Product ID:\s*\d+\s*\)""", RegexOption.IGNORE_CASE), "")
                     .replace(Regex("""\s*Product ID:\s*\d+""", RegexOption.IGNORE_CASE), "")
                     .trim()
 
-                // When products are found, keep ONLY the intro sentence so product info
-                // never leaks into the text bubble — it's shown exclusively in cards.
                 val targetText = if (recommendedProducts.isNotEmpty()) {
                     extractIntroText(cleanedText)
                 } else {
                     cleanedText.ifBlank { "Here you go!" }
                 }
+
                 val aiMessageId = UUID.randomUUID().toString()
 
                 val aiMessage = ChatMessage(
@@ -150,8 +156,8 @@ class AIChatViewModel @Inject constructor(
                     products = recommendedProducts
                 )
 
-                // Add empty response bubble and clear the progress status message loader,
-                // but keep isProcessing = true to keep the typing area locked during streaming.
+
+
                 _uiState.update {
                     it.copy(
                         messages = it.messages + aiMessage,
@@ -159,7 +165,6 @@ class AIChatViewModel @Inject constructor(
                     )
                 }
 
-                // Typewriter/streaming animation word-by-word
                 val words = targetText.split(" ")
                 var currentText = ""
                 for (i in words.indices) {
@@ -175,7 +180,7 @@ class AIChatViewModel @Inject constructor(
                             }
                         )
                     }
-                    kotlinx.coroutines.delay(35) // 35ms delay per word
+                    kotlinx.coroutines.delay(55)
                 }
 
                 _uiState.update {
@@ -221,13 +226,6 @@ class AIChatViewModel @Inject constructor(
         }
     }
 
-    private fun extractProductIds(text: String): List<Long> {
-        val regex = Regex("""Product ID:\s*(\d+)""", RegexOption.IGNORE_CASE)
-        return regex.findAll(text)
-            .map { it.groupValues[1].toLong() }
-            .distinct()
-            .toList()
-    }
 
     /**
      * Extract a short intro sentence from AI response when products will be shown in cards.

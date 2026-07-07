@@ -40,13 +40,14 @@ class AIShoppingAgent(
                 put("content", "You are Carto's premium AI Shopping Assistant. " +
                         "Help users search products, compare products, generate outfits, manage cart/wishlist, and discover insights. " +
                         "Always call appropriate App Functions rather than guessing or making up data. " +
-                        "When listing products, display their details clearly and cleanly. " +
+                        "CRITICAL: For every product recommendation, list, search result, or comparison, you MUST explicitly include its 13-digit Product ID (e.g., 'Product ID: 8941908099126'). " +
+                        "If you generate a table or bullet list, you MUST include the Product ID column or label for each item. " +
                         "Keep your responses friendly, helpful, and concise.")
             }
         )
     }
 
-    suspend fun sendMessage(userMessage: String, onStep: (String) -> Unit): String {
+    suspend fun sendMessage(userMessage: String, onStep: (String) -> Unit): AgentResult {
         Log.d(TAG, "Sending message to Custom AI: $userMessage")
         chatHistory.add(
             buildJsonObject {
@@ -57,6 +58,7 @@ class AIShoppingAgent(
 
         var finished = false
         var assistantContent = ""
+        val toolProductIds = mutableListOf<Long>()
 
         while (!finished) {
             val requestBody = buildJsonObject {
@@ -118,6 +120,7 @@ class AIShoppingAgent(
                     onStep(stepMessage)
 
                     val result = appFunctionRunner.execute(functionName, sanitizedArgs)
+                    toolProductIds.addAll(extractProductIdsFromString(result))
 
                     val toolCallId = callObj["id"]?.jsonPrimitive?.content ?: ""
                     chatHistory.add(
@@ -136,7 +139,15 @@ class AIShoppingAgent(
             }
         }
 
-        return if (assistantContent.isNotBlank()) assistantContent else "(The assistant did not return any text.)"
+        val finalContent = if (assistantContent.isNotBlank()) assistantContent else "(The assistant did not return any text.)"
+        val assistantProductIds = extractProductIdsFromString(finalContent)
+        val chosenProductIds = if (assistantProductIds.isNotEmpty()) {
+            assistantProductIds
+        } else {
+            toolProductIds.distinct()
+        }
+
+        return AgentResult(finalContent, chosenProductIds)
     }
 
     private suspend fun callCustomApi(body: JsonObject): String = withContext(Dispatchers.IO) {
@@ -420,7 +431,25 @@ class AIShoppingAgent(
         }
     }
 
+    private fun extractProductIdsFromString(text: String): List<Long> {
+        val ids = mutableListOf<Long>()
+        val digit13Regex = Regex("""\b(\d{13})\b""")
+        digit13Regex.findAll(text).forEach { match ->
+            match.value.toLongOrNull()?.let { ids.add(it) }
+        }
+        val labelRegex = Regex("""Product ID:\s*(\d+)""", RegexOption.IGNORE_CASE)
+        labelRegex.findAll(text).forEach { match ->
+            match.groupValues[1].toLongOrNull()?.let { ids.add(it) }
+        }
+        return ids.distinct()
+    }
+
     companion object {
         private const val TAG = "AIShoppingAgent"
     }
 }
+
+data class AgentResult(
+    val responseText: String,
+    val productIds: List<Long>
+)

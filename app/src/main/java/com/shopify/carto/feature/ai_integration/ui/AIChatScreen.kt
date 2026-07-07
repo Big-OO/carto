@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
@@ -406,7 +407,7 @@ fun MessageBubble(
     val userShape = RoundedCornerShape(20.dp, 20.dp, 4.dp, 20.dp)
     val aiShape   = RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp)
     val hasProducts = message.products.isNotEmpty()
-
+    Log.d("Tago: ","hase products:-> $hasProducts")
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(6.dp)
