@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.shopify.carto.feature.settings.domain.model.AppLanguage
 import com.shopify.carto.feature.settings.domain.model.AppTheme
-import com.shopify.carto.feature.settings.domain.model.Currency
+import com.shopify.carto.feature.currency.domain.model.Currency
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map

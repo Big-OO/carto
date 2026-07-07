@@ -2,7 +2,7 @@ package com.shopify.carto.feature.settings.domain.repository
 
 import com.shopify.carto.feature.settings.domain.model.AppLanguage
 import com.shopify.carto.feature.settings.domain.model.AppTheme
-import com.shopify.carto.feature.settings.domain.model.Currency
+import com.shopify.carto.feature.currency.domain.model.Currency
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
