@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.shopify.carto.feature.favorite.presentation.components.FavoriteProductCard
+import com.shopify.carto.core.components.ProductCard
 import com.shopify.carto.feature.favorite.presentation.components.FavoriteProductCardPlaceholder
 import com.shopify.carto.feature.home.presentation.screens.EmptyCategoryView
 import androidx.compose.foundation.layout.Box
@@ -82,10 +82,13 @@ fun SavedScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(favorites, key = { it.productId }) { product ->
-                        FavoriteProductCard(
-                            product = product,
-                            onClick = { onProductClick(it.productId) },
-                            onRemoveClick = { viewModel.removeFavorite(it) },
+                        ProductCard(
+                            name = product.name,
+                            price = product.price,
+                            imageUrl = product.imageUrl,
+                            isFavorite = true,
+                            onClick = { onProductClick(product.productId) },
+                            onFavoriteClick = { viewModel.removeFavorite(product) },
                         )
                     }
                 }

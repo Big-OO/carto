@@ -47,8 +47,9 @@ fun ProductDetailsPriceSection(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            val formatter = com.shopify.carto.feature.currency.presentation.format.LocalCurrencyFormatter.current
             Text(
-                text = formatPrice(price, currency),
+                text = formatter.format(price),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -96,13 +97,4 @@ fun ProductDetailsPriceSection(
         }
     }
 }
-
-private fun formatPrice(price: Double, currencyCode: String): String {
-    return try {
-        val format = NumberFormat.getCurrencyInstance(Locale.getDefault())
-        format.currency = Currency.getInstance(currencyCode)
-        format.format(price)
-    } catch (exception: IllegalArgumentException) {
-        "$currencyCode ${"%.2f".format(price)}"
-    }
-}
+

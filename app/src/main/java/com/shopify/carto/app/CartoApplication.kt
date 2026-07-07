@@ -12,13 +12,13 @@ import com.mapbox.common.MapboxOptions
 import com.shopify.carto.BuildConfig
 import com.shopify.carto.core.notification.domain.work.NotificationWorkerManager
 import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import com.shopify.carto.feature.currency.worker.CurrencySyncWorker
 
 
 @HiltAndroidApp
-class CartoApplication : Application(), Configuration.Provider {
+class CartoApplication: Application(), Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -28,10 +28,8 @@ class CartoApplication : Application(), Configuration.Provider {
         super.onCreate()
         MapboxOptions.accessToken = BuildConfig.MAPBOX_ACCESS_TOKEN
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
         enqueueNotificationWorker()
+        enqueueCurrencyWorker()
     }
 
     override val workManagerConfiguration: Configuration
@@ -57,6 +55,18 @@ class CartoApplication : Application(), Configuration.Provider {
             NOTIFICATION_WORK_NAME,
             ExistingPeriodicWorkPolicy.UPDATE,
             notificationWorkRequest,
+        )
+    }
+
+    private fun enqueueCurrencyWorker(){
+        val syncWorkRequest = PeriodicWorkRequestBuilder<CurrencySyncWorker>(
+            3, TimeUnit.HOURS
+        ).build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "CurrencySyncWork",
+            ExistingPeriodicWorkPolicy.KEEP,
+            syncWorkRequest
         )
     }
 

@@ -16,6 +16,8 @@ lifecycle = "2.11.0"
 navigationCompose = "2.9.8"
 dataStore = "1.2.1"
 hiltLifecycleViewModelCompose = "1.4.0"
+work = "2.9.0"
+hiltWork = "1.4.0"
 
 composeBom = "2026.06.01"
 
@@ -41,7 +43,6 @@ mapboxMaps = "11.19.0"
 mapboxSearch = "2.18.2"
 playServicesLocation = "21.4.0"
 workRuntimeKtx = "2.11.2"
-hiltWork = "1.4.0"
 
 
 [libraries]
