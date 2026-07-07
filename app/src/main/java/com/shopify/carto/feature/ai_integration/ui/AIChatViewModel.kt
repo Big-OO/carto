@@ -31,6 +31,7 @@ data class ChatMessage(
     val isUser: Boolean,
     val type: MessageType = MessageType.TEXT,
     val products: List<SearchProduct> = emptyList(),
+    val isVoiceMessage: Boolean = false,
     val timestamp: Long = System.currentTimeMillis()
 )
 
@@ -68,10 +69,10 @@ class AIChatViewModel @Inject constructor(
         }
     }
 
-    fun sendMessage(text: String) {
+    fun sendMessage(text: String, isVoice: Boolean = false) {
         if (text.isBlank() || _uiState.value.isProcessing) return
 
-        val userMessage = ChatMessage(text = text, isUser = true)
+        val userMessage = ChatMessage(text = text, isUser = true, isVoiceMessage = isVoice)
         _uiState.update {
             it.copy(
                 messages = it.messages + userMessage,
