@@ -357,9 +357,6 @@
     <string name="removeFavoriteConfirm">Yes, Remove</string>
     <string name="removeFavoriteCancel">No, Keep it</string>
 
-</resources>
-
-
     <!-- Search -->
     <string name="search_initial_title">Start searching</string>
     <string name="search_initial_subtitle">Type a product name to get quick suggestions, then open the product details.</string>
@@ -372,5 +369,4 @@
     <string name="search_error_server">The store is busy right now. Try again later.</string>
     <string name="search_error_unknown">Something went wrong. Try again later.</string>
     <string name="search_back_content_description">Back</string>
-
 </resources>
