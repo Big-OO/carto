@@ -22,6 +22,11 @@ class HomeRemoteDataSourceImpl @Inject constructor(
             networkDataSource.getBrands()
         }
 
+    override suspend fun getPriceRules(limit: Int) =
+        safeApiCall {
+            networkDataSource.getPriceRules(limit = limit)
+        }
+
     override suspend fun getProductsByCollection(
         collectionId: Long
     ) =
