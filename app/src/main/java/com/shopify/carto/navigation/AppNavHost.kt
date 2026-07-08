@@ -30,13 +30,13 @@ import com.shopify.carto.feature.favorite.presentation.components.FavoriteAddedS
 import com.shopify.carto.feature.forgetpassword.presentation.ForgotPasswordScreen
 import com.shopify.carto.feature.home.navigation.homeGraph
 import com.shopify.carto.feature.login.presentation.LoginScreen
-import com.shopify.carto.feature.orderdetails.presentation.view.OrderDetailsScreen
-import com.shopify.carto.feature.orderhistory.presentation.view.OrderHistoryScreen
 import com.shopify.carto.feature.map.domain.model.MapAddress
 import com.shopify.carto.feature.map.domain.model.MapPoint
 import com.shopify.carto.feature.map.domain.model.SelectedMapAddress
 import com.shopify.carto.feature.map.presentation.view.MapPickerScreen
 import com.shopify.carto.feature.map.utils.MapResultKeys
+import com.shopify.carto.feature.orderdetails.presentation.view.OrderDetailsScreen
+import com.shopify.carto.feature.orderhistory.presentation.view.OrderHistoryScreen
 import com.shopify.carto.feature.payment.presentation.view.CheckoutScreen
 import com.shopify.carto.feature.payment.presentation.view.PaymentResultScreen
 import com.shopify.carto.feature.payment.presentation.viewmodel.CheckoutViewModel
@@ -371,6 +371,9 @@ fun AppNavHost(
                 OrderHistoryScreen(
                     onOrderDetailsClick = { orderId ->
                         navController.navigate(Screen.OrderDetails.createRoute(orderId))
+                    },
+                    onBack = {
+                        navController.popBackStack()
                     },
                 )
             }

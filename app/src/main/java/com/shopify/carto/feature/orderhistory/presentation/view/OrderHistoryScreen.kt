@@ -44,6 +44,7 @@ import com.shopify.carto.feature.orderhistory.util.messageRes
 @Composable
 fun OrderHistoryScreen(
     onOrderDetailsClick: (String) -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel = hiltViewModel<OrderHistoryViewModel>()
@@ -70,12 +71,14 @@ fun OrderHistoryScreen(
             interactionListener = viewModel,
             modifier = Modifier
                 .padding(paddingValues),
+            onBack = onBack
         )
     }
 }
 
 @Composable
 private fun OrderHistoryContent(
+    onBack: () -> Unit,
     state: OrderHistoryUiState,
     interactionListener: OrderHistoryInteractionListener,
     modifier: Modifier = Modifier,
@@ -87,7 +90,7 @@ private fun OrderHistoryContent(
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.Start,
     ) {
-        OrderHistoryTopBar()
+        OrderHistoryTopBar(onBack = onBack)
 
         Spacer(modifier = Modifier.height(24.dp))
 
