@@ -27,6 +27,11 @@ sealed class Screen(val route: String) {
     data object Addresses : Screen("addresses")
     data object NewAddress : Screen("new_address")
     data object MapPicker : Screen("map_picker")
+
+    data object OrderHistory : Screen("order_history")
+    data object OrderDetails : Screen("order_details/{orderId}") {
+        fun createRoute(orderId: String) = "order_details/${android.net.Uri.encode(orderId)}"
+    }
     data object Checkout : Screen("checkout")
     data object PaymentResult : Screen("payment_result/{success}/{transactionId}") {
         fun createRoute(success: Boolean, transactionId: String = "") =
