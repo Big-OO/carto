@@ -97,6 +97,7 @@ class ProfileViewModel @Inject constructor(
             ProfileEvent.LoginClicked -> sendEffect(ProfileEffect.NavigateToLogin)
             ProfileEvent.RetryClicked -> loadProfile()
             ProfileEvent.SettingClicked -> sendEffect(ProfileEffect.NavigateToSettings)
+            ProfileEvent.OrdersClicked -> sendEffect(ProfileEffect.NavigateToOrders)
             is ProfileEvent.SaveProfileClicked -> saveProfile(event.name)
         }
     }

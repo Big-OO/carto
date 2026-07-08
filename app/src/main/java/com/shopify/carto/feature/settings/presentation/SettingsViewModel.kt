@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shopify.carto.feature.settings.domain.model.AppLanguage
 import com.shopify.carto.feature.settings.domain.model.AppTheme
-import com.shopify.carto.feature.settings.domain.model.Currency
+import com.shopify.carto.feature.currency.domain.model.Currency
+import com.shopify.carto.feature.currency.domain.model.ExchangeRates
 import com.shopify.carto.feature.settings.domain.repository.SettingsRepository
+import com.shopify.carto.feature.currency.domain.repository.CurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val currencyRepository: CurrencyRepository
 ) : ViewModel() {
 
     val theme: StateFlow<AppTheme> = settingsRepository.theme
@@ -24,8 +27,17 @@ class SettingsViewModel @Inject constructor(
     val language: StateFlow<AppLanguage> = settingsRepository.language
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppLanguage.ENGLISH)
 
-    val currency: StateFlow<Currency> = settingsRepository.currency
+    val currency: StateFlow<Currency> = currencyRepository.observeSelectedCurrency()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Currency.USD)
+        
+    val exchangeRates: StateFlow<ExchangeRates?> = currencyRepository.observeRates()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    init {
+        viewModelScope.launch {
+            currencyRepository.refreshRates()
+        }
+    }
 
     fun setTheme(theme: AppTheme) {
         viewModelScope.launch {
@@ -41,7 +53,7 @@ class SettingsViewModel @Inject constructor(
 
     fun setCurrency(currency: Currency) {
         viewModelScope.launch {
-            settingsRepository.setCurrency(currency)
+            currencyRepository.updateSelectedCurrency(currency)
         }
     }
 }

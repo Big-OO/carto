@@ -1,0 +1,7 @@
+mutation CancelOrder($orderId: ID!) {
+  orderCancel(orderId: $orderId, reason: CUSTOMER, refund: false, restock: true) {
+    job { id done }
+    orderCancelUserErrors { field message }
+    userErrors { field message }
+  }
+}

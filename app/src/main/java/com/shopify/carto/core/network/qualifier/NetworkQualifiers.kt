@@ -12,6 +12,10 @@ annotation class StorefrontApollo
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
+annotation class AdminApollo
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
 annotation class AdminOkHttp
 
 @Qualifier
