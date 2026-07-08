@@ -43,6 +43,8 @@ private fun Product.priceAsDouble(): Double =
 @Composable
 fun BrandScreen(
     brandId: String,
+    brandName: String,
+    brandImageUrl: String,
     onBackClick: () -> Unit,
     onProductClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -72,7 +74,9 @@ fun BrandScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = brandId) },
+                title = {
+                    Text(text = brandName.ifBlank { brandId })
+                },
                 navigationIcon = {
                     IconButton(onClick = { viewModel.onEvent(BrandEvent.ClickBack) }) {
                         Icon(
@@ -113,7 +117,18 @@ fun BrandScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         item(span = { GridItemSpan(maxLineSpan) }) {
-                            BrandHeader(brand = currentState.brand)
+                            val headerBrand = remember(
+                                currentState.brand,
+                                brandName,
+                                brandImageUrl,
+                            ) {
+                                currentState.brand.copy(
+                                    name = currentState.brand.name.ifBlank { brandName },
+                                    imageUrl = currentState.brand.imageUrl.ifBlank { brandImageUrl },
+                                )
+                            }
+
+                            BrandHeader(brand = headerBrand)
                         }
 
                         item(span = { GridItemSpan(maxLineSpan) }) {

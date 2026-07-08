@@ -22,11 +22,12 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.shopify.carto.R
 import com.shopify.carto.core.notification.util.NotificationPermissionEffect
 import com.shopify.carto.feature.favorite.presentation.FavoriteViewModel
+import com.shopify.carto.feature.home.domain.model.Brand
 import com.shopify.carto.feature.home.domain.model.Category
 import com.shopify.carto.feature.home.domain.model.Product
 import com.shopify.carto.feature.home.presentation.HomeContent
@@ -50,7 +51,7 @@ fun HomeScreen(
     onProductClick: (Product) -> Unit,
     onCategoryClick: (Category) -> Unit,
     onSearchClick: () -> Unit,
-    onBrandClick: (String) -> Unit,
+    onBrandClick: (Brand) -> Unit,
     favoriteViewModel: FavoriteViewModel = hiltViewModel(),
 ) {
     NotificationPermissionEffect()
@@ -105,7 +106,8 @@ fun HomeScreen(
                     }
                 },
                 onCopyCouponCode = { code ->
-                    val clipEntry = ClipEntry(ClipData.newPlainText("coupon", AnnotatedString(code)))
+                    val clipEntry =
+                        ClipEntry(ClipData.newPlainText("coupon", AnnotatedString(code)))
                     scope.launch {
                         clipboard.setClipEntry(clipEntry)
                         snackbarHostState.showSnackbar(couponCopiedMessage)
@@ -127,7 +129,7 @@ private fun HomeContent(
     onProductClick: (Product) -> Unit,
     onCategoryClick: (Category) -> Unit,
     onSearchClick: () -> Unit,
-    onBrandClick: (String) -> Unit,
+    onBrandClick: (Brand) -> Unit,
     onFavoriteClick: (Product) -> Unit,
     onGuestFavoriteClick: () -> Unit,
     onCopyCouponCode: (String) -> Unit,
@@ -177,9 +179,7 @@ private fun HomeContent(
             BrandsSection(
                 brands = content.brands.take(6),
                 onSeeAll = onSeeAllVendors,
-                onBrandClick = { vendor ->
-                    onBrandClick(vendor.name)
-                }
+                onBrandClick = onBrandClick
             )
         }
 
