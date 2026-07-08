@@ -336,4 +336,18 @@
     <string name="removeFavoriteConfirm">نعم، إزالة</string>
     <string name="removeFavoriteCancel">لا، احتفظ به</string>
 
+
+    <!-- Search -->
+    <string name="search_initial_title">ابدأ البحث</string>
+    <string name="search_initial_subtitle">اكتب اسم المنتج للحصول على اقتراحات سريعة، ثم افتح تفاصيل المنتج.</string>
+    <string name="search_history_title">عمليات البحث الأخيرة</string>
+    <string name="search_suggestion_subtitle">اضغط لعرض تفاصيل المنتج</string>
+    <string name="search_empty_title">لا توجد نتائج</string>
+    <string name="search_empty_subtitle">جرّب كلمة مشابهة أو ابحث بكلمة أعم.</string>
+    <string name="search_error_network">تحقق من اتصال الإنترنت وحاول مرة أخرى.</string>
+    <string name="search_error_unauthorized">لم نتمكن من تحميل المنتجات الآن. حاول لاحقاً.</string>
+    <string name="search_error_server">المتجر مشغول الآن. حاول لاحقاً.</string>
+    <string name="search_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقاً.</string>
+    <string name="search_back_content_description">رجوع</string>
+
 </resources>
