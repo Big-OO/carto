@@ -1,10 +1,8 @@
 package com.shopify.carto.feature.home.data
 
-
 import com.shopify.carto.feature.home.data.model.CollectionsResponse
 import com.shopify.carto.feature.home.data.model.ProductDetailsResponse
 import com.shopify.carto.feature.home.data.model.ProductsResponse
-import com.shopify.carto.feature.home.data.model.SmartCollectionsResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -15,7 +13,7 @@ interface HomeApiService {
     @GET("admin/api/{version}/products.json")
     suspend fun getProducts(
         @Path("version") version: String = "2026-01",
-        @Query("limit") limit: Int = 50,
+        @Query("limit") limit: Int = 250,
         @Query("fields") fields: String =
             "id,title,handle,vendor,product_type,status,variants,images,tags,created_at,updated_at"
     ): Response<ProductsResponse>
@@ -30,19 +28,26 @@ interface HomeApiService {
 
     @GET("admin/api/{version}/custom_collections.json")
     suspend fun getCollections(
-        @Path("version") version: String = "2026-01"
+        @Path("version") version: String = "2026-01",
+        @Query("limit") limit: Int = 250,
+        @Query("fields") fields: String =
+            "id,title,handle,body_html,image,template_suffix,published_at,published_scope,admin_graphql_api_id,updated_at"
     ): Response<CollectionsResponse>
 
-    @GET("admin/api/{version}/products.json")
+    @GET("admin/api/{version}/collections/{collectionId}/products.json")
     suspend fun getProductsByCollection(
         @Path("version") version: String = "2026-01",
-        @Query("collection_id") collectionId: Long,
+        @Path("collectionId") collectionId: Long,
+        @Query("limit") limit: Int = 250,
         @Query("fields") fields: String =
             "id,title,handle,vendor,product_type,status,variants,images,tags,created_at,updated_at"
     ): Response<ProductsResponse>
 
-    @GET("admin/api/{version}/smart_collections.json")
+    @GET("admin/api/{version}/custom_collections.json")
     suspend fun getBrands(
-        @Path("version") version: String = "2026-01"
-    ): Response<SmartCollectionsResponse>
+        @Path("version") version: String = "2026-01",
+        @Query("limit") limit: Int = 250,
+        @Query("fields") fields: String =
+            "id,title,handle,body_html,image,template_suffix,published_at,published_scope,admin_graphql_api_id,updated_at"
+    ): Response<CollectionsResponse>
 }
