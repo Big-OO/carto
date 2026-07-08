@@ -3,9 +3,11 @@ package com.shopify.carto.feature.home.data.repository
 import com.shopify.carto.feature.home.data.mappers.toDomain
 import com.shopify.carto.feature.home.data.mappers.toCategory
 import com.shopify.carto.feature.home.data.mappers.toProduct
+import com.shopify.carto.feature.home.data.mappers.toCoupon
 import com.shopify.carto.feature.home.data.remote.HomeRemoteDataSource
 import com.shopify.carto.feature.home.domain.model.Brand
 import com.shopify.carto.feature.home.domain.model.Category
+import com.shopify.carto.feature.home.domain.model.Coupon
 import com.shopify.carto.feature.home.domain.model.Product
 import com.shopify.carto.feature.home.domain.repository.HomeRepository
 import javax.inject.Inject
@@ -91,6 +93,15 @@ class HomeRepositoryImp @Inject constructor(
 
             }
 
+    }
+
+
+    override suspend fun getCoupons(limit: Int): Result<List<Coupon>> {
+        return remoteDataSource
+            .getPriceRules(limit = limit)
+            .map { response ->
+                response.priceRules.map { it.toCoupon() }
+            }
     }
 
 }

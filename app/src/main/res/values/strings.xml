@@ -17,6 +17,10 @@
     <string name="homeCategoriesTitle">Categories</string>
     <string name="homeProductsTitle">All Products</string>
     <string name="homeBrandsTitle">All Brands</string>
+    <string name="homeCouponCopyCode">Copy Code</string>
+    <string name="homeCouponCodeCopied">Coupon code copied.</string>
+    <string name="homeCouponPercentageOff">%1$s%% off your order</string>
+    <string name="homeCouponFixedAmountOff">%1$s off your order</string>
 
     <!--   Saved SCREEN   -->
     <string name="savedScreenTitle">Saved</string>

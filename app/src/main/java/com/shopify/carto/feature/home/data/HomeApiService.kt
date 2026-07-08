@@ -3,6 +3,7 @@ package com.shopify.carto.feature.home.data
 
 import com.shopify.carto.feature.home.data.model.CollectionsResponse
 import com.shopify.carto.feature.home.data.model.ProductDetailsResponse
+import com.shopify.carto.feature.home.data.model.PriceRulesResponse
 import com.shopify.carto.feature.home.data.model.ProductsResponse
 import com.shopify.carto.feature.home.data.model.SmartCollectionsResponse
 import retrofit2.Response
@@ -45,4 +46,10 @@ interface HomeApiService {
     suspend fun getBrands(
         @Path("version") version: String = "2026-01"
     ): Response<SmartCollectionsResponse>
+
+    @GET("admin/api/{version}/price_rules.json")
+    suspend fun getPriceRules(
+        @Path("version") version: String = "2026-01",
+        @Query("limit") limit: Int = 50,
+    ): Response<PriceRulesResponse>
 }
