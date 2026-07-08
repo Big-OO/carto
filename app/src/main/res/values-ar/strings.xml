@@ -17,6 +17,10 @@
     <string name="homeCategoriesTitle">الأقسام</string>
     <string name="homeProductsTitle">جميع المنتجات</string>
     <string name="homeBrandsTitle">جميع الماركات</string>
+    <string name="homeCouponCopyCode">نسخ الكود</string>
+    <string name="homeCouponCodeCopied">تم نسخ كود الخصم.</string>
+    <string name="homeCouponPercentageOff">خصم %1$s%% على طلبك</string>
+    <string name="homeCouponFixedAmountOff">خصم %1$s على طلبك</string>
 
     <!--   Saved SCREEN   -->
     <string name="savedScreenTitle">المحفوظة</string>
