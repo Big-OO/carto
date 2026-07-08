@@ -10,4 +10,5 @@ interface CartRemoteDataSource {
     suspend fun addLine(cartId: String, merchandiseId: String, quantity: Int): Result<Unit>
     suspend fun updateLineQuantity(cartId: String, lineId: String, quantity: Int): Result<Unit>
     suspend fun removeLine(cartId: String, lineIds: List<String>): Result<Unit>
+    suspend fun updateCartBuyerIdentity(cartId: String, email: String, countryCode: String = "EG"): Result<String>
 }

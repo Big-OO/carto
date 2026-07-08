@@ -9,12 +9,16 @@ import com.shopify.carto.core.graphql.shopify.CartLinesAddMutation
 import com.shopify.carto.core.graphql.shopify.CartLinesRemoveMutation
 import com.shopify.carto.core.graphql.shopify.CartLinesUpdateMutation
 import com.shopify.carto.core.graphql.shopify.GetCartQuery
+import com.shopify.carto.core.graphql.shopify.UpdateCartBuyerIdentityMutation
+import com.shopify.carto.core.graphql.shopify.type.CartBuyerIdentityInput
 import com.shopify.carto.core.graphql.shopify.type.CartInput
 import com.shopify.carto.core.graphql.shopify.type.CartLineInput
 import com.shopify.carto.core.graphql.shopify.type.CartLineUpdateInput
+import com.shopify.carto.core.graphql.shopify.type.CountryCode
 
 import java.io.IOException
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 
 class CartRemoteDataSourceImpl @Inject constructor(
     private val apolloClient: ApolloClient
@@ -38,6 +42,7 @@ class CartRemoteDataSourceImpl @Inject constructor(
         } catch (exception: IOException) {
             Result.failure(DataException.Network(exception))
         } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
             Result.failure(DataException.Unknown(exception))
         }
     }
@@ -53,6 +58,7 @@ class CartRemoteDataSourceImpl @Inject constructor(
         } catch (exception: IOException) {
             Result.failure(DataException.Network(exception))
         } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
             Result.failure(DataException.Unknown(exception))
         }
     }
@@ -80,6 +86,7 @@ class CartRemoteDataSourceImpl @Inject constructor(
         } catch (exception: IOException) {
             Result.failure(DataException.Network(exception))
         } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
             Result.failure(DataException.Unknown(exception))
         }
     }
@@ -104,6 +111,7 @@ class CartRemoteDataSourceImpl @Inject constructor(
         } catch (exception: IOException) {
             Result.failure(DataException.Network(exception))
         } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
             Result.failure(DataException.Unknown(exception))
         }
     }
@@ -123,11 +131,41 @@ class CartRemoteDataSourceImpl @Inject constructor(
         } catch (exception: IOException) {
             Result.failure(DataException.Network(exception))
         } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
             Result.failure(DataException.Unknown(exception))
         }
     }
 
     private fun gqlError(message: String?): DataException {
         return DataException.Unknown(Exception(message ?: "Unknown GraphQL error"))
+    }
+
+    override suspend fun updateCartBuyerIdentity(cartId: String, email: String, countryCode: String): Result<String> {
+        return try {
+            val response = apolloClient.mutation(
+                UpdateCartBuyerIdentityMutation(
+                    cartId = cartId,
+                    buyerIdentity = CartBuyerIdentityInput(
+                        email = Optional.present(email),
+                        countryCode = Optional.present(CountryCode.valueOf(countryCode))
+                    )
+                )
+            ).execute()
+
+            val userErrors = response.data?.cartBuyerIdentityUpdate?.userErrors.orEmpty()
+            val updatedCartId = response.data?.cartBuyerIdentityUpdate?.cart?.id
+
+            when {
+                response.hasErrors() -> Result.failure(gqlError(response.errors?.firstOrNull()?.message))
+                userErrors.isNotEmpty() -> Result.failure(gqlError(userErrors.first().message))
+                updatedCartId != null -> Result.success(updatedCartId)
+                else -> Result.failure(gqlError("Failed to update buyer identity"))
+            }
+        } catch (exception: IOException) {
+            Result.failure(DataException.Network(exception))
+        } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
+            Result.failure(DataException.Unknown(exception))
+        }
     }
 }
