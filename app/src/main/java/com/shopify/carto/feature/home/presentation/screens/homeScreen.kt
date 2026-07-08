@@ -1,5 +1,6 @@
 package com.shopify.carto.feature.home.presentation.screens
 
+import android.content.ClipData
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -16,21 +17,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.shopify.carto.R
 import com.shopify.carto.core.notification.util.NotificationPermissionEffect
 import com.shopify.carto.feature.favorite.presentation.FavoriteViewModel
-import com.shopify.carto.feature.home.data.HomeAdsFakeData.ads
 import com.shopify.carto.feature.home.domain.model.Brand
 import com.shopify.carto.feature.home.domain.model.Category
 import com.shopify.carto.feature.home.domain.model.Product
 import com.shopify.carto.feature.home.presentation.HomeContent
 import com.shopify.carto.feature.home.presentation.HomeUiState
 import com.shopify.carto.feature.home.presentation.HomeViewModel
-import com.shopify.carto.feature.home.presentation.screens.components.AdsCarousel
+import com.shopify.carto.feature.home.presentation.screens.components.CouponsCarousel
 import com.shopify.carto.feature.home.presentation.screens.components.ErrorBox
 import com.shopify.carto.feature.home.presentation.screens.components.HomeScreenShimmer
 import com.shopify.carto.feature.home.presentation.screens.sections.BrandsSection
@@ -58,7 +61,9 @@ fun HomeScreen(
     val favoriteIds by favoriteViewModel.favoriteIds.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val clipboard = LocalClipboard.current
     val guestFavoriteMessage = stringResource(R.string.commonLoginRequiredFavorite)
+    val couponCopiedMessage = stringResource(R.string.homeCouponCodeCopied)
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -100,6 +105,14 @@ fun HomeScreen(
                         snackbarHostState.showSnackbar(guestFavoriteMessage)
                     }
                 },
+                onCopyCouponCode = { code ->
+                    val clipEntry =
+                        ClipEntry(ClipData.newPlainText("coupon", AnnotatedString(code)))
+                    scope.launch {
+                        clipboard.setClipEntry(clipEntry)
+                        snackbarHostState.showSnackbar(couponCopiedMessage)
+                    }
+                },
             )
         }
     }
@@ -119,6 +132,7 @@ private fun HomeContent(
     onBrandClick: (Brand) -> Unit,
     onFavoriteClick: (Product) -> Unit,
     onGuestFavoriteClick: () -> Unit,
+    onCopyCouponCode: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -132,11 +146,13 @@ private fun HomeContent(
             HomeHeader(onSearchClick = onSearchClick)
         }
 
-        item {
-            AdsCarousel(
-                ads = ads,
-                onAdClick = {},
-            )
+        if (content.coupons.isNotEmpty()) {
+            item {
+                CouponsCarousel(
+                    coupons = content.coupons,
+                    onCopyCodeClick = onCopyCouponCode,
+                )
+            }
         }
 
         item {

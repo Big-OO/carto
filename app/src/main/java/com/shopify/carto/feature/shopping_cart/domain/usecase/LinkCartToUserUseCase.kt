@@ -1,0 +1,12 @@
+package com.shopify.carto.feature.shopping_cart.domain.usecase
+
+import com.shopify.carto.feature.shopping_cart.domain.repository.CartRepository
+import javax.inject.Inject
+
+class LinkCartToUserUseCase @Inject constructor(
+    private val repository: CartRepository
+) {
+    suspend operator fun invoke(email: String): Result<Unit> {
+        return repository.linkCartToUser(email)
+    }
+}

@@ -15,6 +15,9 @@ sealed interface CheckoutEvent {
 
     data object PlaceOrder : CheckoutEvent
     data object RetryPayment : CheckoutEvent
+    data object RefreshCheckout : CheckoutEvent
+    data class UpdatePromoCodeInput(val value: String) : CheckoutEvent
+    data class ApplyPromoCode(val code: String) : CheckoutEvent
 }
 
 

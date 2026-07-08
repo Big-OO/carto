@@ -7,8 +7,11 @@ import com.shopify.carto.core.session.domain.model.AppSession
 import com.shopify.carto.core.session.domain.usecase.ObserveAppSessionUseCase
 import com.shopify.carto.feature.home.domain.model.Brand
 import com.shopify.carto.feature.home.domain.model.Category
+import com.shopify.carto.feature.home.domain.model.Coupon
 import com.shopify.carto.feature.home.domain.model.Product
 import com.shopify.carto.feature.home.domain.repository.HomeRepository
+import com.shopify.carto.feature.home.domain.usecase.GetActiveCouponsUseCase
+import com.shopify.carto.feature.shopping_cart.domain.usecase.RefreshCartUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +24,8 @@ import javax.inject.Inject
 data class HomeContent(
     val products: List<Product> = emptyList(),
     val categories: List<Category> = emptyList(),
-    val brands: List<Brand> = emptyList()
+    val brands: List<Brand> = emptyList(),
+    val coupons: List<Coupon> = emptyList(),
 )
 
 sealed interface HomeUiState {
@@ -40,7 +44,9 @@ sealed interface HomeUiState {
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository,
+    private val getActiveCouponsUseCase: GetActiveCouponsUseCase,
     observeAppSessionUseCase: ObserveAppSessionUseCase,
+    private val refreshCartUseCase: RefreshCartUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -54,6 +60,11 @@ class HomeViewModel @Inject constructor(
 
     init {
         fetchHomeData()
+        viewModelScope.launch {
+            session.collect {
+                refreshCartUseCase()
+            }
+        }
     }
 
     fun fetchHomeData() {
@@ -70,10 +81,14 @@ class HomeViewModel @Inject constructor(
             val brandsDeferred = async {
                 repository.getBrands()
             }
+            val couponsDeferred = async {
+                getActiveCouponsUseCase()
+            }
 
             val productsResult = productsDeferred.await()
             val categoriesResult = categoriesDeferred.await()
             val brandsResult = brandsDeferred.await()
+            val couponsResult = couponsDeferred.await()
 
             productsResult.onFailure {
                 _uiState.value = HomeUiState.Error(it)
@@ -97,7 +112,8 @@ class HomeViewModel @Inject constructor(
                 content = HomeContent(
                     products = products,
                     categories = categories,
-                    brands = brandsResult.getOrThrow()
+                    brands = brandsResult.getOrThrow(),
+                    coupons = couponsResult.getOrElse { emptyList() },
                 )
             )
         }

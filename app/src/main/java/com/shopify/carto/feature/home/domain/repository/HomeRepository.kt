@@ -3,6 +3,7 @@ package com.shopify.carto.feature.home.domain.repository
 import com.shopify.carto.feature.home.domain.model.Brand
 import com.shopify.carto.feature.home.domain.model.Product
 import com.shopify.carto.feature.home.domain.model.Category
+import com.shopify.carto.feature.home.domain.model.Coupon
 
 interface HomeRepository {
     suspend fun getProducts(): Result<List<Product>>
@@ -14,5 +15,7 @@ interface HomeRepository {
     ): Result<List<Product>>
 
     suspend fun getBrands(): Result<List<Brand>>
+
+    suspend fun getCoupons(limit: Int): Result<List<Coupon>>
 }
 
