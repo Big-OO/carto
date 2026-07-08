@@ -13,15 +13,22 @@ class OrderRemoteDataSourceImpl @Inject constructor(
         return try {
             val response = apiService.createOrder(version, request)
             if (response.isSuccessful && response.body() != null) {
-                val payload = response.body()?.data?.orderCreate
-                val userErrors = payload?.userErrors
-                if (!userErrors.isNullOrEmpty()) {
-                    val errorMsg = userErrors.joinToString(", ") { it.message ?: "Unknown error" }
+                val body = response.body()!!
+                val errors = body.errors
+                if (!errors.isNullOrEmpty()) {
+                    val errorMsg = errors.joinToString(", ") { it.message ?: "Unknown error" }
                     Result.failure(Exception(errorMsg))
-                } else if (payload?.order != null) {
-                    Result.success(payload.order)
                 } else {
-                    Result.failure(Exception("Order creation failed: empty order response"))
+                    val payload = body.data?.orderCreate
+                    val userErrors = payload?.userErrors
+                    if (!userErrors.isNullOrEmpty()) {
+                        val errorMsg = userErrors.joinToString(", ") { it.message ?: "Unknown error" }
+                        Result.failure(Exception(errorMsg))
+                    } else if (payload?.order != null) {
+                        Result.success(payload.order)
+                    } else {
+                        Result.failure(Exception("Order creation failed: empty order response"))
+                    }
                 }
             } else {
                 Result.failure(Exception("HTTP error: ${response.code()} ${response.message()}"))

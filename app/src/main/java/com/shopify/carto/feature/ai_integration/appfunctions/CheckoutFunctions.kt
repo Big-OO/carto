@@ -96,7 +96,7 @@ class CheckoutFunctions @Inject constructor(
                 name = line.productTitle,
                 quantity = line.quantity,
                 amountCents = (line.price * 100).toInt(),
-                variantId = line.id,
+                variantId = line.merchandiseId,
                 imageUrl = line.imageUrl
             )
         }
