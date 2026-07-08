@@ -1,0 +1,51 @@
+query GetOrderDetails($orderId: ID!) {
+  order(id: $orderId) {
+    id
+    name
+    createdAt
+    confirmationNumber
+    displayFinancialStatus
+    displayFulfillmentStatus
+    cancelledAt
+    closedAt
+    paymentGatewayNames
+    discountCodes
+    currentSubtotalPriceSet { shopMoney { amount currencyCode } }
+    currentTotalDiscountsSet { shopMoney { amount currencyCode } }
+    currentTotalTaxSet { shopMoney { amount currencyCode } }
+    currentShippingPriceSet { shopMoney { amount currencyCode } }
+    currentTotalPriceSet { shopMoney { amount currencyCode } }
+    shippingAddress { name address1 city country phone }
+    lineItems(first: 50) {
+      nodes {
+        id
+        title
+        name
+        sku
+        vendor
+        variantTitle
+        quantity
+        currentQuantity
+        image { url altText }
+        variant {
+          image { url altText }
+          product { featuredImage { url altText } }
+        }
+        product { featuredImage { url altText } }
+        originalUnitPriceSet { shopMoney { amount currencyCode } }
+        discountedTotalSet(withCodeDiscounts: true) { shopMoney { amount currencyCode } }
+        totalDiscountSet { shopMoney { amount currencyCode } }
+      }
+    }
+    fulfillments {
+      id
+      status
+      createdAt
+      trackingInfo { number url }
+    }
+    refunds {
+      id
+      createdAt
+    }
+  }
+}

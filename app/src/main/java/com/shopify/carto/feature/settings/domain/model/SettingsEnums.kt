@@ -1,10 +1,6 @@
 package com.shopify.carto.feature.settings.domain.model
 
-enum class Currency(val displayName: String) {
-    USD("USD"),
-    EGP("EGP"),
-    EUR("EUR")
-}
+
 
 enum class AppTheme(val displayName: String) {
     LIGHT("Light"),

@@ -36,11 +36,19 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
 
+import com.shopify.carto.feature.currency.domain.repository.CurrencyRepository
+import com.shopify.carto.feature.currency.presentation.format.CurrencyFormatter
+import com.shopify.carto.feature.currency.presentation.format.LocalCurrencyFormatter
+import com.shopify.carto.feature.currency.domain.model.Currency
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var settingsRepository: SettingsRepository
+
+    @Inject
+    lateinit var currencyRepository: CurrencyRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +56,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val appTheme by settingsRepository.theme.collectAsState(initial = AppTheme.LIGHT)
             val appLanguage by settingsRepository.language.collectAsState(initial = AppLanguage.ENGLISH)
+            val selectedCurrency by currencyRepository.observeSelectedCurrency().collectAsState(initial = Currency.USD)
+            val exchangeRates by currencyRepository.observeRates().collectAsState(initial = null)
+            
             val context = LocalContext.current
             val currentConfig = LocalConfiguration.current
 
@@ -95,7 +106,8 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(
                 LocalContext provides localizedContext,
                 LocalConfiguration provides configuration,
-                LocalLayoutDirection provides layoutDirection
+                LocalLayoutDirection provides layoutDirection,
+                LocalCurrencyFormatter provides CurrencyFormatter(selectedCurrency, exchangeRates)
             ) {
                 CartoTheme(appTheme = appTheme) {
                     Box(

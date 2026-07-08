@@ -38,7 +38,7 @@ import com.shopify.carto.feature.favorite.presentation.FavoriteViewModel
 import com.shopify.carto.feature.home.presentation.HomeUiState
 import com.shopify.carto.feature.home.presentation.HomeViewModel
 import com.shopify.carto.feature.home.presentation.screens.components.ErrorBox
-import com.shopify.carto.feature.home.presentation.screens.components.ProductCard
+import com.shopify.carto.core.components.ProductCard
 import com.shopify.carto.feature.home.presentation.screens.components.ProductsGridShimmer
 import com.shopify.carto.feature.home.presentation.screens.components.SearchTextField
 import kotlinx.coroutines.launch
@@ -152,16 +152,23 @@ fun AllProductsScreen(
                                 items(filteredProducts, key = { it.id }) { product ->
 
                                     ProductCard(
-                                        product = product,
+                                        name = product.name,
+                                        price = product.price,
+                                        imageUrl = product.imageUrl,
+                                        compareAtPrice = product.compareAtPrice,
+                                        isNew = product.isNew,
+                                        isOnSale = product.isOnSale,
+                                        productType = product.productType,
+                                        imageCount = product.imageCount,
                                         isGuest = isGuest,
                                         isFavorite = favoriteIds.contains(product.id),
-                                        onClick = onProductClick,
-                                        onFavoriteClick = { clicked ->
+                                        onClick = { onProductClick(product) },
+                                        onFavoriteClick = {
                                             favoriteViewModel.toggleFavorite(
-                                                productId = clicked.id,
-                                                name = clicked.name,
-                                                imageUrl = clicked.imageUrl,
-                                                price = clicked.price,
+                                                productId = product.id,
+                                                name = product.name,
+                                                imageUrl = product.imageUrl,
+                                                price = product.price,
                                             )
                                         },
                                         onGuestFavoriteClick = {

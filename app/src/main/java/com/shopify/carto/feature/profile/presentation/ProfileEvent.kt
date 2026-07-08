@@ -6,4 +6,5 @@ sealed interface ProfileEvent {
     data object RetryClicked : ProfileEvent
     data class SaveProfileClicked(val name: String) : ProfileEvent
     data object SettingClicked : ProfileEvent
+    data object OrdersClicked : ProfileEvent
 }
