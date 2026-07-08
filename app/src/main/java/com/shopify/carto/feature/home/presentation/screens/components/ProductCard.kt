@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.shopify.carto.feature.home.domain.model.Product
-import com.shopify.carto.feature.settings.domain.model.Currency
+import com.shopify.carto.feature.currency.domain.model.Currency
 import com.shopify.carto.ui.theme.CartoTheme
 
 

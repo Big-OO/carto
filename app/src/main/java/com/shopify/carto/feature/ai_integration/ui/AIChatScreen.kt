@@ -59,11 +59,11 @@ import com.shopify.carto.feature.ai_integration.voice.VoiceRecognitionState
 import com.shopify.carto.feature.home.domain.model.Product
 import com.shopify.carto.feature.home.presentation.screens.components.ProductCard
 import com.shopify.carto.feature.search.domain.model.SearchProduct
+import com.shopify.carto.feature.currency.domain.model.Currency
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.stringResource
 import com.shopify.carto.R
 
-// ─── Screen ──────────────────────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,10 +81,8 @@ fun AIChatScreen(
 
     var textInput by remember { mutableStateOf("") }
     var voiceState by remember { mutableStateOf<VoiceRecognitionState>(VoiceRecognitionState.Idle) }
-    // Accumulated rms amplitudes for waveform preview while recording
     val rmsHistory = remember { mutableStateListOf<Float>() }
 
-    // ── SpeechRecognizerManager — DisposableEffect: correct per compose-side-effects ──
     val manager = remember {
         SpeechRecognizerManager(context) { state ->
             voiceState = state
@@ -98,7 +96,6 @@ fun AIChatScreen(
         onDispose { manager.destroy() }
     }
 
-    // Clear rms on idle
     LaunchedEffect(voiceState) {
         when (val s = voiceState) {
             is VoiceRecognitionState.Partial -> textInput = s.text
@@ -118,7 +115,6 @@ fun AIChatScreen(
         }
     }
 
-    // ── Runtime permission ────────────────────────────────────────────────────
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -131,7 +127,6 @@ fun AIChatScreen(
         }
     }
 
-    // Auto-scroll to latest message
     LaunchedEffect(uiState.messages.size) {
         if (uiState.messages.isNotEmpty()) {
             listState.animateScrollToItem(uiState.messages.size - 1)
@@ -152,7 +147,6 @@ fun AIChatScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // ── Chat messages area ────────────────────────────────────────────
             Box(modifier = Modifier.weight(1f)) {
                 if (uiState.messages.isEmpty() ||
                     (uiState.messages.size == 1 && uiState.messages.first().text.isBlank())
@@ -190,7 +184,6 @@ fun AIChatScreen(
                 }
             }
 
-            // ── Recording overlay (WhatsApp-style, shown while holding mic) ──
             AnimatedVisibility(
                 visible = isListening,
                 enter = fadeIn(tween(150)) + expandVertically(tween(150)),
@@ -207,7 +200,6 @@ fun AIChatScreen(
                 )
             }
 
-            // ── Input bar ─────────────────────────────────────────────────────
             ChatInput(
                 textInput = textInput,
                 isListening = isListening,
@@ -220,13 +212,11 @@ fun AIChatScreen(
                     }
                 },
                 onMicPressStart = {
-                    // Hold started → request permission or start immediately
                     if (voiceState == VoiceRecognitionState.Idle) {
                         permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
                     }
                 },
                 onMicPressEnd = {
-                    // Finger lifted → stop & auto-send (result dispatched via LaunchedEffect)
                     if (isListening) manager.stopListening()
                 },
                 onMicCancel = {
@@ -240,7 +230,6 @@ fun AIChatScreen(
     }
 }
 
-// ─── Chat Header ──────────────────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -317,7 +306,7 @@ fun ChatHeader(
     )
 }
 
-// ─── Empty State ──────────────────────────────────────────────────────────────
+
 
 @Composable
 fun EmptyState(
@@ -395,13 +384,12 @@ fun EmptyState(
     }
 }
 
-// ─── Message Bubble ───────────────────────────────────────────────────────────
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MessageBubble(
     message: ChatMessage,
-    currency: com.shopify.carto.feature.settings.domain.model.Currency,
+    currency: Currency,
     isLastAiMessage: Boolean,
     onProductClick: (Long) -> Unit,
     onFavoriteClick: (SearchProduct) -> Unit,
@@ -665,7 +653,7 @@ fun VoiceMessageBubble(
 @Composable
 fun ProductsCarousel(
     products: List<SearchProduct>,
-    currency: com.shopify.carto.feature.settings.domain.model.Currency,
+    currency: Currency,
     onProductClick: (Long) -> Unit,
     onFavoriteClick: (SearchProduct) -> Unit,
     onAddToCartClick: (SearchProduct) -> Unit,
@@ -692,7 +680,7 @@ fun ProductsCarousel(
 @Composable
 fun ProductChatCardWrapper(
     product: SearchProduct,
-    currency: com.shopify.carto.feature.settings.domain.model.Currency,
+    currency: Currency,
     onClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onAddToCartClick: () -> Unit,
@@ -724,7 +712,6 @@ fun ProductChatCardWrapper(
             onClick = { _ -> onClick() },
             onFavoriteClick = { _ -> onFavoriteClick() }
         )
-        // Cart overlay chip
         FilledIconButton(
             onClick = onAddToCartClick,
             modifier = Modifier
@@ -809,7 +796,6 @@ fun VoiceRecordingBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Pulsing red record dot
             Box(
                 modifier = Modifier
                     .size(10.dp)

@@ -9,7 +9,7 @@ import com.shopify.carto.feature.search.domain.model.SearchProduct
 import com.shopify.carto.feature.shopping_cart.domain.usecase.AddToCartUseCase
 import com.shopify.carto.feature.favorite.domain.usecase.ToggleFavoriteUseCase
 import com.shopify.carto.feature.product_details.domain.model.merchandiseId
-import com.shopify.carto.feature.settings.domain.model.Currency as AppCurrency
+import com.shopify.carto.feature.currency.domain.model.Currency as AppCurrency
 import com.shopify.carto.feature.settings.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

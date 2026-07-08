@@ -16,17 +16,15 @@ import com.shopify.carto.feature.ai_integration.appfunctions.CompareFunctions
 import com.shopify.carto.feature.ai_integration.appfunctions.OutfitFunctions
 import com.shopify.carto.feature.ai_integration.appfunctions.SearchFunctions
 import com.shopify.carto.feature.ai_integration.appfunctions.WishlistFunctions
-import com.shopify.carto.BuildConfig
 import com.shopify.carto.core.notification.domain.work.NotificationWorkerManager
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import com.shopify.carto.feature.currency.worker.CurrencySyncWorker
 
 
 @HiltAndroidApp
-class CartoApplication: Application(), AppFunctionConfiguration.Provider {
+class CartoApplication: Application(), AppFunctionConfiguration.Provider, Configuration.Provider {
 
     @Inject
     lateinit var searchFunctions: SearchFunctions
@@ -42,7 +40,6 @@ class CartoApplication: Application(), AppFunctionConfiguration.Provider {
 
     @Inject
     lateinit var outfitFunctions: OutfitFunctions
-class CartoApplication: Application(), Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
