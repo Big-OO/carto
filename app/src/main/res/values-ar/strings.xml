@@ -17,6 +17,10 @@
     <string name="homeCategoriesTitle">الأقسام</string>
     <string name="homeProductsTitle">جميع المنتجات</string>
     <string name="homeBrandsTitle">جميع الماركات</string>
+    <string name="homeCouponCopyCode">نسخ الكود</string>
+    <string name="homeCouponCodeCopied">تم نسخ كود الخصم.</string>
+    <string name="homeCouponPercentageOff">خصم %1$s%% على طلبك</string>
+    <string name="homeCouponFixedAmountOff">خصم %1$s على طلبك</string>
 
     <!--   Saved SCREEN   -->
     <string name="savedScreenTitle">المحفوظة</string>
@@ -351,4 +355,30 @@
     <string name="ai_message_placeholder">اكتب رسالة إلى كارتو AI…</string>
     <string name="ai_copied_toast">تم النسخ</string>
     <string name="ai_welcome_assistant_message">مرحباً! أنا مساعد التسوق الذكي الخاص بك. اسألني عن أي شيء يخص البحث عن المنتجات، مقارنة الأسعار، إدارة العربة أو قائمة الأمنيات، أو تنسيق الملابس!</string>
+
+    <!-- Search -->
+    <string name="search_initial_title">ابدأ البحث</string>
+    <string name="search_initial_subtitle">اكتب اسم المنتج للحصول على اقتراحات سريعة، ثم افتح تفاصيل المنتج.</string>
+    <string name="search_history_title">عمليات البحث الأخيرة</string>
+    <string name="search_suggestion_subtitle">اضغط لعرض تفاصيل المنتج</string>
+    <string name="search_empty_title">لا توجد نتائج</string>
+    <string name="search_empty_subtitle">جرّب كلمة مشابهة أو ابحث بكلمة أعم.</string>
+    <string name="search_error_network">تحقق من اتصال الإنترنت وحاول مرة أخرى.</string>
+    <string name="search_error_unauthorized">لم نتمكن من تحميل المنتجات الآن. حاول لاحقاً.</string>
+    <string name="search_error_server">المتجر مشغول الآن. حاول لاحقاً.</string>
+    <string name="search_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقاً.</string>
+    <string name="search_back_content_description">رجوع</string>
+
+    <!-- Home Screen Glance Widget -->
+    <string name="home_profile_widget_description">ويدجت ملف العميل في كارتو</string>
+    <string name="home_profile_widget_loading">جاري تحميل الملف…</string>
+    <string name="home_profile_widget_customer_id">العميل #%s</string>
+    <string name="home_profile_widget_orders">الطلبات</string>
+    <string name="home_profile_widget_total_paid">إجمالي المدفوع</string>
+    <string name="home_profile_widget_footer">افتح كارتو لآخر التحديثات</string>
+    <string name="home_profile_widget_guest_title">ملف كارتو</string>
+    <string name="home_profile_widget_guest_message">سجّل الدخول لعرض إحصائياتك هنا.</string>
+    <string name="home_profile_widget_unavailable_title">الملف غير متاح</string>
+    <string name="home_profile_widget_unavailable_message">افتح التطبيق مرة واحدة لتحديث بياناتك.</string>
+
 </resources>

@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shopify.carto.feature.ai_integration.ai.AIShoppingAgent
 import com.shopify.carto.feature.product_details.domain.usecase.GetProductDetailsUseCase
-import com.shopify.carto.feature.search.domain.model.SearchProduct
 import com.shopify.carto.feature.shopping_cart.domain.usecase.AddToCartUseCase
 import com.shopify.carto.feature.favorite.domain.usecase.ToggleFavoriteUseCase
 import com.shopify.carto.feature.favorite.domain.usecase.ObserveFavoriteIdsUseCase
 import com.shopify.carto.feature.product_details.domain.model.merchandiseId
+import com.shopify.carto.feature.search.domain.model.SearchCatalogProduct
 import com.shopify.carto.feature.currency.domain.model.Currency as AppCurrency
 import com.shopify.carto.feature.settings.domain.repository.SettingsRepository
 import com.shopify.carto.feature.currency.domain.repository.CurrencyRepository
@@ -36,7 +36,7 @@ data class ChatMessage(
     val text: String,
     val isUser: Boolean,
     val type: MessageType = MessageType.TEXT,
-    val products: List<SearchProduct> = emptyList(),
+    val products: List<SearchCatalogProduct> = emptyList(),
     val isVoiceMessage: Boolean = false,
     val timestamp: Long = System.currentTimeMillis(),
     val options: List<String> = emptyList(),
@@ -129,7 +129,7 @@ class AIChatViewModel @Inject constructor(
 
                 val agentResponse = agentResult.responseText
                 val productIds = agentResult.productIds
-                val recommendedProducts = mutableListOf<SearchProduct>()
+                val recommendedProducts = mutableListOf<SearchCatalogProduct>()
                 productIds.forEach { id ->
                     val detailsResult = getProductDetailsUseCase(id)
                     detailsResult.onSuccess { product ->
@@ -140,7 +140,7 @@ class AIChatViewModel @Inject constructor(
                         )
 
                         recommendedProducts.add(
-                            SearchProduct(
+                            SearchCatalogProduct(
                                 id = product.id,
                                 title = product.title,
                                 price = product.price,
@@ -242,7 +242,7 @@ class AIChatViewModel @Inject constructor(
         }
     }
 
-    fun toggleProductFavorite(product: SearchProduct) {
+    fun toggleProductFavorite(product: SearchCatalogProduct) {
         viewModelScope.launch {
             toggleFavoriteUseCase(
                 productId = product.id,

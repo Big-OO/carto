@@ -4,6 +4,7 @@ import com.shopify.carto.feature.search.data.local.SearchHistoryLocalDataSource
 import com.shopify.carto.feature.search.data.mapper.toDomain
 import com.shopify.carto.feature.search.data.remote.SearchProductRemoteDataSource
 import com.shopify.carto.feature.search.data.result.SearchDataResult
+import com.shopify.carto.feature.search.domain.model.SearchCatalogProduct
 import com.shopify.carto.feature.search.domain.model.SearchFailure
 import com.shopify.carto.feature.search.domain.model.SearchHistoryItem
 import com.shopify.carto.feature.search.domain.model.SearchProduct
@@ -17,20 +18,33 @@ class SearchRepositoryImpl @Inject constructor(
     private val remoteDataSource: SearchProductRemoteDataSource,
     private val localDataSource: SearchHistoryLocalDataSource,
 ) : SearchRepository {
-    override suspend fun getInitialProducts(): SearchResult<List<SearchProduct>> {
-        return when (val result = remoteDataSource.getInitialProducts()) {
+
+    override suspend fun searchProducts(keyword: String): SearchResult<List<SearchProduct>> {
+        val cleanedKeyword = keyword.trim()
+        if (cleanedKeyword.isBlank()) {
+            return SearchResult.Success(emptyList())
+        }
+
+        return when (val result = remoteDataSource.searchProducts(cleanedKeyword)) {
             is SearchDataResult.Success -> SearchResult.Success(result.data)
             is SearchDataResult.Failure -> result.failure.toDomainResult()
         }
     }
 
-    override suspend fun searchProducts(keyword: String): SearchResult<List<SearchProduct>> {
+    override suspend fun getInitialCatalogProducts(): SearchResult<List<SearchCatalogProduct>> {
+        return when (val result = remoteDataSource.getInitialCatalogProducts()) {
+            is SearchDataResult.Success -> SearchResult.Success(result.data)
+            is SearchDataResult.Failure -> result.failure.toDomainResult()
+        }
+    }
+
+    override suspend fun searchCatalogProducts(keyword: String): SearchResult<List<SearchCatalogProduct>> {
         val cleanedKeyword = keyword.trim()
         if (cleanedKeyword.isBlank()) {
-            return getInitialProducts()
+            return getInitialCatalogProducts()
         }
 
-        return when (val result = remoteDataSource.searchProducts(cleanedKeyword)) {
+        return when (val result = remoteDataSource.searchCatalogProducts(cleanedKeyword)) {
             is SearchDataResult.Success -> SearchResult.Success(result.data)
             is SearchDataResult.Failure -> result.failure.toDomainResult()
         }

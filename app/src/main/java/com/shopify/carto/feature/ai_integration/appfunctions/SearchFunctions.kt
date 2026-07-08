@@ -2,13 +2,13 @@ package com.shopify.carto.feature.ai_integration.appfunctions
 
 import androidx.appfunctions.AppFunctionContext
 import androidx.appfunctions.service.AppFunction
-import com.shopify.carto.feature.search.domain.usecases.SearchProductsUseCase
 import com.shopify.carto.feature.product_details.domain.usecase.GetProductDetailsUseCase
 import com.shopify.carto.feature.search.domain.model.SearchResult
+import com.shopify.carto.feature.search.domain.usecases.SearchCatalogProductsUseCase
 import javax.inject.Inject
 
 class SearchFunctions @Inject constructor(
-    private val searchProductsUseCase: SearchProductsUseCase,
+    private val searchProductsUseCase: SearchCatalogProductsUseCase,
     private val getProductDetailsUseCase: GetProductDetailsUseCase
 ) {
 

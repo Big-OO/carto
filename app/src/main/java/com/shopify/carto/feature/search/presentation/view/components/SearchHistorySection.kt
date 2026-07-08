@@ -3,6 +3,7 @@ package com.shopify.carto.feature.search.presentation.view.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -20,9 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.shopify.carto.R
 import com.shopify.carto.feature.search.domain.model.SearchHistoryItem
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -31,7 +35,6 @@ fun SearchHistorySection(
     history: List<SearchHistoryItem>,
     onHistoryItemClicked: (String) -> Unit,
     onHistoryItemDeleted: (Long) -> Unit,
-    onClearHistoryClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (history.isEmpty()) return
@@ -42,7 +45,7 @@ fun SearchHistorySection(
             .padding(horizontal = 24.dp),
     ) {
         Text(
-            text = "Recent searches",
+            text = stringResource(R.string.search_history_title),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -53,8 +56,9 @@ fun SearchHistorySection(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             maxItemsInEachRow = 3,
+            maxLines = 3,
         ) {
-            history.forEach { item ->
+            history.take(9).forEach { item ->
                 SearchHistoryChip(
                     item = item,
                     onClick = { onHistoryItemClicked(item.query) },
@@ -92,13 +96,16 @@ private fun SearchHistoryChip(
 
             Spacer(Modifier.width(7.dp))
 
-            Text(
-                text = item.query,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-            )
+            Box(modifier = Modifier.width(80.dp)) {
+                Text(
+                    text = item.query,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
 
             Spacer(Modifier.width(4.dp))
 

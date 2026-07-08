@@ -27,17 +27,17 @@ fun SearchProductResultItemShimmer(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 20.dp, horizontal = 24.dp),
+                .padding(vertical = 18.dp, horizontal = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
                 modifier = Modifier
-                    .size(76.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(14.dp))
                     .shimmerEffect(),
             )
 
-            Spacer(Modifier.width(24.dp))
+            Spacer(Modifier.width(18.dp))
 
             Column(
                 modifier = Modifier.weight(1f),
@@ -50,12 +50,12 @@ fun SearchProductResultItemShimmer(
                         .shimmerEffect(),
                 )
 
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(10.dp))
 
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.38f)
-                        .height(14.dp)
+                        .fillMaxWidth(0.42f)
+                        .height(13.dp)
                         .clip(RoundedCornerShape(50))
                         .shimmerEffect(),
                 )

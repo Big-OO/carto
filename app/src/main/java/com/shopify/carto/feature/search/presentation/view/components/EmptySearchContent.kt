@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -70,7 +71,7 @@ fun EmptySearchContent(
         Spacer(Modifier.height(42.dp))
 
         Text(
-            text = "No Results Found!",
+            text = stringResource(R.string.search_empty_title),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -80,7 +81,7 @@ fun EmptySearchContent(
         Spacer(Modifier.height(16.dp))
 
         Text(
-            text = "Try a similar word or something\nmore general.",
+            text = stringResource(R.string.search_empty_subtitle),
             fontSize = 18.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             lineHeight = 30.sp,

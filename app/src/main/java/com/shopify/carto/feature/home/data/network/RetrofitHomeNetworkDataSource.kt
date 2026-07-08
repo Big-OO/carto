@@ -4,8 +4,8 @@ import com.shopify.carto.core.network.config.ShopifyConfig
 import com.shopify.carto.feature.home.data.HomeApiService
 import com.shopify.carto.feature.home.data.model.CollectionsResponse
 import com.shopify.carto.feature.home.data.model.ProductDetailsResponse
+import com.shopify.carto.feature.home.data.model.PriceRulesResponse
 import com.shopify.carto.feature.home.data.model.ProductsResponse
-import com.shopify.carto.feature.home.data.model.SmartCollectionsResponse
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -30,7 +30,14 @@ class RetrofitHomeNetworkDataSource @Inject constructor(
         return api.getProductsByCollection(version = config.apiVersion, collectionId = collectionId)
     }
 
-    override suspend fun getBrands(): Response<SmartCollectionsResponse> {
+    override suspend fun getBrands(): Response<CollectionsResponse> {
         return api.getBrands(version = config.apiVersion)
+    }
+
+    override suspend fun getPriceRules(limit: Int): Response<PriceRulesResponse> {
+        return api.getPriceRules(
+            version = config.apiVersion,
+            limit = limit,
+        )
     }
 }

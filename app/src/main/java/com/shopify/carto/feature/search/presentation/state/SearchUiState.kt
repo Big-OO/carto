@@ -1,18 +1,15 @@
 package com.shopify.carto.feature.search.presentation.state
 
+import androidx.annotation.StringRes
 import com.shopify.carto.feature.search.domain.model.SearchHistoryItem
 import com.shopify.carto.feature.search.domain.model.SearchProduct
 
 data class SearchUiState(
     val query: String = "",
     val history: List<SearchHistoryItem> = emptyList(),
-    val initialProducts: List<SearchProduct> = emptyList(),
     val searchProducts: List<SearchProduct> = emptyList(),
-    val isInitialLoading: Boolean = false,
     val isSearchLoading: Boolean = false,
-    val initialErrorMessage: String = "",
-    val searchErrorMessage: String = "",
-    val hasLoadedInitialProducts: Boolean = false,
+    @StringRes val searchErrorMessageRes: Int? = null,
     val hasSearched: Boolean = false,
 ) {
     val visibleHistory: List<SearchHistoryItem>
@@ -21,24 +18,24 @@ data class SearchUiState(
     val isSearchMode: Boolean
         get() = query.isNotBlank()
 
-    val displayedProducts: List<SearchProduct>
-        get() = if (isSearchMode) searchProducts else initialProducts
-
-    val isLoading: Boolean
-        get() = if (isSearchMode) isSearchLoading else isInitialLoading
-
-    val errorMessage: String
-        get() = if (isSearchMode) searchErrorMessage else initialErrorMessage
-
     val shouldShowHistory: Boolean
         get() = query.isBlank() && visibleHistory.isNotEmpty()
 
+    val shouldShowInitialPrompt: Boolean
+        get() = query.isBlank()
+
+    val shouldShowSuggestions: Boolean
+        get() = query.isNotBlank() &&
+            !isSearchLoading &&
+            searchErrorMessageRes == null &&
+            searchProducts.isNotEmpty()
+
     val shouldShowEmptyResult: Boolean
-        get() {
-            val hasFinishedInitialLoading = query.isBlank() && hasLoadedInitialProducts && !isInitialLoading
-            val hasFinishedSearchLoading = query.isNotBlank() && hasSearched && !isSearchLoading
-            return errorMessage.isBlank() && displayedProducts.isEmpty() && (hasFinishedInitialLoading || hasFinishedSearchLoading)
-        }
+        get() = query.isNotBlank() &&
+            hasSearched &&
+            !isSearchLoading &&
+            searchErrorMessageRes == null &&
+            searchProducts.isEmpty()
 
     private companion object {
         const val MAX_HISTORY_CHIPS = 8

@@ -25,61 +25,50 @@ class CategoryProductsViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     fun loadCategory(collectionId: Long) {
-
         viewModelScope.launch {
-
             _uiState.value = CategoryProductsUiState.Loading
 
             repository
                 .getProductsByCategory(collectionId)
                 .onSuccess {
-
                     allProducts = it
-
                     updateUi("All")
-
                 }
                 .onFailure {
-
                     _uiState.value =
                         CategoryProductsUiState.Error(
                             it.message ?: "Unknown error"
                         )
-
                 }
-
         }
-
     }
-    private fun updateUi(
-        selectedChip: String
-    ) {
 
+    private fun updateUi(selectedChip: String) {
         val filteredProducts =
-            if (selectedChip == "All")
+            if (selectedChip == "All") {
                 allProducts
-            else
+            } else {
                 allProducts.filter {
                     it.productType.equals(selectedChip, true)
                 }
+            }
+
+        val chips = listOf("All") +
+                allProducts
+                    .map { it.productType.trim() }
+                    .filter { it.isNotBlank() }
+                    .distinctBy { it.lowercase() }
+                    .sortedBy { it.lowercase() }
 
         _uiState.value =
             CategoryProductsUiState.Success(
                 products = filteredProducts,
-                chips = listOf("All") +
-                        allProducts
-                            .map { it.productType }
-                            .distinct(),
+                chips = chips,
                 selectedChip = selectedChip
             )
     }
 
-
     fun selectChip(type: String) {
-
         updateUi(type)
-
     }
-
-
 }
