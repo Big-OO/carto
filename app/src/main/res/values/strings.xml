@@ -25,7 +25,7 @@
 
     <!--   Search SCREEN   -->
     <string name="searchScreenTitle">Search</string>
-    <string name="searchHintTitle">Search for clothes...</string>
+    <string name="searchHintTitle">Search for clothes…</string>
 
     <!--   ERRORS   -->
     <string name="errorNoInternetTitle">No Internet Connection</string>
@@ -87,7 +87,7 @@
     <string name="accountLogoutBtnTitle">Logout</string>
     <string name="accountNotProvidedPhoneTitle">Not provided</string>
     <string name="accountSaveChangesTitle">Save Changes</string>
-    <string name="accountSaveChangesLoadingTitle">Saving updates...</string>
+    <string name="accountSaveChangesLoadingTitle">Saving updates…</string>
     <string name="accountEnterYourFullNamePlaceHolder">Enter your full name</string>
     <string name="accountErrorMsgWhenLT3WordsTitle">Name must be at least 3 characters long</string>
     <string name="accountErrorMsgWhenFASNameAreMissingTitle">Please enter both first and last name</string>
@@ -201,4 +201,156 @@
     <string name="error_server_down">Server Down Error</string>
     <string name="error_unknown">UnKnown Error</string>
     <string name="login_required">please log in first</string>
+
+    <string name="ai_welcome_title">Welcome to Carto AI</string>
+    <string name="ai_welcome_subtitle">Ask me anything about products, fashion, outfits, comparisons, or shopping advice!</string>
+    <string name="ai_try_asking">Try asking:</string>
+    <string name="ai_suggestion_wear">What should I wear today? 👕</string>
+    <string name="ai_suggestion_shoes">Show best running shoes 👟</string>
+    <string name="ai_suggestion_compare">Compare Nike vs Adidas ⚔️</string>
+    <string name="ai_suggestion_cart">Show my cart details 🛒</string>
+    <string name="ai_chat_header_title">Carto AI</string>
+    <string name="ai_chat_header_subtitle">Your smart shopping assistant</string>
+    <string name="ai_recording">Recording…</string>
+    <string name="ai_listening">🎙 Listening…</string>
+    <string name="ai_message_placeholder">Message Carto AI…</string>
+    <string name="ai_copied_toast">Copied</string>
+    <string name="ai_welcome_assistant_message">Hi! I\'m your AI Shopping Assistant. Ask me anything about searching products, comparing prices, managing your cart/wishlist, or generating outfit ideas!</string>
+    <string name="order_history_screen_title">My Orders</string>
+    <string name="order_history_no_orders_title">No %1$s Orders!</string>
+    <string name="order_history_no_orders_subtitle">You don\'t have any %1$s orders at this time.</string>
+
+    <string name="order_history_ongoing_tab">Ongoing</string>
+    <string name="order_history_order_label">Order %1$s</string>
+    <string name="order_history_completed_tab">Completed</string>
+    <string name="order_history_see_details">See Details</string>
+    <string name="order_history_before_discount">Before discount: %1$s</string>
+    <string name="order_history_back_content_description">Back</string>
+    <string name="order_history_notifications_content_description">Notifications</string>
+    <string name="order_history_error_missing_customer">Please login again to view your orders.</string>
+    <string name="order_history_error_configuration">Shopify order configuration is missing.</string>
+    <string name="order_history_error_unauthorized">Please login again to view your orders.</string>
+    <string name="order_history_error_network">Check your internet connection and try again.</string>
+    <string name="order_history_error_server">Something went wrong. Please try again later.</string>
+    <string name="order_history_error_not_found">We could not find your orders.</string>
+    <string name="order_history_error_unknown">Something went wrong. Please try again later.</string>
+    <string name="order_details_title">Order Details</string>
+    <string name="order_details_back_content_description">Back</string>
+    <string name="order_details_products_title">Products</string>
+    <string name="order_details_payment_summary_title">Payment Summary</string>
+    <string name="order_details_extra_info_title">More Details</string>
+    <string name="order_details_shipping_title">Shipping</string>
+    <string name="order_details_subtotal">Subtotal</string>
+    <string name="order_details_discount">Discount</string>
+    <string name="order_details_shipping">Shipping</string>
+    <string name="order_details_tax">Tax</string>
+    <string name="order_details_total">Total</string>
+    <string name="order_details_payment_method">Payment method</string>
+    <string name="order_details_coupons">Coupons</string>
+    <string name="order_details_confirmation_number">Confirmation number</string>
+    <string name="order_details_lifecycle">Order status</string>
+    <string name="order_details_variant_and_quantity">%1$s · Qty %2$s</string>
+    <string name="order_details_sku">SKU: %1$s</string>
+    <string name="order_details_cancel_order">Cancel Order</string>
+    <string name="order_details_remove_from_history">Remove From History</string>
+    <string name="order_details_cancel_dialog_title">Cancel order?</string>
+    <string name="order_details_cancel_dialog_message">This will request order cancellation in Shopify. This action cannot be undone from the app.</string>
+    <string name="order_details_remove_dialog_title">Remove order?</string>
+    <string name="order_details_remove_dialog_message">This will hide the order from your app history only. It will not delete the order from Shopify.</string>
+    <string name="order_details_confirm_negative_action">Confirm</string>
+    <string name="order_details_order_cancelled_success">Order cancelled successfully.</string>
+    <string name="order_details_order_removed_success">Order removed from history.</string>
+    <string name="order_details_error_configuration">Shopify order configuration is missing.</string>
+    <string name="order_details_error_unauthorized">Please login again to view this order.</string>
+    <string name="order_details_error_network">Check your internet connection and try again.</string>
+    <string name="order_details_error_server">Something went wrong. Please try again later.</string>
+    <string name="order_details_error_not_found">We could not find this order.</string>
+    <string name="order_details_error_unknown">Something went wrong. Please try again later.</string>
+    <string name="accountMyOrdersTitle">My Orders</string>
+
+
+    <!--  Notification  -->
+    <string name="notification_default_title">Carto is waiting</string>
+    <string name="notification_default_subtitle">Open the app and discover fresh styles today.</string>
+
+    <string name="notification_cart_title">Make them yours</string>
+    <string name="notification_cart_subtitle">Checkout now before your favorites disappear.</string>
+
+    <string-array name="notification_general_titles">
+        <item>Still thinking about it?</item>
+        <item>Fresh styles just landed</item>
+        <item>New drip alert</item>
+        <item>Your next outfit is here</item>
+        <item>Trending now</item>
+        <item>Your wishlist is calling</item>
+        <item>New arrivals are live</item>
+        <item>Ready for a new look?</item>
+        <item>Your next favorite item</item>
+    </string-array>
+
+    <string-array name="notification_general_subtitles">
+        <item>That item you liked is waiting for you.</item>
+        <item>Explore the latest arrivals picked for you.</item>
+        <item>Upgrade your look with our newest collection.</item>
+        <item>Find styles that match your vibe today.</item>
+        <item>See what everyone is checking out today.</item>
+        <item>Some of your saved items are waiting.</item>
+        <item>Be the first to shop the latest styles.</item>
+        <item>Fresh styles are waiting for you.</item>
+        <item>Open the app and find it today.</item>
+    </string-array>
+
+    <!-- cart screen -->
+
+    <string name="cartMyCart">My Cart</string>
+    <string name="cartRemoveItem">Remove Item</string>
+    <string name="cartRemoveItemConfirmation">Are you sure you want to remove this item from your cart?</string>
+    <string name="cartRemove">Remove</string>
+    <string name="cartCancel">Cancel</string>
+    <string name="cartSubTotal">Sub-total</string>
+    <string name="cartShippingFee">Shipping fee</string>
+    <string name="cartTotal">Total</string>
+    <string name="cartGoToCheckout">Go To Checkout</string>
+    <string name="cartEmptyTitle">Your Cart Is Empty</string>
+    <string name="cartEmptyDescription">When you add products, they will appear here.</string>
+
+    <!-- product details screen -->
+
+    <string name="productDetailsRemoveFromCart">Remove from Cart</string>
+    <string name="productDetailsRemoveFromCartConfirmation">Are you sure you want to remove this item from your cart?</string>
+    <string name="productDetailsTryAgain">Try Again</string>
+    <string name="productDetailsPrice">Price</string>
+    <string name="productDetailsAddToCart">Add to Cart</string>
+    <string name="productDetailsInCart">In Cart</string>
+    <string name="productDetailsOutOfStock">Out of Stock</string>
+
+    <!-- Ads sections -->
+
+    <string name="homeAdBigSaleTitle">Big Sale</string>
+    <string name="homeAdBigSaleSubtitle">Up to 30% OFF</string>
+    <string name="homeAdBigSaleButton">Shop</string>
+
+    <string name="homeAdNewArrivalsTitle">New Arrivals</string>
+    <string name="homeAdNewArrivalsSubtitle">Fresh products</string>
+    <string name="homeAdNewArrivalsButton">Explore</string>
+
+    <string name="homeAdFreeDeliveryTitle">Free Delivery</string>
+    <string name="homeAdFreeDeliverySubtitle">Orders above $50</string>
+    <string name="homeAdFreeDeliveryButton">Grab</string>
+
+    <!-- Profile Guest Screen -->
+    <string name="profileGuestIconContentDescription">Guest Session</string>
+    <string name="profileGuestTitle">Access Your Profile</string>
+    <string name="profileGuestDescription">
+    You are currently browsing as a guest. Please log in or create an account to view your profile details, order history, and saved addresses.
+    </string>
+    <string name="profileGuestLoginButton">Log In</string>
+    <string name="profileGuestSomethingWentWrong">Something went wrong</string>
+    <string name="profileGuestRetry">Retry</string>
+
+    <string name="removeFavoriteTitle">Remove item?</string>
+    <string name="removeFavoriteMessage">Are you sure you want to remove this item from your favorites?</string>
+    <string name="removeFavoriteConfirm">Yes, Remove</string>
+    <string name="removeFavoriteCancel">No, Keep it</string>
+
 </resources>

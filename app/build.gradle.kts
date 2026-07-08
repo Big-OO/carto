@@ -1,4 +1,18 @@
 import java.util.Properties
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use(::load)
+    }
+}
+
+fun localProperty(key: String, defaultValue: String = ""): String {
+    return localProperties.getProperty(key) ?: defaultValue
+}
+
+fun String.asBuildConfigString(): String = "\"${replace("\\", "\\\\").replace("\"", "\\\"")}\""
+
 val packageName: String = "com.shopify.carto"
 
 
@@ -19,25 +33,30 @@ apollo {
         schemaFile.set(file("src/main/graphql/shopify/schema.json"))
         packageNamesFromFilePaths()
     }
-}
 
-val localProperties = Properties().apply {
-    val file = rootProject.file("local.properties")
-    if (file.exists()) {
-        file.inputStream().use(::load)
+    service("shopifyAdmin") {
+        packageName.set("com.shopify.carto.core.graphql.admin")
+        srcDir("src/main/graphql/admin")
+        schemaFile.set(file("src/main/graphql/admin/schema.json"))
+
+        introspection {
+            endpointUrl.set("https://mad46-and7.myshopify.com/admin/api/2026-01/graphql.json")
+            schemaFile.set(file("src/main/graphql/admin/schema.json"))
+            headers.put(
+                "X-Shopify-Access-Token",
+                localProperty("shopify.admin.access.token")
+            )
+        }
+
+        packageNamesFromFilePaths()
     }
 }
-
-fun localProperty(key: String, defaultValue: String = ""): String {
-    return localProperties.getProperty(key) ?: defaultValue
-}
-
-fun String.asBuildConfigString(): String = "\"${replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
     arg("room.incremental", "true")
     arg("room.expandProjection", "true")
+    arg("appfunctions:aggregateAppFunctions", "true")
 }
 
 hilt {
@@ -112,6 +131,17 @@ android {
             "PAYMOB_FLASH_BASE_URL",
             localProperty("paymob.flash.base.url").asBuildConfigString()
         )
+        buildConfigField(
+            "String",
+            "AI_API_BASE_URL",
+            localProperty("ai.api.base.url").asBuildConfigString()
+        )
+        buildConfigField(
+            "String",
+            "AI_API_KEY",
+            localProperty("ai.api.key").asBuildConfigString()
+        )
+
     }
 
     buildTypes {
@@ -162,6 +192,10 @@ android {
     }
 }
 
+ksp {
+    arg("appfunctions:aggregateAppFunctions", "true")
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
@@ -206,10 +240,23 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.play.services.auth)
 
     implementation(libs.hilt.android)
     implementation(libs.hilt.lifecycle.viewmodel.compose)
     ksp(libs.hilt.compiler)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
+
+    implementation(libs.paymob.sdk)
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
@@ -235,6 +282,10 @@ dependencies {
     kspAndroidTest(libs.hilt.compiler)
 
     implementation(libs.paymob.sdk)
+
+    implementation(libs.androidx.appfunctions)
+    implementation(libs.androidx.appfunctions.service)
+    ksp(libs.androidx.appfunctions.compiler)
 
     implementation(libs.mapbox.android.maps)
     implementation(libs.mapbox.maps.compose)

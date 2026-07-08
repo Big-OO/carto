@@ -33,10 +33,12 @@ interface HomeApiService {
         @Path("version") version: String = "2026-01"
     ): Response<CollectionsResponse>
 
-    @GET("admin/api/{version}/collections/{collectionId}/products.json")
+    @GET("admin/api/{version}/products.json")
     suspend fun getProductsByCollection(
         @Path("version") version: String = "2026-01",
-        @Path("collectionId") collectionId: Long
+        @Query("collection_id") collectionId: Long,
+        @Query("fields") fields: String =
+            "id,title,handle,vendor,product_type,status,variants,images,tags,created_at,updated_at"
     ): Response<ProductsResponse>
 
     @GET("admin/api/{version}/smart_collections.json")

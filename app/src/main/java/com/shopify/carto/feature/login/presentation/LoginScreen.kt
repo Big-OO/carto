@@ -28,12 +28,20 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.shopify.carto.R
 import com.shopify.carto.core.components.PrimaryButton
 import com.shopify.carto.core.components.TextField
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +52,8 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -266,7 +276,37 @@ fun LoginScreen(
                     )
                 ) {
                     OutlinedButton(
-                        onClick = { /* handle google login click*/ },
+                        onClick = {
+                            coroutineScope.launch {
+                                try {
+                                    val credentialManager = CredentialManager.create(context)
+                                    val webClientId = "579211706775-1d135j2b1oglq75qeutf3ugmau7t2c27.apps.googleusercontent.com"
+                                    val googleIdOption = GetGoogleIdOption.Builder()
+                                        .setFilterByAuthorizedAccounts(false)
+                                        .setServerClientId(webClientId)
+                                        .setAutoSelectEnabled(false)
+                                        .build()
+
+                                    val request = GetCredentialRequest.Builder()
+                                        .addCredentialOption(googleIdOption)
+                                        .build()
+
+                                    val result = credentialManager.getCredential(context, request)
+                                    val credential = result.credential
+                                    if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                                        val idToken = googleIdTokenCredential.idToken
+                                        viewModel.onEvent(LoginEvent.GoogleLoginTokenReceived(idToken))
+                                    } else {
+                                        viewModel.onEvent(LoginEvent.GoogleLoginError("Unsupported credential type"))
+                                    }
+                                } catch (e: Exception) {
+                                    if (e !is GetCredentialCancellationException) {
+                                        viewModel.onEvent(LoginEvent.GoogleLoginError(e.localizedMessage ?: "Google sign in failed"))
+                                    }
+                                }
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),

@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.LocalMall
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Payments
+import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,6 +57,29 @@ fun ProfileSuccessContent(
     var visible by remember { mutableStateOf(false) }
     var showEditBottomSheet by remember { mutableStateOf(false) }
 
+    val updateProfileTitle = stringResource(R.string.accountUpdateProfileTitle)
+    val fullNameTitle = stringResource(R.string.accountFullNameTitle)
+    val fullNamePlaceholder = stringResource(R.string.accountEnterYourFullNamePlaceHolder)
+    val saveChanges = stringResource(R.string.accountSaveChangesTitle)
+    val savingChanges = stringResource(R.string.accountSaveChangesLoadingTitle)
+    val cancel = stringResource(R.string.accountCancelTitle)
+    val nameTooShort =
+        stringResource(R.string.accountErrorMsgWhenLT3WordsTitle)
+    val firstLastMissing =
+        stringResource(R.string.accountErrorMsgWhenFASNameAreMissingTitle)
+
+    val editProfileStrings = remember {
+        EditProfileStrings(
+            updateProfileTitle = updateProfileTitle,
+            fullNameTitle = fullNameTitle,
+            fullNamePlaceholder = fullNamePlaceholder,
+            saveChanges = saveChanges,
+            savingChanges = savingChanges,
+            cancel = cancel,
+            nameTooShort = nameTooShort,
+            firstLastMissing = firstLastMissing
+        )
+    }
     LaunchedEffect(Unit) {
         visible = true
     }
@@ -67,6 +92,7 @@ fun ProfileSuccessContent(
         ) {
             EditProfileBottomSheetContent(
                 currentName = profile.name,
+                strings = editProfileStrings,
                 effectFlow = effectFlow,
                 onDismiss = { showEditBottomSheet = false },
                 onEvent = onEvent
@@ -151,6 +177,14 @@ fun ProfileSuccessContent(
             }
 
             Spacer(Modifier.height(24.dp))
+
+            SecondaryButton(
+                text = stringResource(R.string.accountMyOrdersTitle),
+                icon = Icons.AutoMirrored.Outlined.ReceiptLong,
+                color = CartoTheme.colors.primary,
+            ) { onEvent(ProfileEvent.OrdersClicked) }
+
+            Spacer(Modifier.height(12.dp))
 
             SecondaryButton(
                 text = stringResource(R.string.accountLogoutBtnTitle),

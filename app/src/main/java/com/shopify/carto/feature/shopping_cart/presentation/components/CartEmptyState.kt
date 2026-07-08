@@ -13,8 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.shopify.carto.R
 
 @Composable
 fun CartEmptyState(modifier: Modifier = Modifier) {
@@ -32,12 +34,12 @@ fun CartEmptyState(modifier: Modifier = Modifier) {
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            text = "Your Cart Is Empty",
+            text = stringResource(id = R.string.cartEmptyTitle),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(top = 16.dp)
         )
         Text(
-            text = "When you add products, they'll appear here.",
+            text = stringResource(id = R.string.cartEmptyDescription),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

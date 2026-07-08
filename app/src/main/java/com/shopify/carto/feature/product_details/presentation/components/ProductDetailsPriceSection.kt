@@ -21,8 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.shopify.carto.R
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
@@ -43,12 +45,13 @@ fun ProductDetailsPriceSection(
     ) {
         Column {
             Text(
-                text = "Price",
+                text = stringResource(id = R.string.productDetailsPrice),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            val formatter = com.shopify.carto.feature.currency.presentation.format.LocalCurrencyFormatter.current
             Text(
-                text = formatPrice(price, currency),
+                text = formatter.format(price),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -87,9 +90,9 @@ fun ProductDetailsPriceSection(
 
             Text(
                 text = when {
-                    isOutOfStock -> "Out of Stock"
-                    isInCart -> "In Cart"
-                    else -> "Add to Cart"
+                    isOutOfStock -> stringResource(id = R.string.productDetailsOutOfStock)
+                    isInCart -> stringResource(id = R.string.productDetailsInCart)
+                    else -> stringResource(id = R.string.productDetailsAddToCart)
                 },
                 fontWeight = FontWeight.SemiBold
             )
@@ -97,12 +100,3 @@ fun ProductDetailsPriceSection(
     }
 }
 
-private fun formatPrice(price: Double, currencyCode: String): String {
-    return try {
-        val format = NumberFormat.getCurrencyInstance(Locale.getDefault())
-        format.currency = Currency.getInstance(currencyCode)
-        format.format(price)
-    } catch (exception: IllegalArgumentException) {
-        "$currencyCode ${"%.2f".format(price)}"
-    }
-}

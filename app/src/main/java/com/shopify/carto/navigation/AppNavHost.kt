@@ -30,6 +30,8 @@ import com.shopify.carto.feature.favorite.presentation.components.FavoriteAddedS
 import com.shopify.carto.feature.forgetpassword.presentation.ForgotPasswordScreen
 import com.shopify.carto.feature.home.navigation.homeGraph
 import com.shopify.carto.feature.login.presentation.LoginScreen
+import com.shopify.carto.feature.orderdetails.presentation.view.OrderDetailsScreen
+import com.shopify.carto.feature.orderhistory.presentation.view.OrderHistoryScreen
 import com.shopify.carto.feature.map.domain.model.MapAddress
 import com.shopify.carto.feature.map.domain.model.MapPoint
 import com.shopify.carto.feature.map.domain.model.SelectedMapAddress
@@ -217,6 +219,19 @@ fun AppNavHost(
                 )
             }
 
+            composable(Screen.AIAssistant.route) {
+                com.shopify.carto.feature.ai_integration.ui.AIChatScreen(
+                    onProductClick = { productId ->
+                        navController.navigate(
+                            Screen.ProductDetail.createRoute(productId),
+                        )
+                    },
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
             composable(
                 route = Screen.ProductDetail.route,
                 arguments = listOf(
@@ -250,9 +265,10 @@ fun AppNavHost(
             }
             composable(Screen.Cart.route) {
                 CartScreen(
-
-                    onNavigateToCheckout = { checkoutUrl ->
-
+                    onNavigateToCheckout = { _ ->
+                        navController.navigate(Screen.Checkout.route) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
@@ -289,17 +305,11 @@ fun AppNavHost(
                             }
                         }
                     },
-                    onPaymentFailed = { message ->
-                        navController.navigate(
-                            Screen.PaymentResult.createRoute(
-                                success = false,
-                                transactionId = message,
-                            )
-                        ) {
-                            popUpTo(Screen.Checkout.route) {
-                                inclusive = true
-                            }
-                        }
+                    onPaymentFailed = { _ ->
+                        // Handled via snackbar in CheckoutScreen
+                    },
+                    onNavigateToAddressesClick = {
+                        navController.navigate(Screen.Addresses.route)
                     },
                 )
             }
@@ -353,6 +363,10 @@ fun AppNavHost(
                                 navController.navigate(Screen.Settings.route)
                             }
 
+                            ProfileEffect.NavigateToOrders -> {
+                                navController.navigate(Screen.OrderHistory.route)
+                            }
+
                             else -> Unit
                         }
                     }
@@ -362,6 +376,28 @@ fun AppNavHost(
                     uiState = uiState,
                     effectFlow = profileViewModel.effect,
                     onEvent = profileViewModel::onEvent,
+                )
+            }
+
+
+            composable(Screen.OrderHistory.route) {
+                OrderHistoryScreen(
+                    onOrderDetailsClick = { orderId ->
+                        navController.navigate(Screen.OrderDetails.createRoute(orderId))
+                    },
+                )
+            }
+
+            composable(
+                route = Screen.OrderDetails.route,
+                arguments = listOf(
+                    navArgument("orderId") { type = NavType.StringType },
+                ),
+            ) {
+                OrderDetailsScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
                 )
             }
 

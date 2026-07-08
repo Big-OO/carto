@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,10 +27,11 @@ import com.shopify.carto.feature.settings.presentation.components.SettingsItem
 import com.shopify.carto.feature.settings.presentation.components.SettingsSection
 import com.shopify.carto.feature.settings.domain.model.AppLanguage
 import com.shopify.carto.feature.settings.domain.model.AppTheme
-import com.shopify.carto.feature.settings.domain.model.Currency
+import com.shopify.carto.feature.currency.domain.model.Currency
 import com.shopify.carto.ui.theme.CartoTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
+import androidx.compose.ui.platform.LocalLocale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +49,7 @@ fun SettingsScreen(
     }
 
     val selectedCurrency by viewModel.currency.collectAsState()
+    val exchangeRates by viewModel.exchangeRates.collectAsState()
     val selectedTheme by viewModel.theme.collectAsState()
     val selectedLanguage by viewModel.language.collectAsState()
 
@@ -107,12 +110,6 @@ fun SettingsScreen(
                             )
                             HorizontalDivider(color = CartoTheme.colors.outline)
                             SettingsItem(
-                                title = stringResource(R.string.settingsOrderHistory),
-                                icon = Icons.Outlined.History,
-                                onClick = { }
-                            )
-                            HorizontalDivider(color = CartoTheme.colors.outline)
-                            SettingsItem(
                                 title = stringResource(R.string.settingsPaymentMethods),
                                 icon = Icons.Outlined.Payment,
                                 onClick = {
@@ -134,6 +131,34 @@ fun SettingsScreen(
                                 onOptionSelected = { viewModel.setCurrency(it) },
                                 optionLabel = { it.displayName }
                             )
+                            
+                            exchangeRates?.let { rates ->
+                                val currentRate = rates.rates[selectedCurrency] ?: 1.0
+                                val lastUpdateDate = java.text.SimpleDateFormat("MMM dd, hh:mm a", androidx.compose.ui.text.intl.Locale.current.platformLocale).format(java.util.Date(rates.lastUpdated * 1000))
+                                
+                                Row(modifier = Modifier.padding(start = 56.dp, end = 16.dp, bottom = 16.dp)) {
+                                    Text(
+                                        text = "1 USD = $currentRate ${selectedCurrency.displayName}",
+                                        style = CartoTheme.typography.bodyMedium,
+                                        color = CartoTheme.colors.onSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.AccessTime,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(12.dp),
+                                            tint = CartoTheme.colors.onSurfaceVariant.copy(alpha = 0.7f)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = lastUpdateDate,
+                                            style = CartoTheme.typography.labelSmall,
+                                            color = CartoTheme.colors.onSurfaceVariant.copy(alpha = 0.7f)
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -191,7 +216,7 @@ fun SettingsScreen(
 //import com.shopify.carto.feature.settings.presentation.components.SettingsSection
 //import com.shopify.carto.feature.settings.domain.model.AppLanguage
 //import com.shopify.carto.feature.settings.domain.model.AppTheme
-//import com.shopify.carto.feature.settings.domain.model.Currency
+//import com.shopify.carto.feature.currency.domain.model.Currency
 //import com.shopify.carto.ui.theme.CartoTheme
 //import kotlinx.coroutines.delay
 //import kotlin.time.Duration.Companion.milliseconds

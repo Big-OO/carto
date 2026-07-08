@@ -5,6 +5,10 @@ import com.shopify.carto.core.network.qualifier.NetworkLogger
 import com.shopify.carto.core.network.qualifier.PaymobRetrofit
 import com.shopify.carto.core.network.qualifier.PaymobFlashRetrofit
 import com.shopify.carto.core.network.rest.RetrofitFactory
+import com.shopify.carto.feature.payment.data.remote.OrderRemoteDataSource
+import com.shopify.carto.feature.payment.data.remote.OrderRemoteDataSourceImpl
+import com.shopify.carto.feature.payment.data.remote.OrderApiService
+import com.shopify.carto.core.network.qualifier.AdminRetrofit
 import com.shopify.carto.feature.payment.data.remote.PaymentApiService
 import com.shopify.carto.feature.payment.data.remote.PaymobFlashApiService
 import com.shopify.carto.feature.payment.data.remote.PaymentRemoteDataSource
@@ -22,6 +26,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import javax.inject.Singleton
 import com.shopify.carto.BuildConfig
+
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class PaymentRepositoryModule {
@@ -37,6 +42,12 @@ abstract class PaymentRepositoryModule {
     abstract fun bindPaymentRemoteDataSource(
         dataSource: PaymentRemoteDataSourceImpl,
     ): PaymentRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindOrderRemoteDataSource(
+        dataSource: OrderRemoteDataSourceImpl,
+    ): OrderRemoteDataSource
 }
 
 @Module
@@ -91,5 +102,11 @@ object PaymentNetworkModule {
     @Provides
     fun provideValidateCheckoutUseCase(): ValidateCheckoutUseCase {
         return ValidateCheckoutUseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideOrderApiService(@AdminRetrofit retrofit: Retrofit): OrderApiService {
+        return retrofit.create(OrderApiService::class.java)
     }
 }

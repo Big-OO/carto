@@ -62,11 +62,9 @@ class AppSessionLocalDataSource @Inject constructor(
 
     suspend fun clearSession() {
         dataStore.edit { preferences ->
-            val isOnboardingCompleted = preferences[IS_ONBOARDING_COMPLETED] ?: false
-
-            preferences.clear()
-
-            preferences[IS_ONBOARDING_COMPLETED] = isOnboardingCompleted
+            preferences.remove(IS_LOGGED_IN)
+            preferences.remove(IS_GUEST)
+            preferences.remove(CUSTOMER_ID)
         }
     }
 
