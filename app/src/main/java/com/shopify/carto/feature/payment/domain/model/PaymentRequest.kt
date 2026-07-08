@@ -13,4 +13,6 @@ data class PaymentRequest(
     val city: String,
     val country: String = "EG",
     val items: List<OrderItem> = emptyList(),
+    val discountCode: String? = null,
+    val discountAmountCents: Int = 0,
 )
