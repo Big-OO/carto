@@ -8,6 +8,7 @@ import com.shopify.carto.feature.product_details.domain.usecase.GetProductDetail
 import com.shopify.carto.feature.search.domain.model.SearchProduct
 import com.shopify.carto.feature.shopping_cart.domain.usecase.AddToCartUseCase
 import com.shopify.carto.feature.favorite.domain.usecase.ToggleFavoriteUseCase
+import com.shopify.carto.feature.favorite.domain.usecase.ObserveFavoriteIdsUseCase
 import com.shopify.carto.feature.product_details.domain.model.merchandiseId
 import com.shopify.carto.feature.currency.domain.model.Currency as AppCurrency
 import com.shopify.carto.feature.settings.domain.repository.SettingsRepository
@@ -50,7 +51,8 @@ class AIChatViewModel @Inject constructor(
     private val getProductDetailsUseCase: GetProductDetailsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val addToCartUseCase: AddToCartUseCase,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    observeFavoriteIdsUseCase: ObserveFavoriteIdsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AIChatUiState())
@@ -58,6 +60,13 @@ class AIChatViewModel @Inject constructor(
 
     val selectedCurrency: StateFlow<AppCurrency> = settingsRepository.currency
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppCurrency.EGP)
+
+    val favoriteIds: StateFlow<Set<Long>> = observeFavoriteIdsUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptySet()
+        )
 
     init {
         _uiState.update {

@@ -55,7 +55,22 @@ fun CartScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is CartEffect.NavigateToCheckout -> onNavigateToCheckout(effect.checkoutUrl)
+                is CartEffect.NavigateToCheckout -> {
+                    if (effect.checkoutUrl.isNotBlank()) {
+                        try {
+                            val intent = android.content.Intent(
+                                android.content.Intent.ACTION_VIEW,
+                                android.net.Uri.parse(effect.checkoutUrl)
+                            )
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            snackbarHostState.showSnackbar("Unable to open checkout link")
+                        }
+                    } else {
+                        snackbarHostState.showSnackbar("Checkout link is empty")
+                    }
+                    onNavigateToCheckout(effect.checkoutUrl)
+                }
                 is CartEffect.ShowError -> snackbarHostState.showSnackbar(context.getString(effect.messageRes))
             }
         }
