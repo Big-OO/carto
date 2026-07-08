@@ -46,13 +46,15 @@ fun BrandHeader(
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(brand.imageUrl)
+                    .data(brand.imageUrl.takeIf { it.isNotBlank() })
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.ic_launcher_foreground),
+                error = painterResource(R.drawable.ic_launcher_foreground),
+                fallback = painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription = "Brand Banner",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.fillMaxSize(),
             )
         }
 

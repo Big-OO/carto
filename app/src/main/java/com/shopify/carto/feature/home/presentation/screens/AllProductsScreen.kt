@@ -112,6 +112,7 @@ fun AllProductsScreen(
                         .fillMaxSize()
                         .padding(padding)
                 ) {
+                    Spacer(Modifier.height(15.dp))
 
                     SearchTextField(
                         modifier = Modifier.padding(horizontal = 16.dp),

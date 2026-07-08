@@ -109,6 +109,7 @@ fun AllCategoriesScreen(
                         .padding(padding)
                         .padding(horizontal = 16.dp)
                 ) {
+                    Spacer(Modifier.height(15.dp))
 
                     SearchTextField(
                         query = query,

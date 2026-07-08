@@ -2,8 +2,8 @@ package com.shopify.carto.feature.home.data.remote
 
 import com.shopify.carto.feature.home.data.model.CollectionsResponse
 import com.shopify.carto.feature.home.data.model.ProductDetailsResponse
+import com.shopify.carto.feature.home.data.model.PriceRulesResponse
 import com.shopify.carto.feature.home.data.model.ProductsResponse
-import com.shopify.carto.feature.home.data.model.SmartCollectionsResponse
 
 interface HomeRemoteDataSource {
 
@@ -19,5 +19,7 @@ interface HomeRemoteDataSource {
         collectionId: Long
     ): Result<ProductsResponse>
 
-    suspend fun getBrands(): Result<SmartCollectionsResponse>
+    suspend fun getBrands(): Result<CollectionsResponse>
+
+    suspend fun getPriceRules(limit: Int): Result<PriceRulesResponse>
 }

@@ -1,5 +1,6 @@
 package com.shopify.carto.feature.home.presentation.screens.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.BrandingWatermark
 import androidx.compose.material.icons.filled.BrandingWatermark
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Icon
@@ -37,7 +39,6 @@ fun BrandCard(
     compact: Boolean = true,
     onBrandClick: (Brand) -> Unit = {}
 ) {
-
     Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -54,7 +55,7 @@ fun BrandCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.BrandingWatermark,
+                    imageVector = Icons.AutoMirrored.Filled.BrandingWatermark,
                     contentDescription = brand.name,
                     modifier = Modifier.size(if (compact) 28.dp else 40.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant

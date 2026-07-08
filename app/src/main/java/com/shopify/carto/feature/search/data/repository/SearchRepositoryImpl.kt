@@ -17,17 +17,11 @@ class SearchRepositoryImpl @Inject constructor(
     private val remoteDataSource: SearchProductRemoteDataSource,
     private val localDataSource: SearchHistoryLocalDataSource,
 ) : SearchRepository {
-    override suspend fun getInitialProducts(): SearchResult<List<SearchProduct>> {
-        return when (val result = remoteDataSource.getInitialProducts()) {
-            is SearchDataResult.Success -> SearchResult.Success(result.data)
-            is SearchDataResult.Failure -> result.failure.toDomainResult()
-        }
-    }
 
     override suspend fun searchProducts(keyword: String): SearchResult<List<SearchProduct>> {
         val cleanedKeyword = keyword.trim()
         if (cleanedKeyword.isBlank()) {
-            return getInitialProducts()
+            return SearchResult.Success(emptyList())
         }
 
         return when (val result = remoteDataSource.searchProducts(cleanedKeyword)) {

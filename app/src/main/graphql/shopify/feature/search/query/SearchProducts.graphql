@@ -1,28 +1,9 @@
 query SearchProducts($query: String!, $first: Int!) {
-  search(query: $query, first: $first, types: [PRODUCT]) {
-    edges {
-      node {
-        ... on Product {
-          id
-          title
-          handle
-          vendor
-          productType
-          featuredImage {
-            url
-            altText
-          }
-          priceRange {
-            minVariantPrice {
-              amount
-              currencyCode
-            }
-            maxVariantPrice {
-              amount
-              currencyCode
-            }
-          }
-        }
+  search(query: $query, first: $first, types: [PRODUCT], prefix: LAST) {
+    nodes {
+      ... on Product {
+        id
+        title
       }
     }
   }
