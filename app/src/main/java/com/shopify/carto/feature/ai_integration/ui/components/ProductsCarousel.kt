@@ -12,17 +12,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.shopify.carto.core.components.ProductCard
-import com.shopify.carto.feature.search.domain.model.SearchProduct
 import com.shopify.carto.feature.currency.domain.model.Currency
+import com.shopify.carto.feature.search.domain.model.SearchCatalogProduct
 
 @Composable
 fun ProductsCarousel(
-    products: List<SearchProduct>,
+    products: List<SearchCatalogProduct>,
     currency: Currency,
     favoriteIds: Set<Long>,
     onProductClick: (Long) -> Unit,
-    onFavoriteClick: (SearchProduct) -> Unit,
-    onAddToCartClick: (SearchProduct) -> Unit,
+    onFavoriteClick: (SearchCatalogProduct) -> Unit,
+    onAddToCartClick: (SearchCatalogProduct) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -45,7 +45,7 @@ fun ProductsCarousel(
 
 @Composable
 fun ProductChatCardWrapper(
-    product: SearchProduct,
+    product: SearchCatalogProduct,
     currency: Currency,
     isFavorite: Boolean,
     onClick: () -> Unit,

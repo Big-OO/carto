@@ -1,6 +1,6 @@
 package com.shopify.carto.feature.search.data.remote
 
-import com.shopify.carto.feature.search.data.remote.model.SearchProductsResponseDto
+import com.shopify.carto.feature.search.data.remote.model.SearchCatalogProductsResponseDto
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -13,5 +13,5 @@ interface SearchShopifyApi {
         @Query("limit") limit: Int = 250,
         @Query("published_status") publishedStatus: String = "published",
         @Query("fields") fields: String = "id,title,handle,vendor,product_type,status,tags,variants,images,created_at,updated_at",
-    ): Response<SearchProductsResponseDto>
+    ): Response<SearchCatalogProductsResponseDto>
 }

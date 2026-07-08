@@ -4,6 +4,7 @@ import com.shopify.carto.feature.search.data.local.SearchHistoryLocalDataSource
 import com.shopify.carto.feature.search.data.mapper.toDomain
 import com.shopify.carto.feature.search.data.remote.SearchProductRemoteDataSource
 import com.shopify.carto.feature.search.data.result.SearchDataResult
+import com.shopify.carto.feature.search.domain.model.SearchCatalogProduct
 import com.shopify.carto.feature.search.domain.model.SearchFailure
 import com.shopify.carto.feature.search.domain.model.SearchHistoryItem
 import com.shopify.carto.feature.search.domain.model.SearchProduct
@@ -25,6 +26,25 @@ class SearchRepositoryImpl @Inject constructor(
         }
 
         return when (val result = remoteDataSource.searchProducts(cleanedKeyword)) {
+            is SearchDataResult.Success -> SearchResult.Success(result.data)
+            is SearchDataResult.Failure -> result.failure.toDomainResult()
+        }
+    }
+
+    override suspend fun getInitialCatalogProducts(): SearchResult<List<SearchCatalogProduct>> {
+        return when (val result = remoteDataSource.getInitialCatalogProducts()) {
+            is SearchDataResult.Success -> SearchResult.Success(result.data)
+            is SearchDataResult.Failure -> result.failure.toDomainResult()
+        }
+    }
+
+    override suspend fun searchCatalogProducts(keyword: String): SearchResult<List<SearchCatalogProduct>> {
+        val cleanedKeyword = keyword.trim()
+        if (cleanedKeyword.isBlank()) {
+            return getInitialCatalogProducts()
+        }
+
+        return when (val result = remoteDataSource.searchCatalogProducts(cleanedKeyword)) {
             is SearchDataResult.Success -> SearchResult.Success(result.data)
             is SearchDataResult.Failure -> result.failure.toDomainResult()
         }

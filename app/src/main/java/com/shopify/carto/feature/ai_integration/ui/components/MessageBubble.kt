@@ -30,6 +30,7 @@ import com.shopify.carto.R
 import com.shopify.carto.feature.ai_integration.ui.ChatMessage
 import com.shopify.carto.feature.ai_integration.ui.MessageType
 import com.shopify.carto.feature.currency.domain.model.Currency
+import com.shopify.carto.feature.search.domain.model.SearchCatalogProduct
 import com.shopify.carto.feature.search.domain.model.SearchProduct
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -40,8 +41,8 @@ fun MessageBubble(
     favoriteIds: Set<Long>,
     isLastAiMessage: Boolean,
     onProductClick: (Long) -> Unit,
-    onFavoriteClick: (SearchProduct) -> Unit,
-    onAddToCartClick: (SearchProduct) -> Unit,
+    onFavoriteClick: (SearchCatalogProduct) -> Unit,
+    onAddToCartClick: (SearchCatalogProduct) -> Unit,
     onRegenerateClick: () -> Unit,
     onOptionClick: (String) -> Unit,
     snackbarHostState: SnackbarHostState,

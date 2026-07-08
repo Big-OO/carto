@@ -1,7 +1,7 @@
 package com.shopify.carto.feature.search.data.remote.network
 
 import com.shopify.carto.feature.search.data.remote.SearchShopifyApi
-import com.shopify.carto.feature.search.data.remote.model.SearchProductsResponseDto
+import com.shopify.carto.feature.search.data.remote.model.SearchCatalogProductsResponseDto
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ class RetrofitSearchNetworkDataSource @Inject constructor(
         limit: Int,
         publishedStatus: String,
         fields: String,
-    ): Response<SearchProductsResponseDto> {
+    ): Response<SearchCatalogProductsResponseDto> {
         return api.getProductsForSearch(
             version = version,
             limit = limit,
