@@ -3,6 +3,9 @@ package com.shopify.carto.feature.ai_integration.appfunctions
 import androidx.appfunctions.AppFunctionContext
 import androidx.appfunctions.service.AppFunction
 import com.shopify.carto.core.session.domain.usecase.ObserveAppSessionUseCase
+import com.shopify.carto.feature.addresses.domain.model.AddressResult
+import com.shopify.carto.feature.addresses.domain.model.CustomerAddress
+import com.shopify.carto.feature.addresses.domain.usecase.GetAddressesUseCase
 import com.shopify.carto.feature.profile.domain.usecase.ObserveProfileUseCase
 import com.shopify.carto.feature.shopping_cart.domain.usecase.ObserveCartUseCase
 import com.shopify.carto.feature.payment.domain.usecase.PlaceCashOnDeliveryOrderUseCase
@@ -20,6 +23,7 @@ class CheckoutFunctions @Inject constructor(
     private val observeCartUseCase: ObserveCartUseCase,
     private val observeAppSessionUseCase: ObserveAppSessionUseCase,
     private val observeProfileUseCase: ObserveProfileUseCase,
+    private val getAddressesUseCase: GetAddressesUseCase,
     private val placeCashOnDeliveryOrderUseCase: PlaceCashOnDeliveryOrderUseCase,
     private val createCardPaymentUseCase: CreateCardPaymentUseCase,
     private val cancelOrderUseCase: CancelOrderUseCase
@@ -28,16 +32,20 @@ class CheckoutFunctions @Inject constructor(
     /**
      * Checkout the current cart and place an order.
      *
-     * Use this when the user wants to place an order, complete their purchase, buy the cart items, or checkout.
+     * This function automatically fetches the user's profile (full name, email, phone) and
+     * default shipping address. The AI should call this function with only the paymentMethod
+     * parameter. If any required information (firstName, lastName, email, phone, address, city)
+     * cannot be resolved from the profile or default address, the function returns a message
+     * listing the missing fields so the AI can ask the user.
      *
      * @param paymentMethod The payment method to use (either "CASH_ON_DELIVERY", "CARD", or "DIGITAL_WALLET"). Defaults to "CASH_ON_DELIVERY".
-     * @param firstName Optional first name for shipping.
-     * @param lastName Optional last name for shipping.
-     * @param email Optional email address.
-     * @param phone Optional phone number.
-     * @param address Optional shipping address.
-     * @param city Optional shipping city.
-     * @return A status message indicating if checkout succeeded, failed, or requires further action.
+     * @param firstName Optional first name override. Auto-fetched from profile if empty.
+     * @param lastName Optional last name override. Auto-fetched from profile if empty.
+     * @param email Optional email override. Auto-fetched from profile if empty.
+     * @param phone Optional phone override. Auto-fetched from profile or default address if empty.
+     * @param address Optional address override. Auto-fetched from default address if empty.
+     * @param city Optional city override. Auto-fetched from default address if empty.
+     * @return A status message indicating if checkout succeeded, failed, or requires the user to provide missing info.
      */
     @AppFunction(isDescribedByKDoc = true)
     suspend fun checkout(
@@ -50,6 +58,7 @@ class CheckoutFunctions @Inject constructor(
         address: String,
         city: String
     ): String {
+        // 1. Validate cart
         val cartResult = observeCartUseCase().first()
         if (cartResult.isFailure) {
             return "Failed to retrieve your cart for checkout."
@@ -59,6 +68,7 @@ class CheckoutFunctions @Inject constructor(
             return "Your cart is empty. Please add items to your cart before checking out."
         }
 
+        // 2. Fetch profile data (name, email, phone)
         var profileFirstName = ""
         var profileLastName = ""
         var profileEmail = ""
@@ -76,21 +86,63 @@ class CheckoutFunctions @Inject constructor(
                     profilePhone = profile.phone.orEmpty()
                 }
             }
-        } catch (e: Exception) {
-            // ignore session read errors
+        } catch (_: Exception) {
+            // Profile fetch failed, will rely on overrides or ask user
         }
 
-        val resolvedFirstName = firstName.takeIf { it.isNotBlank() }
-            ?: profileFirstName.takeIf { it.isNotBlank() } ?: "e"
-        val resolvedLastName = lastName.takeIf { it.isNotBlank() }
-            ?: profileLastName.takeIf { it.isNotBlank() } ?: "e"
-        val resolvedEmail = email.takeIf { it.isNotBlank() }
-            ?: profileEmail.takeIf { it.isNotBlank() } ?: "abdallahelsobky02@gmail.com"
-        val resolvedPhone = phone.takeIf { it.isNotBlank() }
-            ?: profilePhone.takeIf { it.isNotBlank() } ?: "01226022955"
-        val resolvedAddress = address.takeIf { it.isNotBlank() } ?: "fd"
-        val resolvedCity = city.takeIf { it.isNotBlank() } ?: "sd"
+        // 3. Fetch default address
+        var defaultAddress: CustomerAddress? = null
+        try {
+            when (val addressResult = getAddressesUseCase()) {
+                is AddressResult.Success -> {
+                    defaultAddress = addressResult.data.firstOrNull { it.isDefault }
+                        ?: addressResult.data.firstOrNull()
+                }
+                is AddressResult.Failure -> {
+                    // Address fetch failed, will rely on overrides or ask user
+                }
+            }
+        } catch (_: Exception) {
+            // Address fetch failed
+        }
 
+        // 4. Resolve fields: override > profile/address > null
+        val resolvedFirstName = firstName.takeIf { it.isNotBlank() }
+            ?: profileFirstName.takeIf { it.isNotBlank() }
+            ?: defaultAddress?.firstName?.takeIf { it.isNotBlank() }
+        val resolvedLastName = lastName.takeIf { it.isNotBlank() }
+            ?: profileLastName.takeIf { it.isNotBlank() }
+            ?: defaultAddress?.lastName?.takeIf { it.isNotBlank() }
+        val resolvedEmail = email.takeIf { it.isNotBlank() }
+            ?: profileEmail.takeIf { it.isNotBlank() }
+        val resolvedPhone = phone.takeIf { it.isNotBlank() }
+            ?: profilePhone.takeIf { it.isNotBlank() }
+            ?: defaultAddress?.phone?.takeIf { it.isNotBlank() }
+        val resolvedAddress = address.takeIf { it.isNotBlank() }
+            ?: defaultAddress?.let {
+                buildString {
+                    append(it.address1)
+                    if (it.address2.isNotBlank()) append(", ${it.address2}")
+                }
+            }?.takeIf { it.isNotBlank() }
+        val resolvedCity = city.takeIf { it.isNotBlank() }
+            ?: defaultAddress?.city?.takeIf { it.isNotBlank() }
+
+        // 5. Check for missing required fields
+        val missingFields = mutableListOf<String>()
+        if (resolvedFirstName == null) missingFields.add("firstName")
+        if (resolvedLastName == null) missingFields.add("lastName")
+        if (resolvedEmail == null) missingFields.add("email")
+        if (resolvedPhone == null) missingFields.add("phone")
+        if (resolvedAddress == null) missingFields.add("address")
+        if (resolvedCity == null) missingFields.add("city")
+
+        if (missingFields.isNotEmpty()) {
+            return "MISSING_INFO: Cannot place the order because the following information is missing: ${missingFields.joinToString(", ")}. " +
+                    "Please ask the user to provide: ${missingFields.joinToString(", ")}."
+        }
+
+        // 6. Build order items
         val orderItems = cart.lines.map { line ->
             OrderItem(
                 name = line.productTitle,
@@ -113,15 +165,16 @@ class CheckoutFunctions @Inject constructor(
             amountCents = amountCents,
             currency = cart.currency,
             paymentMethod = resolvedMethod,
-            customerFirstName = resolvedFirstName,
-            customerLastName = resolvedLastName,
-            customerEmail = resolvedEmail,
-            customerPhone = resolvedPhone,
-            address = resolvedAddress,
-            city = resolvedCity,
+            customerFirstName = resolvedFirstName!!,
+            customerLastName = resolvedLastName!!,
+            customerEmail = resolvedEmail!!,
+            customerPhone = resolvedPhone!!,
+            address = resolvedAddress!!,
+            city = resolvedCity!!,
             items = orderItems
         )
 
+        // 7. Place order
         return when (resolvedMethod) {
             PaymentMethod.CASH_ON_DELIVERY -> {
                 val result = placeCashOnDeliveryOrderUseCase(request)

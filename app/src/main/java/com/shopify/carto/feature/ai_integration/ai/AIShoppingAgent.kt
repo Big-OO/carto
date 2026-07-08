@@ -181,6 +181,8 @@ class AIShoppingAgent(
                         "showWishlist" -> "Loading wishlist..."
                         "compareProducts" -> "Comparing products..."
                         "generateOutfit" -> "Generating outfit..."
+                        "checkout" -> "Placing your order..."
+                        "cancelOrder" -> "Cancelling order..."
                         else -> "Processing request..."
                     }
                     onStep(stepMessage)
@@ -498,37 +500,37 @@ class AIShoppingAgent(
                 put("type", "function")
                 putJsonObject("function") {
                     put("name", "checkout")
-                    put("description", "Checkout the shopping cart and place/create an order using the specified payment method and customer/address details.")
+                    put("description", "Checkout the shopping cart and place an order. The system automatically fetches the user's full name, email, phone from their profile and their default shipping address. Call this with just paymentMethod first. If the response starts with 'MISSING_INFO:', ask the user for the listed missing fields, then call again with those fields filled in.")
                     putJsonObject("parameters") {
                         put("type", "object")
                         putJsonObject("properties") {
                             putJsonObject("paymentMethod") {
                                 put("type", "string")
-                                put("description", "The payment method to use (either 'CASH_ON_DELIVERY', 'CARD', or 'DIGITAL_WALLET'). Defaults to 'CASH_ON_DELIVERY'.")
+                                put("description", "The payment method: 'CASH_ON_DELIVERY' (default), 'CARD', or 'DIGITAL_WALLET'.")
                             }
                             putJsonObject("firstName") {
                                 put("type", "string")
-                                put("description", "Optional first name for shipping.")
+                                put("description", "Override first name. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
                             }
                             putJsonObject("lastName") {
                                 put("type", "string")
-                                put("description", "Optional last name for shipping.")
+                                put("description", "Override last name. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
                             }
                             putJsonObject("email") {
                                 put("type", "string")
-                                put("description", "Optional email address.")
+                                put("description", "Override email. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
                             }
                             putJsonObject("phone") {
                                 put("type", "string")
-                                put("description", "Optional phone number.")
+                                put("description", "Override phone. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
                             }
                             putJsonObject("address") {
                                 put("type", "string")
-                                put("description", "Optional shipping street address.")
+                                put("description", "Override shipping address. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
                             }
                             putJsonObject("city") {
                                 put("type", "string")
-                                put("description", "Optional shipping city.")
+                                put("description", "Override city. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
                             }
                         }
                     }
