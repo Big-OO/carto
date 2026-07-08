@@ -1,16 +1,17 @@
 package com.shopify.carto.feature.product_details.presentation
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -43,7 +44,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.shopify.carto.R
-import com.shopify.carto.feature.product_details.presentation.components.FavoriteToggleButton
 import com.shopify.carto.feature.product_details.presentation.components.ProductDetailsColorSection
 import com.shopify.carto.feature.product_details.presentation.components.ProductDetailsDescriptionSection
 import com.shopify.carto.feature.product_details.presentation.components.ProductDetailsHeaderSection
@@ -74,18 +74,21 @@ fun ProductDetailsScreen(
             when (effect) {
                 ProductDetailsEffect.NavigateBack -> onBackClick()
                 ProductDetailsEffect.NavigateToCart -> onNavigateToCart()
-                is ProductDetailsEffect.ShowError -> snackbarHostState.showSnackbar(context.getString(effect.messageRes))
+                is ProductDetailsEffect.ShowError -> snackbarHostState.showSnackbar(
+                    context.getString(
+                        effect.messageRes
+                    )
+                )
             }
         }
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 24.dp)
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
             when {
                 uiState.isLoading -> LoadingState()
@@ -102,8 +105,10 @@ fun ProductDetailsScreen(
             }
 
             ProductDetailsHeaderSection(
+                uiState = uiState,
+                onEvent = viewModel::onEvent,
                 onBackClick = { viewModel.onEvent(ProductDetailsEvent.OnBackClick) },
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.safeContentPadding()
             )
         }
     }
@@ -132,18 +137,10 @@ private fun ProductDetailsContent(
                     selectedIndex = uiState.selectedImageIndex,
                     onImageSelected = { onEvent(ProductDetailsEvent.OnImageSelected(it)) }
                 )
-
-                FavoriteToggleButton(
-                    isFavorite = uiState.isFavorite,
-                    onClick = { onEvent(ProductDetailsEvent.OnFavoriteClick) },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp)
-                )
             }
 
             Column(
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 ProductDetailsDescriptionSection(
@@ -240,31 +237,6 @@ private fun ProductDetailsContent(
             }
         )
     }
-//
-//    if (showRemoveDialog) {
-//        AlertDialog(
-//            onDismissRequest = { showRemoveDialog = false },
-//            title = { Text(text = stringResource(id = R.string.productDetailsRemoveFromCart)) },
-//            text = { Text(text = stringResource(id = R.string.productDetailsRemoveFromCartConfirmation)) },
-//            confirmButton = {
-//                TextButton(
-//                    onClick = {
-//                        onEvent(ProductDetailsEvent.OnRemoveFromCartConfirm)
-//                        showRemoveDialog = false
-//                    }
-//                ) {
-//                    Text(stringResource(id = R.string.cartRemove))
-//                    // add log here to print the current value of string
-//                    Log.d("TAG", "ProductDetailsContent: ${R.string.cartRemove}")
-//                }
-//            },
-//            dismissButton = {
-//                TextButton(onClick = { showRemoveDialog = false }) {
-//                    Text(stringResource(id = R.string.cartCancel))
-//                }
-//            }
-//        )
-//    }
 }
 
 @Composable

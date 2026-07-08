@@ -10,8 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,9 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.shopify.carto.feature.product_details.presentation.ProductDetailsEvent
+import com.shopify.carto.feature.product_details.presentation.ProductDetailsUiState
 
 @Composable
 fun ProductDetailsHeaderSection(
+    uiState: ProductDetailsUiState,
+    onEvent: (ProductDetailsEvent) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -32,6 +34,12 @@ fun ProductDetailsHeaderSection(
             icon = Icons.AutoMirrored.Outlined.ArrowBack,
             onClick = onBackClick,
             modifier = Modifier.align(Alignment.CenterStart)
+        )
+
+        FavoriteToggleButton(
+            isFavorite = uiState.isFavorite,
+            onClick = { onEvent(ProductDetailsEvent.OnFavoriteClick) },
+            modifier = Modifier.align(Alignment.TopEnd)
         )
     }
 }
