@@ -36,7 +36,11 @@ class CartViewModel @Inject constructor(
 
     init {
         observeCart()
-        viewModelScope.launch { refreshCartUseCase() }
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            refreshCartUseCase()
+            _uiState.update { it.copy(isLoading = false) }
+        }
     }
 
     fun onEvent(event: CartEvent) {
@@ -52,7 +56,12 @@ class CartViewModel @Inject constructor(
         observeCartUseCase()
             .onEach { result ->
                 result
-                    .onSuccess { cart -> _uiState.update { it.copy(isLoading = false, cart = cart, errorMessage = null) } }
+                    .onSuccess { cart ->
+                        _uiState.update {
+                            val stillLoading = it.isLoading && cart.isEmpty
+                            it.copy(isLoading = stillLoading, cart = cart, errorMessage = null)
+                        }
+                    }
                     .onFailure { throwable ->
                         _uiState.update { it.copy(isLoading = false, errorMessage = throwable.message) }
                         sendEffect(CartEffect.ShowError(throwable.toUiErrorMessage()))

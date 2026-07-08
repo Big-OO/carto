@@ -21,16 +21,23 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -106,13 +113,16 @@ fun CheckoutScreen(
     onBackClick: () -> Unit,
     onPaymentSuccess: (transactionId: String, orderId: String) -> Unit,
     onPaymentFailed: (message: String) -> Unit,
+    onNavigateToAddressesClick: () -> Unit,
     viewModel: CheckoutViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = androidx.compose.runtime.rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
+        viewModel.onEvent(CheckoutEvent.RefreshCheckout)
         viewModel.events.collect { event ->
             when (event) {
                 is CheckoutUiEvent.LaunchPaymob -> {
@@ -148,17 +158,29 @@ fun CheckoutScreen(
                 }
 
                 is CheckoutUiEvent.PaymentFailed -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(event.message)
+                    }
                     onPaymentFailed(event.message)
                 }
             }
         }
     }
 
-    CheckoutScreenContent(
-        state = state,
-        onEvent = viewModel::onEvent,
-        onBackClick = onBackClick,
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        CheckoutScreenContent(
+            state = state,
+            onEvent = viewModel::onEvent,
+            onBackClick = onBackClick,
+            onNavigateToAddressesClick = onNavigateToAddressesClick,
+        )
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 80.dp)
+        )
+    }
 }
 
 @Composable
@@ -166,6 +188,7 @@ private fun CheckoutScreenContent(
     state: CheckoutUiState,
     onEvent: (CheckoutEvent) -> Unit,
     onBackClick: () -> Unit,
+    onNavigateToAddressesClick: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -185,19 +208,27 @@ private fun CheckoutScreenContent(
             ) {
                 Spacer(modifier = Modifier.height(4.dp))
 
-                CustomerInfoSection(
+                DeliveryAddressSection(
                     state = state,
-                    onEvent = onEvent,
+                    onNavigateToAddressesClick = onNavigateToAddressesClick,
                 )
 
-                DeliveryAddressSection(
+                CustomerInfoSection(
                     state = state,
                     onEvent = onEvent,
                 )
 
                 OrderSummarySection(
                     items = state.orderItems,
+                    subtotalAmountCents = state.subtotalAmountCents,
+                    shippingFeeCents = state.shippingFeeCents,
+                    discountAmountCents = state.discountAmountCents,
                     totalAmountCents = state.totalAmountCents,
+                    promoCodeInput = state.promoCodeInput,
+                    promoCodeError = state.promoCodeError,
+                    appliedPromoCode = state.appliedPromoCode,
+                    onPromoCodeInputChange = { onEvent(CheckoutEvent.UpdatePromoCodeInput(it)) },
+                    onApplyPromoCode = { onEvent(CheckoutEvent.ApplyPromoCode(state.promoCodeInput)) },
                 )
 
                 PaymentMethodSelector(
@@ -341,34 +372,100 @@ private fun CustomerInfoSection(
 @Composable
 private fun DeliveryAddressSection(
     state: CheckoutUiState,
-    onEvent: (CheckoutEvent) -> Unit,
+    onNavigateToAddressesClick: () -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(
-            text = "Delivery Address",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Delivery Address",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            TextButton(onClick = onNavigateToAddressesClick) {
+                Text(
+                    text = "Change",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
 
-
-        CheckoutTextField(
-            value = state.address,
-            onValueChange = { onEvent(CheckoutEvent.UpdateAddress(it)) },
-            label = "Street Address",
-            error = state.validationErrors["address"],
-            imeAction = ImeAction.Next,
-        )
-
-        CheckoutTextField(
-            value = state.city,
-            onValueChange = { onEvent(CheckoutEvent.UpdateCity(it)) },
-            label = "City",
-            error = state.validationErrors["city"],
-            imeAction = ImeAction.Done,
-        )
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+            border = CardDefaults.outlinedCardBorder(),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Address",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Column(modifier = Modifier.weight(1f)) {
+                    val addr = state.selectedAddress
+                    if (addr != null) {
+                        Text(
+                            text = addr.nickname.ifBlank { "Delivery Address" },
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "${addr.address1}, ${addr.city}, ${addr.country}\nPhone: ${addr.phone}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            lineHeight = 20.sp
+                        )
+                    } else if (state.address.isNotBlank()) {
+                        Text(
+                            text = "Current Address",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "${state.address}, ${state.city}\nPhone: ${state.customerPhone}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            lineHeight = 20.sp
+                        )
+                    } else {
+                        Text(
+                            text = "No address selected",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Click 'Change' to choose or add a delivery address.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

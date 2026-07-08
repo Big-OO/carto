@@ -24,4 +24,17 @@ class LoginRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun loginWithGoogle(
+        idToken: String
+    ): Result<User> {
+        return try {
+            val user = remoteDataSource
+                .loginWithGoogle(idToken)
+                .toDomain()
+            Result.success(user)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

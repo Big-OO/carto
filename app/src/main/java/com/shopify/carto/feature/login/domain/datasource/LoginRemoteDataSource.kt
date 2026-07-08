@@ -7,4 +7,8 @@ interface LoginRemoteDataSource {
         email: String,
         password: String
     ): UserDto
+
+    suspend fun loginWithGoogle(
+        idToken: String
+    ): UserDto
 }

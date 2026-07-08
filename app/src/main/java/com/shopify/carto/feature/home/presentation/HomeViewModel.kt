@@ -9,6 +9,7 @@ import com.shopify.carto.feature.home.domain.model.Brand
 import com.shopify.carto.feature.home.domain.model.Category
 import com.shopify.carto.feature.home.domain.model.Product
 import com.shopify.carto.feature.home.domain.repository.HomeRepository
+import com.shopify.carto.feature.shopping_cart.domain.usecase.RefreshCartUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,6 +42,7 @@ sealed interface HomeUiState {
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository,
     observeAppSessionUseCase: ObserveAppSessionUseCase,
+    private val refreshCartUseCase: RefreshCartUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -54,6 +56,11 @@ class HomeViewModel @Inject constructor(
 
     init {
         fetchHomeData()
+        viewModelScope.launch {
+            session.collect {
+                refreshCartUseCase()
+            }
+        }
     }
 
     fun fetchHomeData() {

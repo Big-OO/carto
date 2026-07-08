@@ -44,6 +44,9 @@ mapboxMaps = "11.19.0"
 mapboxSearch = "2.18.2"
 playServicesLocation = "21.4.0"
 workRuntimeKtx = "2.11.2"
+credentials = "1.5.0-alpha05"
+googleId = "1.1.1"
+playServicesAuth = "21.3.0"
 
 
 [libraries]
@@ -120,6 +123,10 @@ mapbox-android-maps = { module = "com.mapbox.maps:android-ndk27", version.ref = 
 mapbox-maps-compose = { module = "com.mapbox.extension:maps-compose", version.ref = "mapboxMaps" }
 mapbox-search-android = { module = "com.mapbox.search:mapbox-search-android-ndk27", version.ref = "mapboxSearch" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleId" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
 androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltWork" }
