@@ -4,11 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,7 +52,7 @@ private fun SizeChip(
 ) {
     Box(
         modifier = modifier
-            .size(48.dp)
+            .defaultMinSize(48.dp, minHeight = 48.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(if (isSelected) Color.Black else Color.Transparent)
             .border(
@@ -62,6 +60,7 @@ private fun SizeChip(
                 color = if (isSelected) Color.Black else MaterialTheme.colorScheme.outlineVariant,
                 shape = RoundedCornerShape(12.dp)
             )
+            .padding(horizontal = 12.dp)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
