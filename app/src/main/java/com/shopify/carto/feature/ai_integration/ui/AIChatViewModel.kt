@@ -14,6 +14,7 @@ import com.shopify.carto.feature.currency.domain.model.Currency as AppCurrency
 import com.shopify.carto.feature.settings.domain.repository.SettingsRepository
 import com.shopify.carto.feature.currency.domain.repository.CurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 enum class MessageType {
     TEXT, PRODUCT_LIST, COMPARISON, OUTFIT, ERROR
@@ -208,7 +210,7 @@ class AIChatViewModel @Inject constructor(
                             }
                         )
                     }
-                    kotlinx.coroutines.delay(55)
+                    delay(35.milliseconds)
                 }
 
                 updateUiState { state ->
