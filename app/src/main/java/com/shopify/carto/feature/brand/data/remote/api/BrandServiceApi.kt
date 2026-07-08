@@ -2,7 +2,6 @@ package com.shopify.carto.feature.brand.data.remote.api
 
 import com.shopify.carto.feature.brand.data.remote.dto.BrandProductsResponseDto
 import com.shopify.carto.feature.brand.data.remote.dto.BrandsResponseDto
-import com.shopify.carto.feature.search.data.remote.model.SearchProductsResponseDto
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

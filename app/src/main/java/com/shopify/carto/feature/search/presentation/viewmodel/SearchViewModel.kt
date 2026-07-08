@@ -1,14 +1,13 @@
 package com.shopify.carto.feature.search.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.shopify.carto.R
 import com.shopify.carto.feature.search.domain.model.SearchFailure
 import com.shopify.carto.feature.search.domain.model.SearchFailureType
 import com.shopify.carto.feature.search.domain.model.SearchResult
 import com.shopify.carto.feature.search.domain.usecases.ClearSearchHistoryUseCase
 import com.shopify.carto.feature.search.domain.usecases.DeleteSearchHistoryItemUseCase
-import com.shopify.carto.feature.search.domain.usecases.GetInitialSearchProductsUseCase
 import com.shopify.carto.feature.search.domain.usecases.ObserveSearchHistoryUseCase
 import com.shopify.carto.feature.search.domain.usecases.SaveSearchQueryUseCase
 import com.shopify.carto.feature.search.domain.usecases.SearchProductsUseCase
@@ -31,7 +30,6 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val getInitialSearchProductsUseCase: GetInitialSearchProductsUseCase,
     private val searchProductsUseCase: SearchProductsUseCase,
     private val observeSearchHistoryUseCase: ObserveSearchHistoryUseCase,
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
@@ -46,7 +44,6 @@ class SearchViewModel @Inject constructor(
 
     init {
         observeHistory()
-        loadInitialProducts()
         observeQueryChanges()
     }
 
@@ -55,9 +52,9 @@ class SearchViewModel @Inject constructor(
         _state.update {
             it.copy(
                 query = cleanedValue,
-                searchErrorMessage = "",
-                searchProducts = if (cleanedValue.isBlank()) emptyList() else it.searchProducts,
-                hasSearched = if (cleanedValue.isBlank()) false else it.hasSearched,
+                searchErrorMessageRes = null,
+                searchProducts = emptyList(),
+                hasSearched = false,
             )
         }
     }
@@ -72,12 +69,24 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    override fun onClearSearchClicked() {
+        _state.update {
+            it.copy(
+                query = "",
+                searchProducts = emptyList(),
+                isSearchLoading = false,
+                searchErrorMessageRes = null,
+                hasSearched = false,
+            )
+        }
+    }
+
     override fun onHistoryItemClicked(query: String) {
         _state.update {
             it.copy(
                 query = query,
                 searchProducts = emptyList(),
-                searchErrorMessage = "",
+                searchErrorMessageRes = null,
                 hasSearched = false,
             )
         }
@@ -91,7 +100,7 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = deleteSearchHistoryItemUseCase(id)) {
                 is SearchResult.Success -> Unit
-                is SearchResult.Failure -> result.failure.logForDeveloper()
+                is SearchResult.Failure -> result.failure
             }
         }
     }
@@ -100,7 +109,7 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = clearSearchHistoryUseCase()) {
                 is SearchResult.Success -> Unit
-                is SearchResult.Failure -> result.failure.logForDeveloper()
+                is SearchResult.Failure -> result.failure
             }
         }
     }
@@ -110,6 +119,16 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             if (query.isNotBlank()) {
                 saveQuery(query)
+            }
+            _effects.emit(SearchSideEffect.NavigateToProduct(productId))
+        }
+    }
+
+    override fun onProductSuggestionClicked(productId: Long, productTitle: String) {
+        val cleanedTitle = productTitle.trim()
+        viewModelScope.launch {
+            if (cleanedTitle.isNotBlank()) {
+                saveQuery(cleanedTitle)
             }
             _effects.emit(SearchSideEffect.NavigateToProduct(productId))
         }
@@ -125,42 +144,6 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             observeSearchHistoryUseCase().collect { history ->
                 _state.update { it.copy(history = history) }
-            }
-        }
-    }
-
-    private fun loadInitialProducts() {
-        viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    isInitialLoading = true,
-                    initialErrorMessage = "",
-                )
-            }
-
-            when (val result = getInitialSearchProductsUseCase()) {
-                is SearchResult.Success -> {
-                    _state.update {
-                        it.copy(
-                            isInitialLoading = false,
-                            initialProducts = result.data,
-                            initialErrorMessage = "",
-                            hasLoadedInitialProducts = true,
-                        )
-                    }
-                }
-
-                is SearchResult.Failure -> {
-                    result.failure.logForDeveloper()
-                    _state.update {
-                        it.copy(
-                            isInitialLoading = false,
-                            initialProducts = emptyList(),
-                            initialErrorMessage = result.failure.toUserMessage(),
-                            hasLoadedInitialProducts = true,
-                        )
-                    }
-                }
             }
         }
     }
@@ -182,7 +165,7 @@ class SearchViewModel @Inject constructor(
         _state.update {
             it.copy(
                 isSearchLoading = true,
-                searchErrorMessage = "",
+                searchErrorMessageRes = null,
                 hasSearched = true,
             )
         }
@@ -193,19 +176,19 @@ class SearchViewModel @Inject constructor(
                     it.copy(
                         isSearchLoading = false,
                         searchProducts = result.data,
-                        searchErrorMessage = "",
+                        searchErrorMessageRes = null,
                         hasSearched = true,
                     )
                 }
             }
 
             is SearchResult.Failure -> {
-                result.failure.logForDeveloper()
+                result.failure
                 _state.update {
                     it.copy(
                         isSearchLoading = false,
                         searchProducts = emptyList(),
-                        searchErrorMessage = result.failure.toUserMessage(),
+                        searchErrorMessageRes = result.failure.toUserMessageRes(),
                         hasSearched = true,
                     )
                 }
@@ -216,27 +199,22 @@ class SearchViewModel @Inject constructor(
     private suspend fun saveQuery(query: String) {
         when (val result = saveSearchQueryUseCase(query)) {
             is SearchResult.Success -> Unit
-            is SearchResult.Failure -> result.failure.logForDeveloper()
+            is SearchResult.Failure -> result.failure
         }
     }
 
-    private fun SearchFailure.toUserMessage(): String {
+    private fun SearchFailure.toUserMessageRes(): Int {
         return when (type) {
-            SearchFailureType.Network -> "Check your internet connection and try again."
-            SearchFailureType.Unauthorized -> "We couldn't load products right now. Try again later."
-            SearchFailureType.Server -> "The store is busy right now. Try again later."
+            SearchFailureType.Network -> R.string.search_error_network
+            SearchFailureType.Unauthorized -> R.string.search_error_unauthorized
+            SearchFailureType.Server -> R.string.search_error_server
             SearchFailureType.ShopifyConfigurationMissing,
             SearchFailureType.LocalStorage,
-            SearchFailureType.Unknown -> "Something went wrong. Try again later."
+            SearchFailureType.Unknown -> R.string.search_error_unknown
         }
-    }
-
-    private fun SearchFailure.logForDeveloper() {
-        Log.e(TAG, "Search failed. type=$type, details=$developerMessage")
     }
 
     private companion object {
-        const val TAG = "SearchViewModel"
         const val SEARCH_DEBOUNCE_MILLIS = 500L
     }
 }

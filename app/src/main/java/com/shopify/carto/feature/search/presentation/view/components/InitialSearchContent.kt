@@ -29,27 +29,27 @@ import androidx.compose.ui.unit.sp
 import com.shopify.carto.R
 
 @Composable
-fun EmptySearchContent(
+fun InitialSearchContent(
     modifier: Modifier = Modifier,
 ) {
-    val transition = rememberInfiniteTransition(label = "empty-search-transition")
+    val transition = rememberInfiniteTransition(label = "initial-search-transition")
     val scale by transition.animateFloat(
-        initialValue = 0.92f,
-        targetValue = 1.08f,
+        initialValue = 0.94f,
+        targetValue = 1.06f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 900),
+            animation = tween(durationMillis = 1000),
             repeatMode = RepeatMode.Reverse,
         ),
-        label = "empty-search-scale",
+        label = "initial-search-scale",
     )
     val alpha by transition.animateFloat(
-        initialValue = 0.45f,
-        targetValue = 0.85f,
+        initialValue = 0.55f,
+        targetValue = 0.95f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 900),
+            animation = tween(durationMillis = 1000),
             repeatMode = RepeatMode.Reverse,
         ),
-        label = "empty-search-alpha",
+        label = "initial-search-alpha",
     )
 
     Column(
@@ -59,32 +59,31 @@ fun EmptySearchContent(
     ) {
         Icon(
             modifier = Modifier
-                .size(80.dp)
+                .size(72.dp)
                 .scale(scale)
                 .alpha(alpha),
             painter = painterResource(R.drawable.ic_search),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-
+            tint = MaterialTheme.colorScheme.primary,
         )
 
-        Spacer(Modifier.height(42.dp))
+        Spacer(Modifier.height(24.dp))
 
         Text(
-            text = stringResource(R.string.search_empty_title),
+            text = stringResource(R.string.search_initial_title),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(12.dp))
 
         Text(
-            text = stringResource(R.string.search_empty_subtitle),
-            fontSize = 18.sp,
+            text = stringResource(R.string.search_initial_subtitle),
+            fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            lineHeight = 30.sp,
+            lineHeight = 24.sp,
             textAlign = TextAlign.Center,
         )
     }

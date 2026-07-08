@@ -1,5 +1,5 @@
 query SearchProducts($query: String!, $first: Int!) {
-  search(query: $query, first: $first, types: [PRODUCT], prefix: LAST) {
+  search(query: $query, first: $first, types: PRODUCT) {
     nodes {
       ... on Product {
         id
