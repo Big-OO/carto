@@ -205,6 +205,21 @@
     <string name="error_server_down">Server Down Error</string>
     <string name="error_unknown">UnKnown Error</string>
     <string name="login_required">please log in first</string>
+
+    <string name="ai_welcome_title">Welcome to Carto AI</string>
+    <string name="ai_welcome_subtitle">Ask me anything about products, fashion, outfits, comparisons, or shopping advice!</string>
+    <string name="ai_try_asking">Try asking:</string>
+    <string name="ai_suggestion_wear">What should I wear today? 👕</string>
+    <string name="ai_suggestion_shoes">Show best running shoes 👟</string>
+    <string name="ai_suggestion_compare">Compare Nike vs Adidas ⚔️</string>
+    <string name="ai_suggestion_cart">Show my cart details 🛒</string>
+    <string name="ai_chat_header_title">Carto AI</string>
+    <string name="ai_chat_header_subtitle">Your smart shopping assistant</string>
+    <string name="ai_recording">Recording…</string>
+    <string name="ai_listening">🎙 Listening…</string>
+    <string name="ai_message_placeholder">Message Carto AI…</string>
+    <string name="ai_copied_toast">Copied</string>
+    <string name="ai_welcome_assistant_message">Hi! I\'m your AI Shopping Assistant. Ask me anything about searching products, comparing prices, managing your cart/wishlist, or generating outfit ideas!</string>
     <string name="order_history_screen_title">My Orders</string>
     <string name="order_history_no_orders_title">No %1$s Orders!</string>
     <string name="order_history_no_orders_subtitle">You don\'t have any %1$s orders at this time.</string>
@@ -332,7 +347,7 @@
     <string name="profileGuestTitle">Access Your Profile</string>
     <string name="profileGuestDescription">
     You are currently browsing as a guest. Please log in or create an account to view your profile details, order history, and saved addresses.
-</string>
+    </string>
     <string name="profileGuestLoginButton">Log In</string>
     <string name="profileGuestSomethingWentWrong">Something went wrong</string>
     <string name="profileGuestRetry">Retry</string>
@@ -342,6 +357,7 @@
     <string name="removeFavoriteConfirm">Yes, Remove</string>
     <string name="removeFavoriteCancel">No, Keep it</string>
 
+</resources>
 
 
     <!-- Search -->

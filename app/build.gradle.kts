@@ -56,6 +56,7 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
     arg("room.incremental", "true")
     arg("room.expandProjection", "true")
+    arg("appfunctions:aggregateAppFunctions", "true")
 }
 
 hilt {
@@ -130,6 +131,17 @@ android {
             "PAYMOB_FLASH_BASE_URL",
             localProperty("paymob.flash.base.url").asBuildConfigString()
         )
+        buildConfigField(
+            "String",
+            "AI_API_BASE_URL",
+            localProperty("ai.api.base.url").asBuildConfigString()
+        )
+        buildConfigField(
+            "String",
+            "AI_API_KEY",
+            localProperty("ai.api.key").asBuildConfigString()
+        )
+
     }
 
     buildTypes {
@@ -178,6 +190,10 @@ android {
         warningsAsErrors = false
         baseline = file("lint-baseline.xml")
     }
+}
+
+ksp {
+    arg("appfunctions:aggregateAppFunctions", "true")
 }
 
 dependencies {
@@ -266,6 +282,10 @@ dependencies {
     kspAndroidTest(libs.hilt.compiler)
 
     implementation(libs.paymob.sdk)
+
+    implementation(libs.androidx.appfunctions)
+    implementation(libs.androidx.appfunctions.service)
+    ksp(libs.androidx.appfunctions.compiler)
 
     implementation(libs.mapbox.android.maps)
     implementation(libs.mapbox.maps.compose)

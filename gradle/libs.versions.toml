@@ -1,4 +1,5 @@
 [versions]
+appfunctions = "1.0.0-alpha09"
 compileSdk = "37"
 kotlinxSerializationJson = "1.11.0"
 minSdk = "24"
@@ -49,6 +50,9 @@ playServicesAuth = "21.3.0"
 
 
 [libraries]
+androidx-appfunctions = { module = "androidx.appfunctions:appfunctions", version.ref = "appfunctions" }
+androidx-appfunctions-compiler = { module = "androidx.appfunctions:appfunctions-compiler", version.ref = "appfunctions" }
+androidx-appfunctions-service = { module = "androidx.appfunctions:appfunctions-service", version.ref = "appfunctions" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
