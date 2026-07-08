@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 fun AIChatScreen(
     onProductClick: (Long) -> Unit,
     onBackClick: () -> Unit = {},
+    onCheckoutClick: () -> Unit = {},
     viewModel: AIChatViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -89,9 +90,17 @@ fun AIChatScreen(
     }
 
     // Auto-scroll to latest message
-    LaunchedEffect(uiState.messages.size) {
-        if (uiState.messages.isNotEmpty()) {
-            listState.animateScrollToItem(uiState.messages.size - 1)
+    LaunchedEffect(
+        uiState.messages.size,
+        uiState.isProcessing,
+        uiState.statusMessage,
+        uiState.messages.lastOrNull()?.text
+    ) {
+        val messageCount = uiState.messages.size
+        val hasThinking = uiState.isProcessing && uiState.statusMessage != null
+        val totalCount = messageCount + (if (hasThinking) 1 else 0)
+        if (totalCount > 0) {
+            listState.animateScrollToItem(totalCount - 1)
         }
     }
 
@@ -138,7 +147,13 @@ fun AIChatScreen(
                                     }
                                 },
                                 onRegenerateClick = { viewModel.regenerateLastResponse() },
-                                onOptionClick = { viewModel.sendMessage(it) },
+                                onOptionClick = { option ->
+                                    if (option.equals("Go to Checkout", ignoreCase = true)) {
+                                        onCheckoutClick()
+                                    } else {
+                                        viewModel.sendMessage(option)
+                                    }
+                                },
                                 snackbarHostState = snackbarHostState,
                                 context = context
                             )

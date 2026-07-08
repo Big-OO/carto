@@ -31,8 +31,6 @@ class ValidateCheckoutUseCase {
         }
         if (phone.isBlank()) {
             errors["phone"] = "Phone number is required"
-        } else if (phone.length < 10) {
-            errors["phone"] = "Please enter a valid phone number"
         }
         if (address.isBlank()) {
             errors["address"] = "Address is required"

@@ -122,7 +122,8 @@ data class TransactionInput(
 )
 
 data class CreateOrderGraphQlResponse(
-    val data: CreateOrderDataDto?
+    val data: CreateOrderDataDto?,
+    val errors: List<com.shopify.carto.core.network.graphql.dto.GraphQlErrorDto>? = null
 )
 
 data class CreateOrderDataDto(
