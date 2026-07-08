@@ -250,9 +250,10 @@ fun AppNavHost(
             }
             composable(Screen.Cart.route) {
                 CartScreen(
-
-                    onNavigateToCheckout = { checkoutUrl ->
-
+                    onNavigateToCheckout = { _ ->
+                        navController.navigate(Screen.Checkout.route) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
@@ -289,17 +290,11 @@ fun AppNavHost(
                             }
                         }
                     },
-                    onPaymentFailed = { message ->
-                        navController.navigate(
-                            Screen.PaymentResult.createRoute(
-                                success = false,
-                                transactionId = message,
-                            )
-                        ) {
-                            popUpTo(Screen.Checkout.route) {
-                                inclusive = true
-                            }
-                        }
+                    onPaymentFailed = { _ ->
+                        // Handled via snackbar in CheckoutScreen
+                    },
+                    onNavigateToAddressesClick = {
+                        navController.navigate(Screen.Addresses.route)
                     },
                 )
             }
