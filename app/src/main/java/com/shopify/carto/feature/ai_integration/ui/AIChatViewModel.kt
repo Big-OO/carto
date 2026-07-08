@@ -166,10 +166,12 @@ class AIChatViewModel @Inject constructor(
                     .replace(Regex("""\s*Product ID:\s*\d+""", RegexOption.IGNORE_CASE), "")
                     .trim()
 
+                val convertedText = convertPricesInText(cleanedText, activeCurrency.name, rate)
+
                 val targetText = if (recommendedProducts.isNotEmpty()) {
-                    extractIntroText(cleanedText)
+                    extractIntroText(convertedText)
                 } else {
-                    cleanedText.ifBlank { "Here you go!" }
+                    convertedText.ifBlank { "Here you go!" }
                 }
 
                 val aiMessageId = UUID.randomUUID().toString()
@@ -292,6 +294,19 @@ class AIChatViewModel @Inject constructor(
 
         return introLines.joinToString(" ").trim()
             .ifBlank { "Here are some items I found for you:" }
+    }
+
+    private fun convertPricesInText(text: String, currencyCode: String, rate: Double): String {
+        val priceRegex = Regex("""\[Price:\s*([0-9]+(?:\.[0-9]+)?)\]""", RegexOption.IGNORE_CASE)
+        return priceRegex.replace(text) { matchResult ->
+            val usdAmount = matchResult.groupValues[1].toDoubleOrNull()
+            if (usdAmount != null) {
+                val converted = usdAmount * rate
+                "${String.format(java.util.Locale.US, "%,.2f", converted)} $currencyCode"
+            } else {
+                matchResult.value
+            }
+        }
     }
 
     private fun updateUiState(update: (AIChatUiState) -> AIChatUiState) {

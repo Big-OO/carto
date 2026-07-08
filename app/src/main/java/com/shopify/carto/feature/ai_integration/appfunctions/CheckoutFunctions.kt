@@ -17,6 +17,9 @@ import com.shopify.carto.feature.payment.domain.model.PaymentRequest
 import com.shopify.carto.feature.payment.domain.model.PaymentMethod
 import com.shopify.carto.feature.payment.domain.model.PaymentResult
 import com.shopify.carto.feature.payment.domain.model.OrderItem
+import com.shopify.carto.feature.settings.domain.repository.SettingsRepository
+import com.shopify.carto.feature.currency.domain.repository.CurrencyRepository
+import com.shopify.carto.feature.currency.domain.model.Currency as AppCurrency
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 
@@ -27,7 +30,9 @@ class CheckoutFunctions @Inject constructor(
     private val getAddressesUseCase: GetAddressesUseCase,
     private val placeCashOnDeliveryOrderUseCase: PlaceCashOnDeliveryOrderUseCase,
     private val createCardPaymentUseCase: CreateCardPaymentUseCase,
-    private val cancelOrderUseCase: CancelOrderUseCase
+    private val cancelOrderUseCase: CancelOrderUseCase,
+    private val settingsRepository: SettingsRepository,
+    private val currencyRepository: CurrencyRepository
 ) {
 
     // ── Step 1: Customer Info ────────────────────────────────────────────
@@ -231,9 +236,17 @@ class CheckoutFunctions @Inject constructor(
             else -> "Cash on Delivery"
         }
 
-        val shippingFee = 80.0
-        val finalTotal = cart.subtotal + shippingFee
-        val currency = cart.currency
+
+
+        val activeCurrency = settingsRepository.currency.first()
+        val rates = currencyRepository.observeRates().first()
+        val rate = rates?.rates?.get(activeCurrency) ?: 1.0
+        val displayCurrency = activeCurrency.name
+
+        val shippingFeeUsd = 80.0
+        val convertedShippingFee = shippingFeeUsd * rate
+        val convertedSubtotal = cart.subtotal * rate
+        val convertedFinalTotal = (cart.subtotal + shippingFeeUsd) * rate
 
         // Build summary
         return buildString {
@@ -242,7 +255,8 @@ class CheckoutFunctions @Inject constructor(
 
             append("Products:\n")
             cart.lines.forEach { line ->
-                append("  • ${line.productTitle} x${line.quantity} — ${String.format("%.2f", line.price)} $currency\n")
+                val convertedPrice = line.price * rate
+                append("  • ${line.productTitle} x${line.quantity} — ${String.format("%.2f", convertedPrice)} $displayCurrency\n")
             }
             append("\n")
 
@@ -260,11 +274,11 @@ class CheckoutFunctions @Inject constructor(
 
             append("Payment Method: $paymentLabel\n\n")
 
-            append("Subtotal: ${String.format("%.2f", cart.subtotal)} $currency\n")
-            append("Shipping Fee: ${String.format("%.2f", shippingFee)} $currency\n")
-            append("Discounts: 0.00 $currency\n")
-            append("Taxes: 0.00 $currency\n")
-            append("Final Total: ${String.format("%.2f", finalTotal)} $currency\n")
+            append("Subtotal: ${String.format("%.2f", convertedSubtotal)} $displayCurrency\n")
+            append("Shipping Fee: ${String.format("%.2f", convertedShippingFee)} $displayCurrency\n")
+            append("Discounts: 0.00 $displayCurrency\n")
+            append("Taxes: 0.00 $displayCurrency\n")
+            append("Final Total: ${String.format("%.2f", convertedFinalTotal)} $displayCurrency\n")
         }
     }
 

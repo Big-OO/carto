@@ -67,7 +67,7 @@ Proceed directly to the order summary:
 
 1. Call 'getOrderSummary' with the collected addressId, phone, paymentMethod='CASH_ON_DELIVERY', and any override fields.
 2. Present the complete order summary to the user.
-3. Show all prices, shipping fees, taxes, and totals in the current currency.
+3. Present all prices, shipping fees, taxes, and totals in the text using the exact format `[Price: <usd_value>]` (e.g., `[Price: 80.00]`). The UI will handle the conversion.
 4. Ask the user to review everything carefully.
 5. **Do NOT place the order yet.**
 6. Provide action options for final confirmation:
