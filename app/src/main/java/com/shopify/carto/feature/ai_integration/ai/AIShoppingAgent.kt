@@ -494,6 +494,65 @@ class AIShoppingAgent(
                     }
                 }
             }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "checkout")
+                    put("description", "Checkout the shopping cart and place/create an order using the specified payment method and customer/address details.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("paymentMethod") {
+                                put("type", "string")
+                                put("description", "The payment method to use (either 'CASH_ON_DELIVERY', 'CARD', or 'DIGITAL_WALLET'). Defaults to 'CASH_ON_DELIVERY'.")
+                            }
+                            putJsonObject("firstName") {
+                                put("type", "string")
+                                put("description", "Optional first name for shipping.")
+                            }
+                            putJsonObject("lastName") {
+                                put("type", "string")
+                                put("description", "Optional last name for shipping.")
+                            }
+                            putJsonObject("email") {
+                                put("type", "string")
+                                put("description", "Optional email address.")
+                            }
+                            putJsonObject("phone") {
+                                put("type", "string")
+                                put("description", "Optional phone number.")
+                            }
+                            putJsonObject("address") {
+                                put("type", "string")
+                                put("description", "Optional shipping street address.")
+                            }
+                            putJsonObject("city") {
+                                put("type", "string")
+                                put("description", "Optional shipping city.")
+                            }
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "cancelOrder")
+                    put("description", "Cancel an existing order using its order ID.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("orderId") {
+                                put("type", "string")
+                                put("description", "The Shopify order ID to cancel.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("orderId")
+                        }
+                    }
+                }
+            }
         }
     }
 
