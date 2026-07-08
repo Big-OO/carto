@@ -19,4 +19,12 @@ sealed interface LoginEvent {
     data object RegisterClicked : LoginEvent
 
     data object GuestLoginClicked : LoginEvent
+
+    data class GoogleLoginTokenReceived(
+        val idToken: String
+    ) : LoginEvent
+
+    data class GoogleLoginError(
+        val message: String
+    ) : LoginEvent
 }
