@@ -21,6 +21,7 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import java.util.concurrent.TimeUnit
 import com.shopify.carto.feature.currency.worker.CurrencySyncWorker
+import com.shopify.carto.feature.ai_integration.appfunctions.CheckoutFunctions
 
 
 @HiltAndroidApp
@@ -40,6 +41,9 @@ class CartoApplication: Application(), AppFunctionConfiguration.Provider, Config
 
     @Inject
     lateinit var outfitFunctions: OutfitFunctions
+
+    @Inject
+    lateinit var checkoutFunctions: CheckoutFunctions
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -103,5 +107,6 @@ class CartoApplication: Application(), AppFunctionConfiguration.Provider, Config
             .addEnclosingClassFactory(WishlistFunctions::class.java) { wishlistFunctions }
             .addEnclosingClassFactory(CompareFunctions::class.java) { compareFunctions }
             .addEnclosingClassFactory(OutfitFunctions::class.java) { outfitFunctions }
+            .addEnclosingClassFactory(CheckoutFunctions::class.java) { checkoutFunctions }
             .build()
 }
