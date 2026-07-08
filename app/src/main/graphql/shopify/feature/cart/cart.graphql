@@ -79,3 +79,19 @@ mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
         }
     }
 }
+
+mutation UpdateCartBuyerIdentity($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
+        cart {
+            id
+            buyerIdentity {
+                email
+                countryCode
+            }
+        }
+        userErrors {
+            field
+            message
+        }
+    }
+}
