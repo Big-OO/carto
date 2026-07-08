@@ -228,6 +228,11 @@ fun AppNavHost(
                     },
                     onBackClick = {
                         navController.popBackStack()
+                    },
+                    onCheckoutClick = {
+                        navController.navigate(Screen.Checkout.route) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }

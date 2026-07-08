@@ -136,15 +136,38 @@ class CartoAppFunctionProxyReceiver : BroadcastReceiver() {
             "showWishlist" -> {
                 wishlistFunctions.showWishlist(appContext)
             }
+            "getCustomerInfo" -> {
+                checkoutFunctions.getCustomerInfo(appContext)
+            }
+            "getShippingAddresses" -> {
+                checkoutFunctions.getShippingAddresses(appContext)
+            }
+            "validatePhone" -> {
+                val phone = jsonElement?.get("phone")?.jsonPrimitive?.content ?: ""
+                checkoutFunctions.validatePhone(appContext, phone)
+            }
+            "getOrderSummary" -> {
+                val addressId = jsonElement?.get("addressId")?.jsonPrimitive?.longOrNull ?: 0L
+                val phone = jsonElement?.get("phone")?.jsonPrimitive?.content ?: ""
+                val paymentMethod = jsonElement?.get("paymentMethod")?.jsonPrimitive?.content ?: "CASH_ON_DELIVERY"
+                val firstName = jsonElement?.get("firstName")?.jsonPrimitive?.content ?: ""
+                val lastName = jsonElement?.get("lastName")?.jsonPrimitive?.content ?: ""
+                val email = jsonElement?.get("email")?.jsonPrimitive?.content ?: ""
+                val address = jsonElement?.get("address")?.jsonPrimitive?.content ?: ""
+                val city = jsonElement?.get("city")?.jsonPrimitive?.content ?: ""
+                checkoutFunctions.getOrderSummary(appContext, addressId, phone, paymentMethod, firstName, lastName, email, address, city)
+            }
             "checkout" -> {
                 val paymentMethod = jsonElement?.get("paymentMethod")?.jsonPrimitive?.content ?: "CASH_ON_DELIVERY"
+                val confirmed = jsonElement?.get("confirmed")?.jsonPrimitive?.content?.toBooleanStrictOrNull() ?: false
+                val addressId = jsonElement?.get("addressId")?.jsonPrimitive?.longOrNull ?: 0L
                 val firstName = jsonElement?.get("firstName")?.jsonPrimitive?.content ?: ""
                 val lastName = jsonElement?.get("lastName")?.jsonPrimitive?.content ?: ""
                 val email = jsonElement?.get("email")?.jsonPrimitive?.content ?: ""
                 val phone = jsonElement?.get("phone")?.jsonPrimitive?.content ?: ""
                 val address = jsonElement?.get("address")?.jsonPrimitive?.content ?: ""
                 val city = jsonElement?.get("city")?.jsonPrimitive?.content ?: ""
-                checkoutFunctions.checkout(appContext, paymentMethod, firstName, lastName, email, phone, address, city)
+                checkoutFunctions.checkout(appContext, paymentMethod, confirmed, addressId, firstName, lastName, email, phone, address, city)
             }
             "cancelOrder" -> {
                 val orderId = jsonElement?.get("orderId")?.jsonPrimitive?.content ?: ""

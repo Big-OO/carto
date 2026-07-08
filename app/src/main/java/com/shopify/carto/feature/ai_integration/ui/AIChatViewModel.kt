@@ -12,6 +12,7 @@ import com.shopify.carto.feature.favorite.domain.usecase.ObserveFavoriteIdsUseCa
 import com.shopify.carto.feature.product_details.domain.model.merchandiseId
 import com.shopify.carto.feature.currency.domain.model.Currency as AppCurrency
 import com.shopify.carto.feature.settings.domain.repository.SettingsRepository
+import com.shopify.carto.feature.currency.domain.repository.CurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -52,6 +54,7 @@ class AIChatViewModel @Inject constructor(
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val addToCartUseCase: AddToCartUseCase,
     private val settingsRepository: SettingsRepository,
+    private val currencyRepository: CurrencyRepository,
     observeFavoriteIdsUseCase: ObserveFavoriteIdsUseCase
 ) : ViewModel() {
 
@@ -69,15 +72,14 @@ class AIChatViewModel @Inject constructor(
         )
 
     init {
-        _uiState.update {
-            it.copy(
-                messages = listOf(
-                    ChatMessage(
-                        text = "WELCOME_PLACEHOLDER",
-                        isUser = false
-                    )
-                )
+        val initialMessages = savedMessages ?: listOf(
+            ChatMessage(
+                text = "WELCOME_PLACEHOLDER",
+                isUser = false
             )
+        )
+        _uiState.update {
+            it.copy(messages = initialMessages)
         }
     }
 
@@ -85,7 +87,7 @@ class AIChatViewModel @Inject constructor(
         if (text.isBlank() || _uiState.value.isProcessing) return
 
         val userMessage = ChatMessage(text = text, isUser = true, isVoiceMessage = isVoice)
-        _uiState.update {
+        updateUiState {
             it.copy(
                 messages = it.messages + userMessage,
                 isProcessing = true,
@@ -102,7 +104,7 @@ class AIChatViewModel @Inject constructor(
         val lastUserMessage = _uiState.value.messages.lastOrNull { it.isUser } ?: return
         val indexOfLastUser = _uiState.value.messages.lastIndexOf(lastUserMessage)
 
-        _uiState.update {
+        updateUiState {
             it.copy(
                 messages = it.messages.subList(0, indexOfLastUser + 1),
                 isProcessing = true,
@@ -116,7 +118,10 @@ class AIChatViewModel @Inject constructor(
     private fun executeMessageQuery(text: String) {
         viewModelScope.launch {
             try {
-                val agentResult = aiShoppingAgent.sendMessage(text) { step ->
+                val rates = currencyRepository.observeRates().first()
+                val activeCurrency = selectedCurrency.value
+                val rate = rates?.rates?.get(activeCurrency) ?: 1.0
+                val agentResult = aiShoppingAgent.sendMessage(text, activeCurrency.name, rate) { step ->
                     _uiState.update { it.copy(statusMessage = step) }
                 }
 
@@ -179,7 +184,7 @@ class AIChatViewModel @Inject constructor(
                     isTypingFinished = false
                 )
 
-                _uiState.update {
+                updateUiState {
                     it.copy(
                         messages = it.messages + aiMessage,
                         statusMessage = null
@@ -190,7 +195,7 @@ class AIChatViewModel @Inject constructor(
                 var currentText = ""
                 for (i in words.indices) {
                     currentText += (if (i == 0) "" else " ") + words[i]
-                    _uiState.update { state ->
+                    updateUiState { state ->
                         state.copy(
                             messages = state.messages.map { msg ->
                                 if (msg.id == aiMessageId) {
@@ -204,7 +209,7 @@ class AIChatViewModel @Inject constructor(
                     kotlinx.coroutines.delay(55)
                 }
 
-                _uiState.update { state ->
+                updateUiState { state ->
                     state.copy(
                         messages = state.messages.map { msg ->
                             if (msg.id == aiMessageId) {
@@ -222,7 +227,7 @@ class AIChatViewModel @Inject constructor(
                     isUser = false,
                     type = MessageType.ERROR
                 )
-                _uiState.update {
+                updateUiState {
                     it.copy(
                         messages = it.messages + errorMessage,
                         isProcessing = false,
@@ -287,5 +292,17 @@ class AIChatViewModel @Inject constructor(
 
         return introLines.joinToString(" ").trim()
             .ifBlank { "Here are some items I found for you:" }
+    }
+
+    private fun updateUiState(update: (AIChatUiState) -> AIChatUiState) {
+        _uiState.update {
+            val newState = update(it)
+            savedMessages = newState.messages
+            newState
+        }
+    }
+
+    companion object {
+        private var savedMessages: List<ChatMessage>? = null
     }
 }

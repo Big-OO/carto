@@ -63,7 +63,7 @@ class AIShoppingAgent(
         }
     }
 
-    private fun buildSystemPrompt(personaPath: String): String {
+    private fun buildSystemPrompt(personaPath: String, currentCurrency: String, exchangeRate: Double): String {
         val system = loadAssetFile("ai/system.md")
         val responseRules = loadAssetFile("ai/response_rules.md")
         val uiRules = if (!personaPath.contains("styling")) {
@@ -76,6 +76,9 @@ class AIShoppingAgent(
         val persona = loadAssetFile("ai/$personaPath")
 
         return buildString {
+            append("The current currency is $currentCurrency. The exchange rate is 1 USD = $exchangeRate $currentCurrency. ")
+            append("Prices returned by search/product tools are stored in USD. When communicating with the user, you MUST convert all prices, discounts, and totals from USD to $currentCurrency by multiplying the USD price by $exchangeRate. Always present prices formatted in $currentCurrency. ")
+            append("Note that the shipping fee is a flat 80 $currentCurrency.\n\n")
             if (system.isNotBlank()) {
                 append(system).append("\n\n")
             }
@@ -97,11 +100,11 @@ class AIShoppingAgent(
         }.trim()
     }
 
-    suspend fun sendMessage(userMessage: String, onStep: (String) -> Unit): AgentResult {
+    suspend fun sendMessage(userMessage: String, currentCurrency: String, exchangeRate: Double, onStep: (String) -> Unit): AgentResult {
         Log.d(TAG, "Sending message to Custom AI: $userMessage")
 
         val personaPath = determinePersonaPath(userMessage)
-        val systemPrompt = buildSystemPrompt(personaPath)
+        val systemPrompt = buildSystemPrompt(personaPath, currentCurrency, exchangeRate)
 
         if (chatHistory.isNotEmpty() && chatHistory[0]["role"]?.jsonPrimitive?.content == "system") {
             chatHistory[0] = buildJsonObject {
@@ -181,6 +184,10 @@ class AIShoppingAgent(
                         "showWishlist" -> "Loading wishlist..."
                         "compareProducts" -> "Comparing products..."
                         "generateOutfit" -> "Generating outfit..."
+                        "getCustomerInfo" -> "Retrieving your profile..."
+                        "getShippingAddresses" -> "Loading shipping addresses..."
+                        "validatePhone" -> "Validating phone number..."
+                        "getOrderSummary" -> "Preparing order summary..."
                         "checkout" -> "Placing your order..."
                         "cancelOrder" -> "Cancelling order..."
                         else -> "Processing request..."
@@ -499,39 +506,146 @@ class AIShoppingAgent(
             addJsonObject {
                 put("type", "function")
                 putJsonObject("function") {
+                    put("name", "getCustomerInfo")
+                    put("description", "Retrieve the current customer's profile information (name, email, phone). Use this as the first step when placing an order to verify customer details.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") { }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "getShippingAddresses")
+                    put("description", "Retrieve all saved shipping addresses for the customer. Present them to the user so they can choose which address to ship to.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") { }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "validatePhone")
+                    put("description", "Validate and normalize a phone number. Returns VALID with normalized number or INVALID if the phone cannot be validated.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("phone") {
+                                put("type", "string")
+                                put("description", "The phone number to validate.")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("phone")
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", "getOrderSummary")
+                    put("description", "Generate a complete order summary for user review WITHOUT placing the order. Shows all products, prices, shipping address, customer info, and total. Use this before asking the user for final confirmation on COD orders.")
+                    putJsonObject("parameters") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("addressId") {
+                                put("type", "integer")
+                                put("description", "ID of the selected shipping address. Pass 0 if using manual address/city.")
+                            }
+                            putJsonObject("phone") {
+                                put("type", "string")
+                                put("description", "The validated phone number.")
+                            }
+                            putJsonObject("paymentMethod") {
+                                put("type", "string")
+                                put("description", "Payment method: 'CASH_ON_DELIVERY', 'CARD', or 'DIGITAL_WALLET'.")
+                            }
+                            putJsonObject("firstName") {
+                                put("type", "string")
+                                put("description", "Override first name (only if user provided it manually).")
+                            }
+                            putJsonObject("lastName") {
+                                put("type", "string")
+                                put("description", "Override last name (only if user provided it manually).")
+                            }
+                            putJsonObject("email") {
+                                put("type", "string")
+                                put("description", "Override email (only if user provided it manually).")
+                            }
+                            putJsonObject("address") {
+                                put("type", "string")
+                                put("description", "Manual street address (only if no saved address selected).")
+                            }
+                            putJsonObject("city") {
+                                put("type", "string")
+                                put("description", "Manual city (only if no saved address selected).")
+                            }
+                        }
+                        putJsonArray("required") {
+                            add("addressId")
+                            add("phone")
+                            add("paymentMethod")
+                        }
+                    }
+                }
+            }
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
                     put("name", "checkout")
-                    put("description", "Checkout the shopping cart and place an order. The system automatically fetches the user's full name, email, phone from their profile and their default shipping address. Call this with just paymentMethod first. If the response starts with 'MISSING_INFO:', ask the user for the listed missing fields, then call again with those fields filled in.")
+                    put("description", "Place the order AFTER all information has been verified and the user has explicitly confirmed. The 'confirmed' parameter MUST be true. For COD, only call after showing getOrderSummary and receiving user confirmation. For Card/Wallet, call to get the payment client secret.")
                     putJsonObject("parameters") {
                         put("type", "object")
                         putJsonObject("properties") {
                             putJsonObject("paymentMethod") {
                                 put("type", "string")
-                                put("description", "The payment method: 'CASH_ON_DELIVERY' (default), 'CARD', or 'DIGITAL_WALLET'.")
+                                put("description", "Payment method: 'CASH_ON_DELIVERY', 'CARD', or 'DIGITAL_WALLET'.")
+                            }
+                            putJsonObject("confirmed") {
+                                put("type", "boolean")
+                                put("description", "Must be true to place the order. Only set true after explicit user confirmation.")
+                            }
+                            putJsonObject("addressId") {
+                                put("type", "integer")
+                                put("description", "ID of the selected shipping address. Pass 0 if using manual address/city.")
                             }
                             putJsonObject("firstName") {
                                 put("type", "string")
-                                put("description", "Override first name. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
+                                put("description", "Customer first name.")
                             }
                             putJsonObject("lastName") {
                                 put("type", "string")
-                                put("description", "Override last name. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
+                                put("description", "Customer last name.")
                             }
                             putJsonObject("email") {
                                 put("type", "string")
-                                put("description", "Override email. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
+                                put("description", "Customer email.")
                             }
                             putJsonObject("phone") {
                                 put("type", "string")
-                                put("description", "Override phone. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
+                                put("description", "Validated phone number.")
                             }
                             putJsonObject("address") {
                                 put("type", "string")
-                                put("description", "Override shipping address. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
+                                put("description", "Manual street address (only if addressId is 0).")
                             }
                             putJsonObject("city") {
                                 put("type", "string")
-                                put("description", "Override city. Only pass if the user explicitly provided it or if MISSING_INFO requested it.")
+                                put("description", "Manual city (only if addressId is 0).")
                             }
+                        }
+                        putJsonArray("required") {
+                            add("paymentMethod")
+                            add("confirmed")
+                            add("addressId")
+                            add("firstName")
+                            add("lastName")
+                            add("email")
+                            add("phone")
                         }
                     }
                 }

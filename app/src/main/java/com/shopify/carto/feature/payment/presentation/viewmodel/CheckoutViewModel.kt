@@ -69,11 +69,12 @@ class CheckoutViewModel @Inject constructor(
                 observeProfileUseCase(customerId).collect { profile ->
                     if (profile != null) {
                         _state.update { current ->
+                            val normalizedPhone = profile.phone?.let { com.shopify.carto.core.utils.PhoneNormalizer.normalize(it) }
                             current.copy(
                                 customerEmail = profile.email.ifBlank { current.customerEmail },
                                 customerFirstName = profile.firstName.ifBlank { current.customerFirstName },
                                 customerLastName = profile.lastName.ifBlank { current.customerLastName },
-                                customerPhone = profile.phone?.ifBlank { current.customerPhone } ?: current.customerPhone
+                                customerPhone = normalizedPhone?.ifBlank { current.customerPhone } ?: current.customerPhone
                             )
                         }
                     }
@@ -89,11 +90,12 @@ class CheckoutViewModel @Inject constructor(
                     val defaultAddr = result.data.firstOrNull { it.isDefault } ?: result.data.firstOrNull()
                     if (defaultAddr != null) {
                         _state.update {
+                            val normalizedPhone = com.shopify.carto.core.utils.PhoneNormalizer.normalize(defaultAddr.phone)
                             it.copy(
                                 selectedAddress = defaultAddr,
                                 customerFirstName = defaultAddr.firstName.ifBlank { it.customerFirstName },
                                 customerLastName = defaultAddr.lastName.ifBlank { it.customerLastName },
-                                customerPhone = defaultAddr.phone.ifBlank { it.customerPhone },
+                                customerPhone = normalizedPhone.ifBlank { it.customerPhone },
                                 address = defaultAddr.address1.ifBlank { it.address },
                                 city = defaultAddr.city.ifBlank { it.city },
                                 validationErrors = emptyMap(),
@@ -220,13 +222,17 @@ class CheckoutViewModel @Inject constructor(
 
     private fun placeOrder() {
         val current = _state.value
+        val normalizedPhone = com.shopify.carto.core.utils.PhoneNormalizer.normalize(current.customerPhone)
+        _state.update { it.copy(customerPhone = normalizedPhone) }
+        val updatedCurrent = _state.value
+
         val validation = validateCheckoutUseCase(
-            firstName = current.customerFirstName,
-            lastName = current.customerLastName,
-            email = current.customerEmail,
-            phone = current.customerPhone,
-            address = current.address,
-            city = current.city,
+            firstName = updatedCurrent.customerFirstName,
+            lastName = updatedCurrent.customerLastName,
+            email = updatedCurrent.customerEmail,
+            phone = updatedCurrent.customerPhone,
+            address = updatedCurrent.address,
+            city = updatedCurrent.city,
         )
 
         when (validation) {
@@ -245,17 +251,17 @@ class CheckoutViewModel @Inject constructor(
         }
 
         val request = PaymentRequest(
-            amountCents = current.totalAmountCents,
-            paymentMethod = current.selectedPaymentMethod,
-            customerFirstName = current.customerFirstName,
-            customerLastName = current.customerLastName,
-            customerEmail = current.customerEmail,
-            customerPhone = current.customerPhone,
-            address = current.address,
-            city = current.city,
-            items = current.orderItems,
-            discountCode = current.appliedPromoCode,
-            discountAmountCents = current.discountAmountCents,
+            amountCents = updatedCurrent.totalAmountCents,
+            paymentMethod = updatedCurrent.selectedPaymentMethod,
+            customerFirstName = updatedCurrent.customerFirstName,
+            customerLastName = updatedCurrent.customerLastName,
+            customerEmail = updatedCurrent.customerEmail,
+            customerPhone = updatedCurrent.customerPhone,
+            address = updatedCurrent.address,
+            city = updatedCurrent.city,
+            items = updatedCurrent.orderItems,
+            discountCode = updatedCurrent.appliedPromoCode,
+            discountAmountCents = updatedCurrent.discountAmountCents,
         )
 
         _state.update {
@@ -263,7 +269,7 @@ class CheckoutViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            when (current.selectedPaymentMethod) {
+            when (updatedCurrent.selectedPaymentMethod) {
                 PaymentMethod.CASH_ON_DELIVERY -> processCodOrder(request)
                 PaymentMethod.CARD -> processCardPayment(request)
                 PaymentMethod.DIGITAL_WALLET -> processCardPayment(request)
