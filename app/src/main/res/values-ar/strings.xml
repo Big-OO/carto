@@ -369,4 +369,16 @@
     <string name="search_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقاً.</string>
     <string name="search_back_content_description">رجوع</string>
 
+    <!-- Home Screen Glance Widget -->
+    <string name="home_profile_widget_description">ويدجت ملف العميل في كارتو</string>
+    <string name="home_profile_widget_loading">جاري تحميل الملف…</string>
+    <string name="home_profile_widget_customer_id">العميل #%s</string>
+    <string name="home_profile_widget_orders">الطلبات</string>
+    <string name="home_profile_widget_total_paid">إجمالي المدفوع</string>
+    <string name="home_profile_widget_footer">افتح كارتو لآخر التحديثات</string>
+    <string name="home_profile_widget_guest_title">ملف كارتو</string>
+    <string name="home_profile_widget_guest_message">سجّل الدخول لعرض إحصائياتك هنا.</string>
+    <string name="home_profile_widget_unavailable_title">الملف غير متاح</string>
+    <string name="home_profile_widget_unavailable_message">افتح التطبيق مرة واحدة لتحديث بياناتك.</string>
+
 </resources>

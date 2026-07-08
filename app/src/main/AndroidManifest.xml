@@ -35,6 +35,18 @@
             android:name=".feature.ai_integration.appfunctions.CartoAppFunctionProxyReceiver"
             android:exported="true" />
 
+        <receiver
+            android:name=".feature.home_widget.presentation.HomeProfileGlanceWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/home_profile_widget_info" />
+        </receiver>
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"

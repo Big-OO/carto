@@ -369,4 +369,17 @@
     <string name="search_error_server">The store is busy right now. Try again later.</string>
     <string name="search_error_unknown">Something went wrong. Try again later.</string>
     <string name="search_back_content_description">Back</string>
+
+    <!-- Home Screen Glance Widget -->
+    <string name="home_profile_widget_description">Carto customer profile widget</string>
+    <string name="home_profile_widget_loading">Loading profile…</string>
+    <string name="home_profile_widget_customer_id">Customer #%s</string>
+    <string name="home_profile_widget_orders">Orders</string>
+    <string name="home_profile_widget_total_paid">Total paid</string>
+    <string name="home_profile_widget_footer">Open Carto for latest updates</string>
+    <string name="home_profile_widget_guest_title">Carto Profile</string>
+    <string name="home_profile_widget_guest_message">Log in to show your customer stats here.</string>
+    <string name="home_profile_widget_unavailable_title">Profile unavailable</string>
+    <string name="home_profile_widget_unavailable_message">Open the app once to refresh your profile.</string>
+
 </resources>
