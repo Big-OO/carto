@@ -2,8 +2,12 @@ package com.shopify.carto.feature.shopping_cart.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -17,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.shopify.carto.R
+import com.shopify.carto.feature.shopping_cart.presentation.CartEvent
 
 @Composable
 fun CartSummarySection(
@@ -38,9 +43,10 @@ fun CartSummarySection(
 
         Button(
             onClick = onCheckoutClick,
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black, contentColor = Color.White),
-            modifier = Modifier.fillMaxWidth()
+            shape = RoundedCornerShape(10.dp),
+            contentPadding = PaddingValues(vertical = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
         ) {
             Text(text = stringResource(id = R.string.cartGoToCheckout), fontWeight = FontWeight.SemiBold)
         }

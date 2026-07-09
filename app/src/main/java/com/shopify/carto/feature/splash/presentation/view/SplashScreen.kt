@@ -5,7 +5,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,17 +16,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.shopify.carto.R
 import com.shopify.carto.feature.splash.presentation.state.SplashDestination
 import com.shopify.carto.feature.splash.presentation.state.SplashEffect
 import com.shopify.carto.feature.splash.presentation.viewmodel.SplashInteractionListener
 import com.shopify.carto.feature.splash.presentation.viewmodel.SplashViewModel
+import com.shopify.carto.presentation.components.CartoLogo
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -122,9 +120,7 @@ fun SplashContent(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center,
     ) {
-        Image(
-            painter = painterResource(R.drawable.logo_carto),
-            contentDescription = null,
+        CartoLogo(
             modifier = Modifier
                 .size(150.dp)
                 .graphicsLayer {

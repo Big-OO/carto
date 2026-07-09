@@ -50,14 +50,16 @@ private fun SizeChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = MaterialTheme.colorScheme
+
     Box(
         modifier = modifier
             .defaultMinSize(48.dp, minHeight = 48.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(if (isSelected) Color.Black else Color.Transparent)
+            .background(if (isSelected) colors.onBackground else Color.Transparent)
             .border(
                 width = 1.dp,
-                color = if (isSelected) Color.Black else MaterialTheme.colorScheme.outlineVariant,
+                color = if (isSelected) colors.onBackground else MaterialTheme.colorScheme.outlineVariant,
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 12.dp)
@@ -66,7 +68,7 @@ private fun SizeChip(
     ) {
         Text(
             text = size,
-            color = if (isSelected) Color.White else Color.Black,
+            color = if (isSelected) colors.background else colors.onBackground,
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.bodyLarge
         )
