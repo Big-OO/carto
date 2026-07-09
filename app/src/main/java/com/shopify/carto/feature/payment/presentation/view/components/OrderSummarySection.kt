@@ -24,10 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.shopify.carto.R
 import com.shopify.carto.feature.payment.domain.model.OrderItem
 
 @Composable
@@ -49,7 +51,7 @@ fun OrderSummarySection(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Order Summary",
+            text = stringResource(R.string.checkout_order_summary),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -89,7 +91,7 @@ fun OrderSummarySection(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Sub-total",
+                        text = stringResource(R.string.checkout_subtotal),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -129,7 +131,7 @@ fun OrderSummarySection(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Shipping fee",
+                        text = stringResource(R.string.checkout_shipping),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -153,7 +155,7 @@ fun OrderSummarySection(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Total",
+                        text = stringResource(R.string.checkout_total),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -177,7 +179,7 @@ fun OrderSummarySection(
                 OutlinedTextField(
                     value = promoCodeInput,
                     onValueChange = onPromoCodeInputChange,
-                    placeholder = { Text("Enter promo code", fontSize = 13.sp) },
+                    placeholder = { Text(stringResource(R.string.checkout_promo_placeholder), fontSize = 13.sp) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
@@ -202,7 +204,7 @@ fun OrderSummarySection(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.height(56.dp)
             ) {
-                Text("Add", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.checkout_apply), color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.SemiBold)
             }
         }
     }
@@ -233,6 +235,14 @@ private fun OrderItemRow(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            if (item.variantTitle.isNotBlank() && !item.variantTitle.equals("Default Title", ignoreCase = true)) {
+                Text(
+                    text = item.variantTitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 12.sp,
+                )
+            }
             Text(
                 text = "Qty: ${item.quantity}",
                 style = MaterialTheme.typography.bodySmall,
@@ -250,8 +260,8 @@ private fun OrderItemRow(
     }
 }
 
+@Composable
 private fun formatAmount(amountCents: Int): String {
-    val whole = amountCents / 100
-    val fraction = amountCents % 100
-    return "$whole.${fraction.toString().padStart(2, '0')} EGP"
+    val formatter = com.shopify.carto.feature.currency.presentation.format.LocalCurrencyFormatter.current
+    return formatter.format(amountCents / 100.0)
 }

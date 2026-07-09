@@ -6,4 +6,5 @@ data class OrderItem(
     val amountCents: Int,
     val variantId: String = "",
     val imageUrl: String? = null,
+    val variantTitle: String = "",
 )

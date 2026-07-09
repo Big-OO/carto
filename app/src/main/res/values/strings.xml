@@ -382,4 +382,40 @@
     <string name="home_profile_widget_unavailable_title">Profile unavailable</string>
     <string name="home_profile_widget_unavailable_message">Open the app once to refresh your profile.</string>
 
+    <!-- Checkout Screen -->
+    <string name="checkout_title">Checkout</string>
+    <string name="checkout_delivery_address">Delivery Address</string>
+    <string name="checkout_change">Change</string>
+    <string name="checkout_no_address">No address selected</string>
+    <string name="checkout_customer_info">Customer Information</string>
+    <string name="checkout_first_name">First Name</string>
+    <string name="checkout_last_name">Last Name</string>
+    <string name="checkout_email">Email</string>
+    <string name="checkout_phone">Phone Number</string>
+    <string name="checkout_order_summary">Order Summary</string>
+    <string name="checkout_payment_method">Payment Method</string>
+    <string name="checkout_pay_card">Pay with Card</string>
+    <string name="checkout_pay_wallet">Pay with Digital Wallet</string>
+    <string name="checkout_pay_cod">Place Order (COD)</string>
+    <string name="checkout_processing">Processing your order…</string>
+    <string name="checkout_subtotal">Subtotal</string>
+    <string name="checkout_shipping">Shipping</string>
+    <string name="checkout_total">Total</string>
+    <string name="checkout_promo_code">Promo Code</string>
+    <string name="checkout_apply">Apply</string>
+    <string name="checkout_discount">Discount</string>
+    <string name="checkout_error_validation">Please fill all required fields.</string>
+    <string name="checkout_error_generic">Something went wrong. Please try again.</string>
+    <string name="checkout_promo_placeholder">Enter promo code</string>
+
+    <!-- Product Reviews Screen -->
+    <string name="product_reviews_title">Reviews</string>
+    <string name="product_reviews_count">%1$d Reviews</string>
+
+    <!-- Settings - Payment Methods Bottom Sheet -->
+    <string name="settings_default_payment_method">Default Payment Method</string>
+    <string name="settings_payment_card">Card</string>
+    <string name="settings_payment_digital_wallet">Digital Wallet</string>
+    <string name="settings_payment_cod">Cash on Delivery</string>
+
 </resources>
