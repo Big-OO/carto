@@ -71,9 +71,9 @@ class CartViewModel @Inject constructor(
     }
 
     private fun onCheckoutClick() {
-        val checkoutUrl = _uiState.value.cart?.checkoutUrl ?: return
-        sendEffect(CartEffect.NavigateToCheckout(checkoutUrl))
+        sendEffect(CartEffect.NavigateToCheckout)
     }
+
 
     private fun updateQuantity(lineId: String, quantity: Int) {
         viewModelScope.launch {

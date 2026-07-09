@@ -28,9 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.shopify.carto.R
 import com.shopify.carto.feature.payment.domain.model.PaymentMethod
 
 @Composable
@@ -44,7 +46,7 @@ fun PaymentMethodSelector(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Payment Method",
+            text = stringResource(R.string.checkout_payment_method),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -59,7 +61,7 @@ fun PaymentMethodSelector(
                     tint = MaterialTheme.colorScheme.primary,
                 )
             },
-            title = "Pay with Card",
+            title = stringResource(R.string.settings_payment_card),
             subtitle = "Visa, Mastercard via Paymob",
             isSelected = selectedMethod == PaymentMethod.CARD,
             onClick = { onMethodSelected(PaymentMethod.CARD) },
@@ -74,7 +76,7 @@ fun PaymentMethodSelector(
                     tint = MaterialTheme.colorScheme.primary,
                 )
             },
-            title = "Digital Wallet",
+            title = stringResource(R.string.settings_payment_digital_wallet),
             subtitle = "Vodafone Cash, Orange Money, etc.",
             isSelected = selectedMethod == PaymentMethod.DIGITAL_WALLET,
             onClick = { onMethodSelected(PaymentMethod.DIGITAL_WALLET) },
@@ -89,7 +91,7 @@ fun PaymentMethodSelector(
                     tint = MaterialTheme.colorScheme.primary,
                 )
             },
-            title = "Cash on Delivery",
+            title = stringResource(R.string.settings_payment_cod),
             subtitle = "Pay when your order arrives",
             isSelected = selectedMethod == PaymentMethod.CASH_ON_DELIVERY,
             onClick = { onMethodSelected(PaymentMethod.CASH_ON_DELIVERY) },

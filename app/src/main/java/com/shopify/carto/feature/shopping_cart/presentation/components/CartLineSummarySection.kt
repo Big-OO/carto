@@ -21,7 +21,6 @@ import com.shopify.carto.R
 @Composable
 fun CartSummarySection(
     subtotal: Double,
-    shippingFee: Double,
     total: Double,
     currency: String,
     onCheckoutClick: () -> Unit,
@@ -32,7 +31,6 @@ fun CartSummarySection(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         SummaryRow(label = stringResource(id = R.string.cartSubTotal), value = subtotal, currency = currency)
-        SummaryRow(label = stringResource(id = R.string.cartShippingFee), value = shippingFee, currency = currency)
 
         HorizontalDivider()
 
@@ -48,6 +46,7 @@ fun CartSummarySection(
         }
     }
 }
+
 
 @Composable
 private fun SummaryRow(
