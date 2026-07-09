@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EFF2F8"
+    android:padding="12dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#FFFFFFFF"
+        android:gravity="center"
+        android:padding="14dp"
+        android:text="@string/carto_ai_widget_ask_title"
+        android:textColor="#111827"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+</FrameLayout>

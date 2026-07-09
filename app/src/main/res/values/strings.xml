@@ -382,4 +382,14 @@
     <string name="home_profile_widget_unavailable_title">Profile unavailable</string>
     <string name="home_profile_widget_unavailable_message">Open the app once to refresh your profile.</string>
 
+
+    <!-- Carto AI Glance Widget -->
+    <string name="carto_ai_widget_title">Ask Carto AI</string>
+    <string name="carto_ai_widget_subtitle">Open the assistant and ask anything</string>
+    <string name="carto_ai_widget_record">Record</string>
+    <string name="carto_ai_widget_description">Carto AI quick widget</string>
+    <string name="carto_ai_widget_ask_title">Ask Carto AI</string>
+    <string name="carto_ai_widget_ask_subtitle">Open the assistant and ask anything</string>
+    <string name="carto_ai_widget_record_title">Record</string>
+    <string name="carto_ai_widget_record_subtitle">Start voice chat</string>
 </resources>

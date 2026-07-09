@@ -8,6 +8,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -58,12 +61,24 @@ fun AppNavHost(
     navController: NavHostController = rememberNavController(),
     sessionViewModel: AppSessionViewModel = hiltViewModel(),
     favoriteToastViewModel: FavoriteToastViewModel = hiltViewModel(),
+    openAiAssistant: Boolean = false,
+    autoStartAiVoice: Boolean = false,
 ) {
     val session by sessionViewModel.session.collectAsStateWithLifecycle()
     val favoriteToast by favoriteToastViewModel.toast.collectAsStateWithLifecycle()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    var pendingOpenAiAssistant by remember { mutableStateOf(openAiAssistant) }
+    var pendingAutoStartAiVoice by remember { mutableStateOf(autoStartAiVoice) }
+
+    LaunchedEffect(openAiAssistant, autoStartAiVoice) {
+        if (openAiAssistant) {
+            pendingOpenAiAssistant = true
+            pendingAutoStartAiVoice = autoStartAiVoice
+        }
+    }
 
     LaunchedEffect(
         session?.isLoggedIn,
@@ -84,6 +99,26 @@ fun AppNavHost(
                 launchSingleTop = true
             }
         }
+    }
+
+
+    LaunchedEffect(currentRoute, pendingOpenAiAssistant) {
+        if (!pendingOpenAiAssistant) return@LaunchedEffect
+
+        val blockedRoutes = setOf(
+            Screen.Splash.route,
+            Screen.onBoarding.route,
+        )
+
+        if (currentRoute == null || currentRoute in blockedRoutes) return@LaunchedEffect
+
+        if (currentRoute != Screen.AIAssistant.route) {
+            navController.navigate(Screen.AIAssistant.route) {
+                launchSingleTop = true
+            }
+        }
+
+        pendingOpenAiAssistant = false
     }
 
     Box(
