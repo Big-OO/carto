@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.shopify.carto.R
 import com.shopify.carto.core.components.PrimaryButton
 import com.shopify.carto.feature.payment.domain.model.PaymentMethod
 import com.shopify.carto.feature.payment.presentation.state.CheckoutEvent
@@ -247,9 +249,9 @@ private fun CheckoutScreenContent(
             ) {
                 PrimaryButton(
                     text = when (state.selectedPaymentMethod) {
-                        PaymentMethod.CARD -> "Pay with Card"
-                        PaymentMethod.DIGITAL_WALLET -> "Pay with Wallet"
-                        PaymentMethod.CASH_ON_DELIVERY -> "Place Order (COD)"
+                        PaymentMethod.CARD -> stringResource(R.string.checkout_pay_card)
+                        PaymentMethod.DIGITAL_WALLET -> stringResource(R.string.checkout_pay_wallet)
+                        PaymentMethod.CASH_ON_DELIVERY -> stringResource(R.string.checkout_pay_cod)
                     },
                     enabled = !state.isProcessing,
                     onCLick = { onEvent(CheckoutEvent.PlaceOrder) },
@@ -278,7 +280,7 @@ private fun CheckoutScreenContent(
                         strokeWidth = 3.dp,
                     )
                     Text(
-                        text = "Processing your order...",
+                        text = stringResource(R.string.checkout_processing),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
@@ -299,12 +301,12 @@ private fun CheckoutTopBar(onBackClick: () -> Unit) {
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.commonBack),
                 tint = MaterialTheme.colorScheme.onBackground,
             )
         }
         Text(
-            text = "Checkout",
+            text = stringResource(R.string.checkout_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -321,7 +323,7 @@ private fun CustomerInfoSection(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = "Customer Information",
+            text = stringResource(R.string.checkout_customer_info),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -334,7 +336,7 @@ private fun CustomerInfoSection(
             CheckoutTextField(
                 value = state.customerFirstName,
                 onValueChange = { onEvent(CheckoutEvent.UpdateFirstName(it)) },
-                label = "First Name",
+                label = stringResource(R.string.checkout_first_name),
                 error = state.validationErrors["firstName"],
                 modifier = Modifier.weight(1f),
                 imeAction = ImeAction.Next,
@@ -342,7 +344,7 @@ private fun CustomerInfoSection(
             CheckoutTextField(
                 value = state.customerLastName,
                 onValueChange = { onEvent(CheckoutEvent.UpdateLastName(it)) },
-                label = "Last Name",
+                label = stringResource(R.string.checkout_last_name),
                 error = state.validationErrors["lastName"],
                 modifier = Modifier.weight(1f),
                 imeAction = ImeAction.Next,
@@ -352,7 +354,7 @@ private fun CustomerInfoSection(
         CheckoutTextField(
             value = state.customerEmail,
             onValueChange = { onEvent(CheckoutEvent.UpdateEmail(it)) },
-            label = "Email",
+            label = stringResource(R.string.checkout_email),
             error = state.validationErrors["email"],
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next,
@@ -361,7 +363,7 @@ private fun CustomerInfoSection(
         CheckoutTextField(
             value = state.customerPhone,
             onValueChange = { onEvent(CheckoutEvent.UpdatePhone(it)) },
-            label = "Phone Number",
+            label = stringResource(R.string.checkout_phone),
             error = state.validationErrors["phone"],
             keyboardType = KeyboardType.Phone,
             imeAction = ImeAction.Next,
@@ -383,14 +385,14 @@ private fun DeliveryAddressSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Delivery Address",
+                text = stringResource(R.string.checkout_delivery_address),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             TextButton(onClick = onNavigateToAddressesClick) {
                 Text(
-                    text = "Change",
+                    text = stringResource(R.string.checkout_change),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary,
@@ -415,7 +417,7 @@ private fun DeliveryAddressSection(
             ) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Address",
+                    contentDescription = stringResource(R.string.checkout_delivery_address),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
@@ -423,42 +425,42 @@ private fun DeliveryAddressSection(
                     val addr = state.selectedAddress
                     if (addr != null) {
                         Text(
-                            text = addr.nickname.ifBlank { "Delivery Address" },
+                            text = addr.nickname.ifBlank { stringResource(R.string.checkout_delivery_address) },
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "${addr.address1}, ${addr.city}, ${addr.country}\nPhone: ${addr.phone}",
+                            text = "${addr.address1}, ${addr.city}, ${addr.country}\n${addr.phone}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             lineHeight = 20.sp
                         )
                     } else if (state.address.isNotBlank()) {
                         Text(
-                            text = "Current Address",
+                            text = stringResource(R.string.checkout_delivery_address),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "${state.address}, ${state.city}\nPhone: ${state.customerPhone}",
+                            text = "${state.address}, ${state.city}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             lineHeight = 20.sp
                         )
                     } else {
                         Text(
-                            text = "No address selected",
+                            text = stringResource(R.string.checkout_no_address),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Click 'Change' to choose or add a delivery address.",
+                            text = stringResource(R.string.checkout_change),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

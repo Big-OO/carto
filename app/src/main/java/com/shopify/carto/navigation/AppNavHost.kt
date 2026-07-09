@@ -164,7 +164,7 @@ fun AppNavHost(
                 OnBoardingScreen(
                     onFinishOnboarding = {
                         sessionViewModel.completeOnBoarding {
-                            navController.navigate(Screen.Login.route) {
+                            navController.navigate(Screen.Register.route) {
                                 popUpTo(Screen.onBoarding.route) {
                                     inclusive = true
                                 }

@@ -37,8 +37,12 @@ class CartRepositoryImpl @Inject constructor(
         return appSessionRepository.session.first().customerId
     }
 
-    override suspend fun clearCart() {
-        cartState.value = Result.success(Cart.empty())
+    override suspend fun clearCart() = withContext(NonCancellable) {
+        val customerId = getCurrentCustomerId()
+        sessionLocalDataSource.clearCartId(customerId)
+        sessionRemoteDataSource.clearCartId(customerId ?: "")
+        ensureCartId()
+        refreshCart()
     }
 
     override suspend fun refreshCart() = withContext(NonCancellable) {

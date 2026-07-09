@@ -18,8 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.shopify.carto.R
 
 @Composable
 fun ProductReviewsHeaderSection(
@@ -34,7 +36,7 @@ fun ProductReviewsHeaderSection(
         )
 
         Text(
-            text = "Reviews",
+            text = stringResource(R.string.product_reviews_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.align(Alignment.Center)
@@ -48,7 +50,7 @@ private fun CircleIconButton(
     icon: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    tint: Color = Color.Black
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     IconButton(
         onClick = onClick,

@@ -19,8 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.shopify.carto.R
 import com.shopify.carto.feature.product_reviews.domain.model.ProductReviews
 
 @Composable
@@ -38,7 +40,7 @@ fun ProductReviewsListSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "$totalReviews Reviews",
+                text = stringResource(R.string.product_reviews_count, totalReviews),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )

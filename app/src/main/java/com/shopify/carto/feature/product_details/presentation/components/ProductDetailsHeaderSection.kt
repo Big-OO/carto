@@ -53,7 +53,7 @@ fun FavoriteToggleButton(
     CircleIconButton(
         icon = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
         onClick = onClick,
-        tint = if (isFavorite) Color.Red else Color.Black,
+        tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface,
         modifier = modifier
     )
 }
@@ -63,13 +63,13 @@ private fun CircleIconButton(
     icon: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    tint: Color = Color.Black
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     IconButton(
         onClick = onClick,
         modifier = modifier
             .size(40.dp)
-            .background(MaterialTheme.colorScheme.surface, CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f), CircleShape)
     ) {
         Icon(
             imageVector = icon,

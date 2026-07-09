@@ -91,13 +91,16 @@ class CheckoutViewModel @Inject constructor(
                     if (defaultAddr != null) {
                         _state.update {
                             val normalizedPhone = com.shopify.carto.core.utils.PhoneNormalizer.normalize(defaultAddr.phone)
+                            val cityText = defaultAddr.city.ifBlank { it.city }
+                            val addrText = defaultAddr.address1.ifBlank { it.address }
                             it.copy(
                                 selectedAddress = defaultAddr,
                                 customerFirstName = defaultAddr.firstName.ifBlank { it.customerFirstName },
                                 customerLastName = defaultAddr.lastName.ifBlank { it.customerLastName },
                                 customerPhone = normalizedPhone.ifBlank { it.customerPhone },
-                                address = defaultAddr.address1.ifBlank { it.address },
-                                city = defaultAddr.city.ifBlank { it.city },
+                                address = addrText,
+                                city = cityText,
+                                shippingFeeCents = calculateShippingFeeCents(cityText, addrText),
                                 validationErrors = emptyMap(),
                             )
                         }
@@ -120,6 +123,7 @@ class CheckoutViewModel @Inject constructor(
                             amountCents = (line.price * 100).toInt(),
                             variantId = line.merchandiseId,
                             imageUrl = line.imageUrl,
+                            variantTitle = line.variantTitle,
                         )
                     }
                     val subtotal = items.sumOf { it.amountCents * it.quantity }
@@ -176,6 +180,7 @@ class CheckoutViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         address = event.value,
+                        shippingFeeCents = calculateShippingFeeCents(it.city, event.value),
                         validationErrors = it.validationErrors - "address"
                     )
                 }
@@ -184,6 +189,7 @@ class CheckoutViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         city = event.value,
+                        shippingFeeCents = calculateShippingFeeCents(event.value, it.address),
                         validationErrors = it.validationErrors - "city"
                     )
                 }
@@ -298,7 +304,7 @@ class CheckoutViewModel @Inject constructor(
                 _state.update {
                     it.copy(isProcessing = false)
                 }
-                _events.emit(CheckoutUiEvent.PaymentFailed("Payment cancelled"))
+                return
             }
         }
     }
@@ -306,13 +312,15 @@ class CheckoutViewModel @Inject constructor(
     private suspend fun processCodOrder(request: PaymentRequest) {
         when (val result = placeCashOnDeliveryOrderUseCase(request)) {
             is PaymentResult.Success -> {
+                cartRepository.clearCart()
                 _state.update {
                     it.copy(isProcessing = false)
                 }
+                val numericOrderId = result.orderId.substringAfterLast("/")
                 _events.emit(
                     CheckoutUiEvent.PaymentSuccess(
                         transactionId = result.transactionId,
-                        orderId = result.orderId,
+                        orderId = numericOrderId,
                     )
                 )
             }
@@ -334,9 +342,21 @@ class CheckoutViewModel @Inject constructor(
     }
 
     fun onPaymobSuccess(transactionId: String) {
-        val clientSecret = activeClientSecret
-        if (clientSecret.isNullOrBlank()) {
+        activeClientSecret?.let { secret ->
+            onPaymentCompleted(secret)
+        } ?: run {
+            onPaymentCompleted("")
+        }
+    }
+
+    fun onPaymentCompleted(clientSecret: String) {
+        if (clientSecret.isBlank()) {
+            activeClientSecret?.let {
+                onPaymentCompleted(it)
+                return
+            }
             viewModelScope.launch {
+                _state.update { it.copy(isProcessing = false) }
                 _events.emit(CheckoutUiEvent.PaymentFailed("Payment client secret was missing. Verification aborted."))
             }
             return
@@ -372,8 +392,10 @@ class CheckoutViewModel @Inject constructor(
 
             when (val orderResult = placeShopifyOrderUseCase(request, financialStatus = "PAID")) {
                 is PaymentResult.Success -> {
+                    cartRepository.clearCart()
                     _state.update { it.copy(isProcessing = false) }
-                    _events.emit(CheckoutUiEvent.PaymentSuccess(orderResult.transactionId, orderResult.orderId))
+                    val numericOrderId = orderResult.orderId.substringAfterLast("/")
+                    _events.emit(CheckoutUiEvent.PaymentSuccess(orderResult.transactionId, numericOrderId))
                 }
                 is PaymentResult.Failure -> {
                     _state.update { it.copy(isProcessing = false) }
@@ -402,6 +424,17 @@ class CheckoutViewModel @Inject constructor(
     private fun retryPayment() {
         _state.update {
             it.copy(isProcessing = false)
+        }
+    }
+
+    private fun calculateShippingFeeCents(city: String, addressText: String): Int {
+        val lowerCity = city.trim().lowercase()
+        return when {
+            lowerCity.contains("cairo") || lowerCity.contains("giza") || lowerCity.contains("القاهرة") || lowerCity.contains("الجيزة") -> 4000
+            lowerCity.contains("alexandria") || lowerCity.contains("إسكندرية") || lowerCity.contains("الإسكندرية") -> 7000
+            lowerCity.contains("aswan") || lowerCity.contains("luxor") || lowerCity.contains("hurghada") || lowerCity.contains("sinai") ||
+            lowerCity.contains("أسوان") || lowerCity.contains("الأقصر") || lowerCity.contains("الغردقة") || lowerCity.contains("سيناء") -> 12000
+            else -> if (lowerCity.isNotBlank()) 8000 else 4000
         }
     }
 
