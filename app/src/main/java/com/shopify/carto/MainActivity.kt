@@ -50,11 +50,15 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var currencyRepository: CurrencyRepository
 
+    private val widgetLaunchState = mutableStateOf(WidgetLaunchAction.None)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        widgetLaunchState.value = extractWidgetLaunchAction(intent)
         setContent {
             val appTheme by settingsRepository.theme.collectAsState(initial = AppTheme.LIGHT)
+            val widgetLaunchAction by remember { widgetLaunchState }
             val appLanguage by settingsRepository.language.collectAsState(initial = AppLanguage.ENGLISH)
             val selectedCurrency by currencyRepository.observeSelectedCurrency().collectAsState(initial = Currency.USD)
             val exchangeRates by currencyRepository.observeRates().collectAsState(initial = null)
@@ -119,11 +123,44 @@ class MainActivity : ComponentActivity() {
                                 scaleY = contentScale.value
                             }
                     ) {
-                        AppNavHost()
+                        AppNavHost(
+                            openAiAssistant = widgetLaunchAction.openAiAssistant,
+                            autoStartAiVoice = widgetLaunchAction.startAiVoice,
+                        )
                     }
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        widgetLaunchState.value = extractWidgetLaunchAction(intent)
+    }
+
+    private fun extractWidgetLaunchAction(intent: android.content.Intent?): WidgetLaunchAction {
+        if (intent == null) return WidgetLaunchAction.None
+        val openAi = intent.getBooleanExtra(EXTRA_OPEN_AI_ASSISTANT, false)
+        val startVoice = intent.getBooleanExtra(EXTRA_START_AI_VOICE, false)
+        return WidgetLaunchAction(
+            openAiAssistant = openAi,
+            startAiVoice = openAi && startVoice,
+        )
+    }
+
+    companion object {
+        const val EXTRA_OPEN_AI_ASSISTANT = "extra_open_ai_assistant"
+        const val EXTRA_START_AI_VOICE = "extra_start_ai_voice"
+    }
+}
+
+private data class WidgetLaunchAction(
+    val openAiAssistant: Boolean = false,
+    val startAiVoice: Boolean = false,
+) {
+    companion object {
+        val None = WidgetLaunchAction()
     }
 }
 

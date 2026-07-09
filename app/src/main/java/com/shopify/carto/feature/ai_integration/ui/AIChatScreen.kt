@@ -27,6 +27,8 @@ fun AIChatScreen(
     onProductClick: (Long) -> Unit,
     onBackClick: () -> Unit = {},
     onCheckoutClick: () -> Unit = {},
+    autoStartVoice: Boolean = false,
+    onAutoStartVoiceConsumed: () -> Unit = {},
     viewModel: AIChatViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -86,6 +88,14 @@ fun AIChatScreen(
             manager.startListening()
         } else {
             scope.launch { snackbarHostState.showSnackbar("Microphone permission required") }
+        }
+    }
+
+
+    LaunchedEffect(autoStartVoice) {
+        if (autoStartVoice) {
+            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            onAutoStartVoiceConsumed()
         }
     }
 

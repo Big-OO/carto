@@ -381,6 +381,16 @@
     <string name="home_profile_widget_unavailable_title">الملف غير متاح</string>
     <string name="home_profile_widget_unavailable_message">افتح التطبيق مرة واحدة لتحديث بياناتك.</string>
 
+
+    <!-- Carto AI Glance Widget -->
+    <string name="carto_ai_widget_title">اسأل كارتو AI</string>
+    <string name="carto_ai_widget_subtitle">افتح المساعد واسأل عن أي شيء</string>
+    <string name="carto_ai_widget_record">تسجيل</string>
+    <string name="carto_ai_widget_description">ويدجت كارتو AI السريع</string>
+    <string name="carto_ai_widget_ask_title">اسأل كارتو AI</string>
+    <string name="carto_ai_widget_ask_subtitle">افتح المساعد واسأل عن أي شيء</string>
+    <string name="carto_ai_widget_record_title">تسجيل</string>
+    <string name="carto_ai_widget_record_subtitle">ابدأ محادثة صوتية</string>
     <!-- Checkout Screen -->
     <string name="checkout_title">الدفع</string>
     <string name="checkout_delivery_address">عنوان التوصيل</string>
