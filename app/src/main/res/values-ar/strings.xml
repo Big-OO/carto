@@ -381,4 +381,40 @@
     <string name="home_profile_widget_unavailable_title">الملف غير متاح</string>
     <string name="home_profile_widget_unavailable_message">افتح التطبيق مرة واحدة لتحديث بياناتك.</string>
 
+    <!-- Checkout Screen -->
+    <string name="checkout_title">الدفع</string>
+    <string name="checkout_delivery_address">عنوان التوصيل</string>
+    <string name="checkout_change">تغيير</string>
+    <string name="checkout_no_address">لم يتم اختيار عنوان</string>
+    <string name="checkout_customer_info">بيانات العميل</string>
+    <string name="checkout_first_name">الاسم الأول</string>
+    <string name="checkout_last_name">اسم العائلة</string>
+    <string name="checkout_email">البريد الإلكتروني</string>
+    <string name="checkout_phone">رقم الهاتف</string>
+    <string name="checkout_order_summary">ملخص الطلب</string>
+    <string name="checkout_payment_method">طريقة الدفع</string>
+    <string name="checkout_pay_card">الدفع بالبطاقة</string>
+    <string name="checkout_pay_wallet">الدفع بالمحفظة الرقمية</string>
+    <string name="checkout_pay_cod">تأكيد الطلب (الدفع عند الاستلام)</string>
+    <string name="checkout_processing">جارٍ معالجة طلبك…</string>
+    <string name="checkout_subtotal">المجموع الجزئي</string>
+    <string name="checkout_shipping">الشحن</string>
+    <string name="checkout_total">الإجمالي</string>
+    <string name="checkout_promo_code">كود الخصم</string>
+    <string name="checkout_apply">تطبيق</string>
+    <string name="checkout_discount">الخصم</string>
+    <string name="checkout_error_validation">يرجى ملء جميع الحقول المطلوبة.</string>
+    <string name="checkout_error_generic">حدث خطأ ما. يرجى المحاولة مجدداً.</string>
+    <string name="checkout_promo_placeholder">أدخل كود الخصم</string>
+
+    <!-- Product Reviews Screen -->
+    <string name="product_reviews_title">التقييمات</string>
+    <string name="product_reviews_count">%1$d تقييم</string>
+
+    <!-- Settings - Payment Methods Bottom Sheet -->
+    <string name="settings_default_payment_method">طريقة الدفع الافتراضية</string>
+    <string name="settings_payment_card">بطاقة</string>
+    <string name="settings_payment_digital_wallet">محفظة رقمية</string>
+    <string name="settings_payment_cod">الدفع عند الاستلام</string>
+
 </resources>
