@@ -1,4 +1,4 @@
-package com.shopify.carto.presentation.components
+package com.shopify.carto.core.components
 
 import android.content.Context
 import android.content.res.XmlResourceParser
@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.platform.LocalContext
-import com.shopify.carto.R
+import com.shopify.carto.core.R
 import org.xmlpull.v1.XmlPullParser
 import java.util.Locale
 import kotlin.math.min

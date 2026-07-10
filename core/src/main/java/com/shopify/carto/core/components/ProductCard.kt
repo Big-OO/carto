@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.shopify.carto.feature.currency.presentation.format.LocalCurrencyFormatter
+import java.util.Locale
 
 @Composable
 fun ProductCard(
@@ -45,7 +45,6 @@ fun ProductCard(
     onFavoriteClick: () -> Unit = {},
     onGuestFavoriteClick: () -> Unit = {},
 ) {
-    val formatter = LocalCurrencyFormatter.current
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
@@ -191,7 +190,7 @@ fun ProductCard(
                 ) {
                     if (isOnSale && compareAtPrice != null && compareAtPrice > price) {
                         Text(
-                            text = formatter.format(compareAtPrice),
+                            text = formatProductPrice(compareAtPrice),
                             style = typography.labelSmall.copy(fontSize = 11.sp),
                             color = colors.onSurfaceVariant.copy(alpha = 0.8f),
                             textDecoration = TextDecoration.LineThrough,
@@ -200,7 +199,7 @@ fun ProductCard(
                     }
 
                     Text(
-                        text = formatter.format(price),
+                        text = formatProductPrice(price),
                         style = typography.titleSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 15.sp
@@ -237,3 +236,6 @@ private fun BadgeChip(
         )
     }
 }
+
+private fun formatProductPrice(price: Double): String =
+    "USD ${"%,.2f".format(Locale.US, price)}"

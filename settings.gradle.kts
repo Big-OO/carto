@@ -56,4 +56,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Carto"
 include(":app")
- 
+include(":core")

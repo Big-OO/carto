@@ -25,7 +25,7 @@ import com.shopify.carto.feature.splash.presentation.state.SplashDestination
 import com.shopify.carto.feature.splash.presentation.state.SplashEffect
 import com.shopify.carto.feature.splash.presentation.viewmodel.SplashInteractionListener
 import com.shopify.carto.feature.splash.presentation.viewmodel.SplashViewModel
-import com.shopify.carto.presentation.components.CartoLogo
+import com.shopify.carto.core.components.CartoLogo
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
