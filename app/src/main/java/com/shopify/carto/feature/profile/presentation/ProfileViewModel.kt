@@ -43,7 +43,7 @@ class ProfileViewModel @Inject constructor(
                 if (session.isGuest || session.customerId == null) {
                     _uiState.value = ProfileState.Guest
                 } else {
-                    val customerIdLong = session.customerId.toLongOrNull()
+                    val customerIdLong = session.customerId?.toLongOrNull()
                     if (customerIdLong == null) {
                         _uiState.value = ProfileState.Error("Invalid Customer ID")
                         return@collect

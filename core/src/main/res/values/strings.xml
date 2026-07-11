@@ -1,0 +1,16 @@
+<resources>
+    <string name="errorNoInternetTitle">No internet connection</string>
+    <string name="errorNoInternetMessage">Please check your connection and try again.</string>
+    <string name="errorTimeoutTitle">Connection timeout</string>
+    <string name="errorTimeoutMessage">The request took too long. Try again.</string>
+    <string name="errorNotFoundTitle">Not found</string>
+    <string name="errorNotFoundMessage">We could not find what you are looking for.</string>
+    <string name="errorServerTitle">Server error</string>
+    <string name="errorServerMessage">The server is having a problem right now.</string>
+    <string name="errorUnknownTitle">Something went wrong</string>
+    <string name="errorUnknownMessage">Unexpected error. Please try again.</string>
+    <string name="error_product_not_found">Product not found</string>
+    <string name="error_network_connection">No internet connection</string>
+    <string name="error_server_down">Server error</string>
+    <string name="error_unknown">Something went wrong</string>
+</resources>

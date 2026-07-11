@@ -1,6 +1,6 @@
 package com.shopify.carto.core.network.di
 
-import com.shopify.carto.BuildConfig
+import com.shopify.carto.core.BuildConfig
 import com.shopify.carto.core.network.config.ShopifyConfig
 import com.shopify.carto.core.network.http.OkHttpClientFactory
 import com.shopify.carto.core.network.interceptor.ShopifyAdminAuthInterceptor

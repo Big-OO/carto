@@ -13,8 +13,7 @@ fun localProperty(key: String, defaultValue: String = ""): String {
 
 fun String.asBuildConfigString(): String = "\"${replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
-val packageName: String = "com.shopify.carto"
-
+val packageName = "com.shopify.carto"
 
 plugins {
     alias(libs.plugins.android.application)
@@ -44,7 +43,7 @@ apollo {
             schemaFile.set(file("src/main/graphql/admin/schema.json"))
             headers.put(
                 "X-Shopify-Access-Token",
-                localProperty("shopify.admin.access.token")
+                localProperty("shopify.admin.access.token"),
             )
         }
 
@@ -76,72 +75,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField(
-            "String",
-            "SHOPIFY_HOSTNAME",
-            localProperty("shopify.hostname", "mad46-and7.myshopify.com").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "SHOPIFY_API_VERSION",
-            localProperty("shopify.api.version", "2026-01").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "SHOPIFY_ADMIN_ACCESS_TOKEN",
-            localProperty("shopify.admin.access.token").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "SHOPIFY_STOREFRONT_ACCESS_TOKEN",
-            localProperty("storefront.access.token").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "MAPBOX_ACCESS_TOKEN",
-            localProperty("mapbox.access.token").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "MAPBOX_DOWNLOADS_TOKEN",
-            localProperty("mapbox.downloads.token").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "PAYMOB_PUBLIC_KEY",
-            localProperty("paymob.public.key").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "PAYMOB_INTEGRATION_ID",
-            localProperty("paymob.integration.id").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "PAYMOB_WALLET_INTEGRATION_ID",
-            localProperty("paymob.wallet.integration.id").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "SUPABASE_BASE_URL",
-            localProperty("supabase.base.url").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "PAYMOB_FLASH_BASE_URL",
-            localProperty("paymob.flash.base.url").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "AI_API_BASE_URL",
-            localProperty("ai.api.base.url").asBuildConfigString()
-        )
-        buildConfigField(
-            "String",
-            "AI_API_KEY",
-            localProperty("ai.api.key").asBuildConfigString()
-        )
-
+        buildConfigField("String", "MAPBOX_ACCESS_TOKEN", localProperty("mapbox.access.token").asBuildConfigString())
+        buildConfigField("String", "MAPBOX_DOWNLOADS_TOKEN", localProperty("mapbox.downloads.token").asBuildConfigString())
+        buildConfigField("String", "PAYMOB_PUBLIC_KEY", localProperty("paymob.public.key").asBuildConfigString())
+        buildConfigField("String", "PAYMOB_INTEGRATION_ID", localProperty("paymob.integration.id").asBuildConfigString())
+        buildConfigField("String", "PAYMOB_WALLET_INTEGRATION_ID", localProperty("paymob.wallet.integration.id").asBuildConfigString())
+        buildConfigField("String", "SUPABASE_BASE_URL", localProperty("supabase.base.url").asBuildConfigString())
+        buildConfigField("String", "PAYMOB_FLASH_BASE_URL", localProperty("paymob.flash.base.url").asBuildConfigString())
+        buildConfigField("String", "AI_API_BASE_URL", localProperty("ai.api.base.url").asBuildConfigString())
+        buildConfigField("String", "AI_API_KEY", localProperty("ai.api.key").asBuildConfigString())
     }
 
     buildTypes {
@@ -153,7 +95,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -180,7 +122,7 @@ android {
             excludes += setOf(
                 "/META-INF/{AL2.0,LGPL2.1}",
                 "META-INF/LICENSE.md",
-                "META-INF/LICENSE-notice.md"
+                "META-INF/LICENSE-notice.md",
             )
         }
     }
@@ -192,11 +134,9 @@ android {
     }
 }
 
-ksp {
-    arg("appfunctions:aggregateAppFunctions", "true")
-}
-
 dependencies {
+    implementation(project(":core"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.kotlinx.serialization.json)
@@ -207,7 +147,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -216,7 +155,6 @@ dependencies {
     implementation(libs.material3)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.preferences)
@@ -250,10 +188,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.lifecycle.viewmodel.compose)
     ksp(libs.hilt.compiler)
-    androidTestImplementation(libs.hilt.android.testing)
-    kspAndroidTest(libs.hilt.compiler)
 
-    // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)
@@ -263,6 +198,15 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
+    implementation(libs.androidx.appfunctions)
+    implementation(libs.androidx.appfunctions.service)
+    ksp(libs.androidx.appfunctions.compiler)
+
+    implementation(libs.mapbox.android.maps)
+    implementation(libs.mapbox.maps.compose)
+    implementation(libs.mapbox.search.android)
+    implementation(libs.play.services.location)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.arch.core.testing)
@@ -270,6 +214,7 @@ dependencies {
     testImplementation(libs.hilt.android.testing)
     kspTest(libs.hilt.compiler)
 
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.test.core.ktx)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.junit.ktx)
@@ -282,15 +227,4 @@ dependencies {
     androidTestImplementation(libs.turbine)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
-
-    implementation(libs.paymob.sdk)
-
-    implementation(libs.androidx.appfunctions)
-    implementation(libs.androidx.appfunctions.service)
-    ksp(libs.androidx.appfunctions.compiler)
-
-    implementation(libs.mapbox.android.maps)
-    implementation(libs.mapbox.maps.compose)
-    implementation(libs.mapbox.search.android)
-    implementation(libs.play.services.location)
 }

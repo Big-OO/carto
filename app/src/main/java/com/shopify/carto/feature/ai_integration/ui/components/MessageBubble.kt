@@ -148,7 +148,7 @@ fun MessageBubble(
                                                 } else {
                                                     message.text
                                                 },
-                                                color = if (isUser) Color.White
+                                                color = if (isUser)  MaterialTheme.colorScheme.onPrimary
                                                         else MaterialTheme.colorScheme.onSurface
                                             )
                                         }

@@ -25,9 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.shopify.carto.R
-import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
 
 @Composable
 fun ProductDetailsPriceSection(
@@ -49,7 +46,8 @@ fun ProductDetailsPriceSection(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            val formatter = com.shopify.carto.feature.currency.presentation.format.LocalCurrencyFormatter.current
+            val formatter =
+                com.shopify.carto.feature.currency.presentation.format.LocalCurrencyFormatter.current
             Text(
                 text = formatter.format(price),
                 style = MaterialTheme.typography.titleLarge,
@@ -64,8 +62,8 @@ fun ProductDetailsPriceSection(
             enabled = !isOutOfStock && !isAddingToCart,
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black,
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ),
             contentPadding = PaddingValues(
                 horizontal = 24.dp,

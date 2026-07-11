@@ -36,7 +36,7 @@ fun VoiceMessageBubble(
             Icon(
                 imageVector = Icons.Default.Mic,
                 contentDescription = "Voice message",
-                tint = Color.White.copy(alpha = 0.9f),
+                tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(16.dp)
             )
             // Waveform bars
@@ -50,7 +50,7 @@ fun VoiceMessageBubble(
                             .width(3.dp)
                             .height((h * 20).dp + 4.dp)
                             .clip(RoundedCornerShape(2.dp))
-                            .background(Color.White.copy(alpha = 0.85f))
+                            .background(MaterialTheme.colorScheme.onPrimary)
                     )
                 }
             }

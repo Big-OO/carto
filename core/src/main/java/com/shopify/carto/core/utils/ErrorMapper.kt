@@ -1,7 +1,7 @@
 package com.shopify.carto.core.utils
 
 import androidx.annotation.StringRes
-import com.shopify.carto.R
+import com.shopify.carto.core.R
 import com.shopify.carto.core.common.exception.DataException
 
 @StringRes
