@@ -7,8 +7,8 @@ class PhoneNormalizerTest {
 
     @Test
     fun normalize_egyptianLocalNumber_convertsToInternational() {
-        val input = "012260212955"
-        val expected = "+2012260212955"
+        val input = "01226022955"
+        val expected = "+201226022955"
         assertEquals(expected, PhoneNormalizer.normalize(input))
     }
 

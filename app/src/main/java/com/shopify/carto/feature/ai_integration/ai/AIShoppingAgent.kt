@@ -464,7 +464,7 @@ class AIShoppingAgent(
                 put("type", "function")
                 putJsonObject("function") {
                     put("name", "compareProducts")
-                    put("description", "Compare details, price, vendor, stock, sizes, and colors between two products using their IDs.")
+                    put("description", "Compare details, price, vendor, stock, sizes, and colors between two products using their unique product IDs. You MUST call searchProducts first to find the product IDs if they are not provided by the user.")
                     putJsonObject("parameters") {
                         put("type", "object")
                         putJsonObject("properties") {
