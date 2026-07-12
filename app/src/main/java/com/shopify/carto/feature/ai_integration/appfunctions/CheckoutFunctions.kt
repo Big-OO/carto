@@ -20,6 +20,7 @@ import com.shopify.carto.feature.payment.domain.model.OrderItem
 import com.shopify.carto.feature.settings.domain.repository.SettingsRepository
 import com.shopify.carto.feature.currency.domain.repository.CurrencyRepository
 import com.shopify.carto.feature.currency.domain.model.Currency as AppCurrency
+import com.shopify.carto.feature.payment.domain.usecase.ApplyPromoCodeUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 
@@ -32,7 +33,8 @@ class CheckoutFunctions @Inject constructor(
     private val createCardPaymentUseCase: CreateCardPaymentUseCase,
     private val cancelOrderUseCase: CancelOrderUseCase,
     private val settingsRepository: SettingsRepository,
-    private val currencyRepository: CurrencyRepository
+    private val currencyRepository: CurrencyRepository,
+    private val applyPromoCodeUseCase: ApplyPromoCodeUseCase
 ) {
 
     // ── Step 1: Customer Info ────────────────────────────────────────────
@@ -187,6 +189,58 @@ class CheckoutFunctions @Inject constructor(
      * @param city Optional manual city (only if no saved address selected).
      * @return A formatted order summary string for user review.
      */
+    /**
+     * Apply a discount coupon or promo code to the checkout.
+     *
+     * Call this when the user mentions a discount code or coupon code.
+     *
+     * @param code The coupon code to apply.
+     * @return Confirmation of whether the coupon is valid and the discount amount.
+     */
+    @AppFunction(isDescribedByKDoc = true)
+    suspend fun applyDiscountCode(
+        appFunctionContext: AppFunctionContext,
+        code: String
+    ): String {
+        if (code.isBlank()) {
+            return "INVALID: Coupon code is empty."
+        }
+        val cartResult = observeCartUseCase().first()
+        if (cartResult.isFailure) {
+            return "Failed to retrieve your cart."
+        }
+        val cart = cartResult.getOrThrow()
+        if (cart.isEmpty) {
+            return "Your cart is empty. Add items before applying a coupon."
+        }
+        val subtotalCents = (cart.subtotal * 100).toInt()
+        val result = applyPromoCodeUseCase(code.trim(), subtotalCents)
+        return if (result.isValid) {
+            val discountUsd = result.discountAmountCents / 100.0
+            "VALID: Coupon '${result.code}' applied successfully. Discount: [Price: $discountUsd]"
+        } else {
+            "INVALID: ${result.errorMessage ?: "Invalid or expired discount code."}"
+        }
+    }
+
+    /**
+     * Generate a complete order summary without placing the order.
+     *
+     * Builds a detailed summary including all cart items, quantities, prices, shipping address,
+     * customer information, phone number, payment method, and total. This should be shown to
+     * the user for review before confirming the order.
+     *
+     * @param addressId The ID of the selected shipping address. Pass 0 if using manual address/city overrides.
+     * @param phone The validated phone number to use for the order.
+     * @param paymentMethod The payment method: 'CASH_ON_DELIVERY', 'CARD', or 'DIGITAL_WALLET'.
+     * @param firstName Optional first name override (only if not from profile).
+     * @param lastName Optional last name override (only if not from profile).
+     * @param email Optional email override (only if not from profile).
+     * @param address Optional manual street address (only if no saved address selected).
+     * @param city Optional manual city (only if no saved address selected).
+     * @param discountCode Optional discount coupon code to apply to the order.
+     * @return A formatted order summary string for user review.
+     */
     @AppFunction(isDescribedByKDoc = true)
     suspend fun getOrderSummary(
         appFunctionContext: AppFunctionContext,
@@ -197,7 +251,8 @@ class CheckoutFunctions @Inject constructor(
         lastName: String,
         email: String,
         address: String,
-        city: String
+        city: String,
+        discountCode: String
     ): String {
         // Fetch cart
         val cartResult = observeCartUseCase().first()
@@ -236,7 +291,17 @@ class CheckoutFunctions @Inject constructor(
             else -> "Cash on Delivery"
         }
 
-
+        val discountAmountUsd = if (discountCode.isNotBlank()) {
+            val subtotalCents = (cart.subtotal * 100).toInt()
+            val promoResult = applyPromoCodeUseCase(discountCode.trim(), subtotalCents)
+            if (promoResult.isValid) {
+                promoResult.discountAmountCents / 100.0
+            } else {
+                0.0
+            }
+        } else {
+            0.0
+        }
 
         val activeCurrency = settingsRepository.currency.first()
         val rates = currencyRepository.observeRates().first()
@@ -246,7 +311,8 @@ class CheckoutFunctions @Inject constructor(
         val shippingFeeUsd = 80.0
         val convertedShippingFee = shippingFeeUsd * rate
         val convertedSubtotal = cart.subtotal * rate
-        val convertedFinalTotal = (cart.subtotal + shippingFeeUsd) * rate
+        val convertedDiscount = discountAmountUsd * rate
+        val convertedFinalTotal = (cart.subtotal + shippingFeeUsd - discountAmountUsd).coerceAtLeast(0.0) * rate
 
         // Build summary
         return buildString {
@@ -276,7 +342,10 @@ class CheckoutFunctions @Inject constructor(
 
             append("Subtotal: ${String.format("%.2f", convertedSubtotal)} $displayCurrency\n")
             append("Shipping Fee: ${String.format("%.2f", convertedShippingFee)} $displayCurrency\n")
-            append("Discounts: 0.00 $displayCurrency\n")
+            if (discountCode.isNotBlank()) {
+                append("Applied Coupon: ${discountCode.trim()}\n")
+            }
+            append("Discounts: ${String.format("%.2f", convertedDiscount)} $displayCurrency\n")
             append("Taxes: 0.00 $displayCurrency\n")
             append("Final Total: ${String.format("%.2f", convertedFinalTotal)} $displayCurrency\n")
         }
@@ -344,6 +413,7 @@ class CheckoutFunctions @Inject constructor(
      * @param phone The validated phone number.
      * @param address Manual street address (used only if addressId is 0).
      * @param city Manual city (used only if addressId is 0).
+     * @param discountCode Optional discount coupon code to apply to the order.
      * @return A status message indicating if the order was placed successfully or failed.
      */
     @AppFunction(isDescribedByKDoc = true)
@@ -357,7 +427,8 @@ class CheckoutFunctions @Inject constructor(
         email: String,
         phone: String,
         address: String,
-        city: String
+        city: String,
+        discountCode: String
     ): String {
         // Guard: must be explicitly confirmed
         if (!confirmed) {
@@ -425,10 +496,23 @@ class CheckoutFunctions @Inject constructor(
             else -> PaymentMethod.CASH_ON_DELIVERY
         }
 
-        val amountCents = (cart.total * 100).toInt()
+        // Resolve discount
+        val resolvedPromo = if (discountCode.isNotBlank()) {
+            val subtotalCents = (cart.subtotal * 100).toInt()
+            val promoResult = applyPromoCodeUseCase(discountCode.trim(), subtotalCents)
+            if (promoResult.isValid) promoResult else null
+        } else {
+            null
+        }
+        val discountAmountCents = resolvedPromo?.discountAmountCents ?: 0
+        val finalCode = resolvedPromo?.code
+
+        val subtotalCents = (cart.subtotal * 100).toInt()
+        val shippingFeeCents = 8000 // 80.00 USD in cents
+        val totalCents = (subtotalCents + shippingFeeCents - discountAmountCents).coerceAtLeast(0)
 
         val request = PaymentRequest(
-            amountCents = amountCents,
+            amountCents = totalCents,
             currency = cart.currency,
             paymentMethod = resolvedMethod,
             customerFirstName = resolvedFirstName!!,
@@ -437,7 +521,9 @@ class CheckoutFunctions @Inject constructor(
             customerPhone = resolvedPhone!!,
             address = resolvedAddress!!,
             city = resolvedCity!!,
-            items = orderItems
+            items = orderItems,
+            discountCode = finalCode,
+            discountAmountCents = discountAmountCents
         )
 
         // 7. Place order

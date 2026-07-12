@@ -95,7 +95,7 @@ class CheckoutViewModel @Inject constructor(
                             val addrText = defaultAddr.address1.ifBlank { it.address }
                             it.copy(
                                 selectedAddress = defaultAddr,
-                                customerFirstName = defaultAddr.firstName.ifBlank { it.customerFirstName },
+                                customerFirstName = it.customerFirstName.ifBlank { it.customerFirstName },
                                 customerLastName = defaultAddr.lastName.ifBlank { it.customerLastName },
                                 customerPhone = normalizedPhone.ifBlank { it.customerPhone },
                                 address = addrText,

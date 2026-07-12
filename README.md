@@ -1,134 +1,139 @@
-# Carto
+<p align="center">
+  <img src="./logo.png" alt="Carto Logo" width="150" height="150" style="border-radius: 50%; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" />
+</p>
 
-A native Android Shopify e-commerce application powered by Shopify.
+<h1 align="center">Carto</h1>
 
-Carto allows users to browse products as guests, authenticate, manage wishlist and cart, search and filter products, apply discounts, manage addresses, and complete checkout using Cash on Delivery or online payment.
+<p align="center">
+  <strong>A Premium Native Android E-Commerce Application Powered by Shopify & AI</strong>
+</p>
+
+<p align="center">
+  <a href="#-key-features">Features</a> •
+  <a href="#-tech-stack">Tech Stack</a> •
+  <a href="#-ai-chat-assistant">AI Chat Assistant</a> •
+  <a href="#-getting-started">Getting Started</a> •
+  <a href="#-project-structure">Structure</a>
+</p>
+
+---
 
 ## 📌 Project Overview
 
-This project is a mobile Shopify-based e-commerce app built for the JETS Mobile Lab project.
+**Carto** is a modern, high-performance native Android e-commerce application. It integrates directly with the Shopify ecosystem via REST and GraphQL APIs to deliver a seamless shopping experience. Designed with a mobile-first philosophy, Carto features a rich design system, smooth Jetpack Compose transitions, robust local-first database caching, and a state-of-the-art **AI Shopping Assistant** capable of executing shopping operations directly in the app.
 
-The application integrates with Shopify Admin REST API to fetch and manage store data such as products, vendors, variants, inventory, discounts, customers, and orders.
+---
 
-## ✨ Main Features
+## ✨ Key Features
 
-### Authentication
-- Guest browsing
-- Email/password registration and login
-- Social authentication support
-- Email verification
-- Protected wishlist and cart access
+### 🛍️ Shopping Experience
+- **Dynamic Product Catalog**: Browse products by brands, vendors, and categories synced live with Shopify.
+- **Product Details**: Inspect images, dynamic sizes/colors selection, stock availability, pricing, description, and user reviews.
+- **Global Search, Filter & Sort**: Search the catalog instantly. Filter by category, sub-category, or brand, and sort by price, best-sellers, or grouping.
+- **Animated Coupons Carousel**: High-performance bottom-shadowed sliding banner displaying available discount rules with interactive click-to-copy animations.
 
-### Product Catalog
-- Fetch products dynamically from Shopify
-- Browse products by vendors/brands
-- Product details screen
-- Product images, sizes, price, rating, description, and reviews
+### 🛒 Cart & Wishlist
+- **Persistent Wishlist**: Save favorite items for later (authenticated users only).
+- **Interactive Shopping Cart**: Add, update quantities (with stock limits check), and remove items. Prices, subtotals, and shipping are updated automatically.
 
-### Search, Filtering, and Sorting
-- Global product search
-- Main categories and sub-categories
-- Filter by category, sub-category, and brand
-- Sort by price, best sellers, and sub-category grouping
+### 💳 Address & Checkout
+- **Address Manager**: Create, set default, and manage multiple customer shipping locations.
+- **Multi-Payment Pipeline**: Checkout smoothly using Cash on Delivery (COD) or initialize card payment gateways.
+- **Automatic Currency Converter**: Seamless price conversions across multiple local currencies using real-time sync.
 
-### Wishlist
-- Add products to wishlist
-- Remove products from wishlist
-- Wishlist available only for authenticated users
+### 🛜 Offline Resilience
+- **Connectivity Monitor**: Dynamic network listeners track internet state. Displays a pulsing offline notification capsule when disconnected and alerts the user with a sleek checkmark banner upon connection recovery.
 
-### Shopping Cart
-- Add products to cart
-- Remove products from cart
-- Update item quantity
-- Validate stock before increasing quantity
-- Dynamically calculate total price
+---
 
-### Account & Settings
-- User profile summary
-- Recent orders preview
-- Wishlist preview
-- Address management
-- Currency exchange rate support
-- Country list integration
+## 🤖 AI Chat Assistant
 
-### Checkout & Payment
-- Apply discount coupons
-- Cash on Delivery support
-- COD upper limit validation
-- Online payment support
-- Order placement
-- Confirmation email after successful order
+Carto features an integrated **AI Shopping Agent** that acts as a personalized stylist and shopping companion. Using Google AppFunctions, the assistant understands user requests in natural language and executes in-app actions on their behalf:
 
-### Safety & UX
-- Confirmation dialogs before destructive actions
-- Consistent design system
-- Custom launcher icon
-- Clean mobile-first UI
+1. **Product Discovery**: Search products and check detailed variant options (sizes/colors).
+2. **Cart & Wishlist Operations**: Ask the assistant to add items, update quantities, remove items, or view your current cart and wishlist.
+3. **Smart Outfits & Comparison**: Request styling outfit ideas or compare specifications of products side-by-side.
+4. **Interactive Coupon Checkout**: Inform the assistant of a coupon code (e.g. `banner1`, `banner2`) to automatically validate rules, compute discounts, and compile a Cash on Delivery (COD) order summary for checkout.
+
+---
 
 ## 🛠 Tech Stack
 
-- Kotlin
-- Native Android
-- XML or Jetpack Compose
-- MVVM Architecture
-- Retrofit / OkHttp
-- Coroutines / Flow
-- Firebase Authentication
-- Shopify Admin REST API
-- Optional: Shopify GraphQL Admin API
-- Optional: Google Places API or HERE Maps API
+- **UI & Animation**: Jetpack Compose, Material 3, Compose Motion & Transitions.
+- **Architecture**: MVVM (Model-View-ViewModel), Hilt Dependency Injection.
+- **Data & Network**: Retrofit, OkHttp, Apollo GraphQL, Room Database (Caching & Schemas).
+- **Authentication**: Firebase Auth (Email/Password & Social Providers).
+- **AI Integration**: AppFunctions Framework, Gemini LLM SDK, Kotlin Coroutines & Flows.
 
-## 🔐 API Integration
+---
 
-Shopify REST endpoints follow this structure:
+## 🚀 Getting Started
 
-```text
-https://{hostname}/admin/api/{version}/{resource}.json
-````
+### Prerequisites
+- JDK 17
+- Android SDK (API 34+)
 
-Credentials must never be hardcoded.
-
-Use secure config files or local properties for:
+### Configuration
+Create a `local.properties` file in the root directory and add your credentials:
 
 ```properties
-SHOPIFY_API_KEY=
-SHOPIFY_PASSWORD=
-SHOPIFY_HOSTNAME=
-SHOPIFY_API_VERSION=
+SHOPIFY_API_KEY=your_shopify_api_key
+SHOPIFY_PASSWORD=your_shopify_admin_password
+SHOPIFY_HOSTNAME=your_shop_domain.myshopify.com
+SHOPIFY_API_VERSION=2024-04
+MAPBOX_ACCESS_TOKEN=your_mapbox_token
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-## 📁 Suggested Project Structure
+*Note: Firebase `google-services.json` must be placed in the `app/` directory.*
+
+### Build & Run Commands
+
+Use the Gradle wrapper to build the project:
+
+- **Build Debug APK**:
+  ```bash
+  ./gradlew assembleDebug
+  ```
+- **Run Unit Tests**:
+  ```bash
+  ./gradlew testDebugUnitTest
+  ```
+- **Regenerate Apollo GraphQL Sources**:
+  ```bash
+  ./gradlew generateApolloSources
+  ```
+- **Run Lint Check**:
+  ```bash
+  ./gradlew lintDebug
+  ```
+
+---
+
+## 📁 Project Structure
 
 ```text
 app/
+ ├── schemas/                           # Room database schemas
  └── src/
      └── main/
-         ├── java/com/example/shopifyapp/
-         │   ├── data/
-         │   │   ├── remote/
-         │   │   ├── model/
-         │   │   └── repository/
-         │   ├── domain/
-         │   │   ├── model/
-         │   │   └── usecase/
-         │   ├── presentation/
-         │   │   ├── auth/
-         │   │   ├── home/
-         │   │   ├── product/
-         │   │   ├── cart/
-         │   │   ├── wishlist/
-         │   │   ├── checkout/
-         │   │   └── profile/
-         │   └── utils/
-         └── res/
+         ├── assets/ai/                 # System prompt files and assistant rules
+         ├── graphql/                   # Apollo GraphQL query and schema files
+         ├── java/com/shopify/carto/
+         │   ├── app/                   # Application and Hilt initialization
+         │   ├── core/                  # Shared database, utils, and sessions
+         │   ├── feature/               # Feature-sliced modules (Home, Cart, Payment, AI)
+         │   │   └── <feature_name>/
+         │   │       ├── data/          # Repositories, mappers, API sources
+         │   │       ├── domain/        # UseCases and models
+         │   │       └── presentation/  # UI Views, Composables, ViewModels
+         │   ├── navigation/            # App bottom bar and screen routers
+         │   └── ui/theme/              # Material 3 typography and colors
+         └── res/                       # Drawables, layouts, string files
 ```
 
-## 🧪 Project Requirements
-
-* All team members must contribute through GitHub commits.
-* Tasks should be tracked using Jira or Trello.
-* Mentors should be added to the GitHub repository and project board.
-* Destructive actions must require confirmation before execution.
+---
 
 ## 📄 License
 
