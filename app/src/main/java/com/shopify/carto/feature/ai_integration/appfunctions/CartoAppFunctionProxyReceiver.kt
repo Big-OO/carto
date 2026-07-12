@@ -52,7 +52,8 @@ class CartoAppFunctionProxyReceiver : BroadcastReceiver() {
         val pendingResult = goAsync()
 
         scope.launch {
-            Log.d("AivoDebug", "CartoProxy: Executing $functionId with $parametersJson")
+            val simpleName = functionId.substringAfterLast('#')
+            Log.d("AivoDebug", "CartoProxy: Executing $simpleName with $parametersJson")
             val result = try {
                 executeLocally(context, functionId, parametersJson)
             } catch (e: Exception) {
@@ -60,6 +61,9 @@ class CartoAppFunctionProxyReceiver : BroadcastReceiver() {
                 "Error executing proxy: ${e.message}"
             }
             Log.d("AivoDebug", "CartoProxy: Result is $result")
+            if (simpleName == "searchProducts" || simpleName == "getProductDetails") {
+                Log.i("CartoProxyLogger", "Item data returned to calling app (contains Image URL): $result")
+            }
             val bundle = Bundle().apply {
                 putString("result", result)
             }
@@ -155,7 +159,8 @@ class CartoAppFunctionProxyReceiver : BroadcastReceiver() {
                 val email = jsonElement?.get("email")?.jsonPrimitive?.content ?: ""
                 val address = jsonElement?.get("address")?.jsonPrimitive?.content ?: ""
                 val city = jsonElement?.get("city")?.jsonPrimitive?.content ?: ""
-                checkoutFunctions.getOrderSummary(appContext, addressId, phone, paymentMethod, firstName, lastName, email, address, city)
+                val discountCode = jsonElement?.get("discountCode")?.jsonPrimitive?.content ?: ""
+                checkoutFunctions.getOrderSummary(appContext, addressId, phone, paymentMethod, firstName, lastName, email, address, city, discountCode)
             }
             "checkout" -> {
                 val paymentMethod = jsonElement?.get("paymentMethod")?.jsonPrimitive?.content ?: "CASH_ON_DELIVERY"
@@ -167,7 +172,12 @@ class CartoAppFunctionProxyReceiver : BroadcastReceiver() {
                 val phone = jsonElement?.get("phone")?.jsonPrimitive?.content ?: ""
                 val address = jsonElement?.get("address")?.jsonPrimitive?.content ?: ""
                 val city = jsonElement?.get("city")?.jsonPrimitive?.content ?: ""
-                checkoutFunctions.checkout(appContext, paymentMethod, confirmed, addressId, firstName, lastName, email, phone, address, city)
+                val discountCode = jsonElement?.get("discountCode")?.jsonPrimitive?.content ?: ""
+                checkoutFunctions.checkout(appContext, paymentMethod, confirmed, addressId, firstName, lastName, email, phone, address, city, discountCode)
+            }
+            "applyDiscountCode" -> {
+                val code = jsonElement?.get("code")?.jsonPrimitive?.content ?: ""
+                checkoutFunctions.applyDiscountCode(appContext, code)
             }
             "cancelOrder" -> {
                 val orderId = jsonElement?.get("orderId")?.jsonPrimitive?.content ?: ""

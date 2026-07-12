@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,9 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.shopify.carto.feature.home.domain.model.Coupon
 import kotlinx.coroutines.delay
+import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
@@ -49,12 +52,23 @@ fun CouponsCarousel(
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(190.dp),
+                .height(180.dp),
+            contentPadding = PaddingValues(horizontal = 0.dp),
+            pageSpacing = 0.dp
         ) { page ->
             CouponCardItem(
                 coupon = coupons[page],
                 couponNumber = page,
                 onCopyCodeClick = onCopyCodeClick,
+                modifier = Modifier
+                    .graphicsLayer {
+                        // Calculate how far the page is from the current scroll position
+                        val pageOffset = abs((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)
+                        
+                        // Simple alpha fade to prevent shadow distortion
+                        val alpha = 0.6f + (1f - 0.6f) * (1f - pageOffset.coerceIn(0f, 1f))
+                        this.alpha = alpha
+                    }
             )
         }
 
@@ -90,4 +104,4 @@ fun CouponsCarousel(
             }
         }
     }
-}
+}

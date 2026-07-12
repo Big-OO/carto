@@ -50,13 +50,15 @@ class ShoppingAppFunctionRunner(
             val duration = System.currentTimeMillis() - startTime
             Log.d(TAG, "Completed execute: $simpleName in $duration ms")
 
-            return when (response) {
+            val returnValue = when (response) {
                 is ExecuteAppFunctionResponse.Success -> readReturnValue(metadata, response.returnValue)
                 is ExecuteAppFunctionResponse.Error -> {
                     Log.e(TAG, "Execution failed: ${response.error.errorMessage}")
                     "Error: ${response.error.errorMessage}"
                 }
             }
+            Log.d(TAG, "Return value for $simpleName is: $returnValue")
+            return returnValue
         } catch (e: Exception) {
             Log.e(TAG, "Exception during execution of $simpleName", e)
             return "Error: ${e.message}"

@@ -167,58 +167,83 @@ fun MessageBubble(
                                         enter = fadeIn(animationSpec = tween(300)),
                                         exit = fadeOut(animationSpec = tween(300))
                                     ) {
-                                        Column {
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                            FlowRow(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                                            ) {
-                                                val sortedOptions = remember(message.options) { message.options.sorted() }
-                                                sortedOptions.forEachIndexed { index, option ->
-                                                    var chipVisible by remember { mutableStateOf(false) }
-                                                    LaunchedEffect(Unit) {
-                                                        delay(index * 60L)
-                                                        chipVisible = true
-                                                    }
-                                                    AnimatedVisibility(
-                                                        visible = chipVisible,
-                                                        enter = fadeIn(tween(250)) + slideInVertically(tween(250)) { it / 2 },
-                                                        exit = fadeOut(tween(150))
-                                                    ) {
-                                                        val interactionSource = remember { MutableInteractionSource() }
-                                                        val isPressed by interactionSource.collectIsPressedAsState()
-                                                        val scale by animateFloatAsState(
-                                                            targetValue = if (isPressed) 0.95f else 1f,
-                                                            animationSpec = spring(
-                                                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                                                stiffness = Spring.StiffnessLow
-                                                            ),
-                                                            label = "chipScale"
-                                                        )
-                                                        Surface(
-                                                            onClick = { onOptionClick(option) },
-                                                            shape = RoundedCornerShape(20.dp),
-                                                            color = MaterialTheme.colorScheme.primaryContainer,
-                                                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                                            border = BorderStroke(
-                                                                width = 1.dp,
-                                                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                                                            ),
-                                                            shadowElevation = if (isPressed) 1.dp else 2.dp,
-                                                            interactionSource = interactionSource,
-                                                            modifier = Modifier
-                                                                .graphicsLayer {
-                                                                    scaleX = scale
-                                                                    scaleY = scale
-                                                                }
+                                        val configs = remember(message.options) {
+                                            message.options.mapNotNull { parseMultiSelectorConfig(it) }
+                                        }
+                                        val regularOptions = remember(message.options) {
+                                            message.options.filter { parseMultiSelectorConfig(it) == null }
+                                        }
+
+                                        Column(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            if (configs.isNotEmpty()) {
+                                                MultiOptionsSelector(
+                                                    configs = configs,
+                                                    onSelectionComplete = { selection ->
+                                                        onOptionClick(selection)
+                                                    },
+                                                    isEnabled = isLastAiMessage
+                                                )
+                                            }
+
+                                            if (regularOptions.isNotEmpty()) {
+                                                FlowRow(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                                ) {
+                                                    val sortedOptions = remember(regularOptions) { regularOptions.sorted() }
+                                                    sortedOptions.forEachIndexed { index, option ->
+                                                        var chipVisible by remember { mutableStateOf(false) }
+                                                        LaunchedEffect(Unit) {
+                                                            delay(index * 60L)
+                                                            chipVisible = true
+                                                        }
+                                                        AnimatedVisibility(
+                                                            visible = chipVisible,
+                                                            enter = fadeIn(tween(250)) + slideInVertically(tween(250)) { it / 2 },
+                                                            exit = fadeOut(tween(150))
                                                         ) {
-                                                            Text(
-                                                                text = option,
-                                                                style = MaterialTheme.typography.bodyMedium,
-                                                                fontWeight = FontWeight.SemiBold,
-                                                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                                                            val interactionSource = remember { MutableInteractionSource() }
+                                                            val isPressed by interactionSource.collectIsPressedAsState()
+                                                            val scale by animateFloatAsState(
+                                                                targetValue = if (isPressed) 0.95f else 1f,
+                                                                animationSpec = spring(
+                                                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                                                    stiffness = Spring.StiffnessLow
+                                                                ),
+                                                                label = "chipScale"
                                                             )
+                                                            Surface(
+                                                                onClick = { onOptionClick(option) },
+                                                                enabled = isLastAiMessage,
+                                                                shape = RoundedCornerShape(20.dp),
+                                                                color = if (isLastAiMessage) MaterialTheme.colorScheme.primaryContainer
+                                                                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                                                contentColor = if (isLastAiMessage) MaterialTheme.colorScheme.onPrimaryContainer
+                                                                               else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                                                                border = BorderStroke(
+                                                                    width = 1.dp,
+                                                                    color = if (isLastAiMessage) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                                                            else MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
+                                                                ),
+                                                                shadowElevation = if (isPressed && isLastAiMessage) 1.dp else 2.dp,
+                                                                interactionSource = interactionSource,
+                                                                modifier = Modifier
+                                                                    .graphicsLayer {
+                                                                        scaleX = if (isLastAiMessage) scale else 1f
+                                                                        scaleY = if (isLastAiMessage) scale else 1f
+                                                                    }
+                                                            ) {
+                                                                Text(
+                                                                    text = option,
+                                                                    style = MaterialTheme.typography.bodyMedium,
+                                                                    fontWeight = FontWeight.SemiBold,
+                                                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                                                                )
+                                                            }
                                                         }
                                                     }
                                                 }

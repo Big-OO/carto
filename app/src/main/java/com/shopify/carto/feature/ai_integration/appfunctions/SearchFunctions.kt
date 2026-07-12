@@ -29,7 +29,7 @@ class SearchFunctions @Inject constructor(
                     "No products found matching '$query'."
                 } else {
                     products.joinToString("\n") { product ->
-                        "Product ID: ${product.id}\nTitle: ${product.title}\nPrice: ${product.price}\nVendor: ${product.vendor}\n---"
+                        "Product ID: ${product.id}\nTitle: ${product.title}\nPrice: ${product.price}\nVendor: ${product.vendor}\nImage URL: ${product.imageUrl.orEmpty()}\n---"
                     }
                 }
             }
@@ -52,7 +52,7 @@ class SearchFunctions @Inject constructor(
         val result = getProductDetailsUseCase(productId)
         return if (result.isSuccess) {
             val product = result.getOrThrow()
-            "Product ID: ${product.id}\nTitle: ${product.title}\nDescription: ${product.description}\nVendor: ${product.vendor}\nPrice: ${product.price} ${product.currency}\nSizes: ${product.sizes.joinToString()}\nColors: ${product.colors.joinToString()}\nIn Stock: ${product.isInStock}\nVariants:\n" +
+            "Product ID: ${product.id}\nTitle: ${product.title}\nDescription: ${product.description}\nVendor: ${product.vendor}\nPrice: ${product.price} ${product.currency}\nImage URL: ${product.images.firstOrNull().orEmpty()}\nSizes: ${product.sizes.joinToString()}\nColors: ${product.colors.joinToString()}\nIn Stock: ${product.isInStock}\nVariants:\n" +
                     product.variants.joinToString("\n") { variant ->
                         "Variant ID: ${variant.id}\nPrice: ${variant.price}\nSize: ${variant.size ?: "N/A"}\nColor: ${variant.color ?: "N/A"}\nAvailable: ${variant.isAvailable}\n---"
                     }
