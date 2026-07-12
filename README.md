@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="./logo.png" alt="Carto Logo" width="150" height="150" style="border-radius: 50%; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" />
-</p>
+# <p align="center"><img src="app/src/main/ic_launcher-playstore.png" width="120" height="120" style="border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 4px solid #ee7300f8;" /></p>
 
 <h1 align="center">Carto</h1>
 
