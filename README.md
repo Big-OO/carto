@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-# <p align="center"><img src="app/src/main/ic_launcher-playstore.png" width="120" height="120" style="border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 4px solid #ee7300f8;" /></p>
-
-<h1 align="center">Carto</h1>
-
-<p align="center">
-  <strong>A Premium Native Android E-Commerce Application Powered by Shopify & AI</strong>
-</p>
-
-<p align="center">
-  <a href="#-key-features">Features</a> •
-  <a href="#-tech-stack">Tech Stack</a> •
-  <a href="#-ai-chat-assistant">AI Chat Assistant</a> •
-  <a href="#-getting-started">Getting Started</a> •
-  <a href="#-project-structure">Structure</a>
-</p>
-
----
-=======
 # Carto 🛍️
 
 Carto is a modern native Android e-commerce application built for fashion shopping, product discovery, wishlist management, cart flow, AI assistance, and a polished light/dark user experience.
