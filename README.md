@@ -1,135 +1,256 @@
-# Carto
+# Carto 🛍️
 
-A native Android Shopify e-commerce application powered by Shopify.
+Carto is a modern native Android e-commerce application built for fashion shopping, product discovery, wishlist management, cart flow, AI assistance, and a polished light/dark user experience.
 
-Carto allows users to browse products as guests, authenticate, manage wishlist and cart, search and filter products, apply discounts, manage addresses, and complete checkout using Cash on Delivery or online payment.
+<p align="center">
+  <img src="promo/11-carto-intro-poster.png" alt="Carto app intro poster" width="850"/>
+</p>
 
-## 📌 Project Overview
+## Quick Navigation
 
-This project is a mobile Shopify-based e-commerce app built for the JETS Mobile Lab project.
+- [Overview](#overview)
+- [Core Features](#core-features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Modules](#modules)
+- [Screenshots](#screenshots)
+- [Setup](#setup)
+- [Repository Redirection](#repository-redirection)
+- [License](#license)
 
-The application integrates with Shopify Admin REST API to fetch and manage store data such as products, vendors, variants, inventory, discounts, customers, and orders.
+## Overview
 
-## ✨ Main Features
+Carto delivers a complete shopping workflow:
 
-### Authentication
-- Guest browsing
-- Email/password registration and login
-- Social authentication support
-- Email verification
-- Protected wishlist and cart access
+- onboarding
+- home product discovery
+- categories and brands
+- product details
+- wishlist / saved products
+- cart and checkout preparation
+- AI shopping assistant
+- map-based address picking
+- profile and account management
+- light and dark mode support
 
-### Product Catalog
-- Fetch products dynamically from Shopify
-- Browse products by vendors/brands
-- Product details screen
-- Product images, sizes, price, rating, description, and reviews
+The app is structured as a modular Android project, so every major feature is isolated and easier to scale, test, and maintain.
 
-### Search, Filtering, and Sorting
-- Global product search
-- Main categories and sub-categories
-- Filter by category, sub-category, and brand
-- Sort by price, best sellers, and sub-category grouping
+## Core Features
 
-### Wishlist
-- Add products to wishlist
-- Remove products from wishlist
-- Wishlist available only for authenticated users
+- **Premium onboarding experience**
+- **Home screen with light and dark themes**
+- **Product browsing and product details**
+- **Category and brand discovery**
+- **Wishlist / saved products**
+- **Shopping cart flow**
+- **Carto AI shopping assistant**
+- **Map-based address selection**
+- **Profile, settings, and order screens**
+- **Clean modular architecture**
 
-### Shopping Cart
-- Add products to cart
-- Remove products from cart
-- Update item quantity
-- Validate stock before increasing quantity
-- Dynamically calculate total price
+## Architecture
 
-### Account & Settings
-- User profile summary
-- Recent orders preview
-- Wishlist preview
-- Address management
-- Currency exchange rate support
-- Country list integration
+Carto follows a **feature-based Clean Architecture** approach.
 
-### Checkout & Payment
-- Apply discount coupons
-- Cash on Delivery support
-- COD upper limit validation
-- Online payment support
-- Order placement
-- Confirmation email after successful order
+The project is not a single huge app module where UI, network calls, database logic, and business rules are mixed together. Instead, the app is divided into feature packages and shared core layers.
 
-### Safety & UX
-- Confirmation dialogs before destructive actions
-- Consistent design system
-- Custom launcher icon
-- Clean mobile-first UI
-
-## 🛠 Tech Stack
-
-- Kotlin
-- Native Android
-- XML or Jetpack Compose
-- MVVM Architecture
-- Retrofit / OkHttp
-- Coroutines / Flow
-- Firebase Authentication
-- Shopify Admin REST API
-- Optional: Shopify GraphQL Admin API
-- Optional: Google Places API or HERE Maps API
-
-## 🔐 API Integration
-
-Shopify REST endpoints follow this structure:
+### High-level structure
 
 ```text
-https://{hostname}/admin/api/{version}/{resource}.json
-````
-
-Credentials must never be hardcoded.
-
-Use secure config files or local properties for:
-
-```properties
-SHOPIFY_API_KEY=
-SHOPIFY_PASSWORD=
-SHOPIFY_HOSTNAME=
-SHOPIFY_API_VERSION=
+app
+├── core
+│   ├── common utilities
+│   ├── networking helpers
+│   ├── shared models
+│   ├── storage/session helpers
+│   └── reusable app-level logic
+│
+├── feature
+│   ├── home
+│   ├── brand
+│   ├── search
+│   ├── favorite
+│   ├── shopping_cart
+│   ├── product_details
+│   ├── profile
+│   ├── map
+│   ├── addresses
+│   ├── ai_integration
+│   ├── settings
+│   └── other isolated features
+│
+├── navigation
+│   └── app navigation graph and route handling
+│
+└── ui.theme
+    └── shared theme, colors, typography, and design tokens
 ```
 
-## 📁 Suggested Project Structure
+### Typical feature structure
+
+Most features follow this internal layout:
 
 ```text
-app/
- └── src/
-     └── main/
-         ├── java/com/example/shopifyapp/
-         │   ├── data/
-         │   │   ├── remote/
-         │   │   ├── model/
-         │   │   └── repository/
-         │   ├── domain/
-         │   │   ├── model/
-         │   │   └── usecase/
-         │   ├── presentation/
-         │   │   ├── auth/
-         │   │   ├── home/
-         │   │   ├── product/
-         │   │   ├── cart/
-         │   │   ├── wishlist/
-         │   │   ├── checkout/
-         │   │   └── profile/
-         │   └── utils/
-         └── res/
+feature/<feature_name>
+├── data
+│   ├── remote data sources
+│   ├── local data sources
+│   ├── DTOs
+│   ├── mappers
+│   └── repository implementations
+│
+├── domain
+│   ├── models
+│   ├── repository contracts
+│   └── use cases
+│
+└── presentation
+    ├── screens
+    ├── ViewModels
+    ├── UI state
+    └── events/actions
 ```
 
-## 🧪 Project Requirements
+### Layer responsibilities
 
-* All team members must contribute through GitHub commits.
-* Tasks should be tracked using Jira or Trello.
-* Mentors should be added to the GitHub repository and project board.
-* Destructive actions must require confirmation before execution.
+| Layer | Responsibility |
+|---|---|
+| `presentation` | Jetpack Compose screens, ViewModels, UI state, user actions |
+| `domain` | Business rules, use cases, repository contracts, domain models |
+| `data` | API calls, local database/cache, DTOs, mappers, repository implementations |
+| `core` | Shared utilities, base models, networking/session helpers, common logic |
+| `navigation` | App routes, screen transitions, argument passing |
+| `ui.theme` | Colors, typography, shapes, light/dark theme definitions |
 
-## 📄 License
+### Data flow
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+```text
+User Action
+   ↓
+Compose Screen
+   ↓
+ViewModel
+   ↓
+Use Case
+   ↓
+Repository Interface
+   ↓
+Repository Implementation
+   ↓
+Remote API / Local Database
+   ↓
+Mapper
+   ↓
+Domain Model
+   ↓
+UI State
+   ↓
+Compose UI
+```
+
+### Why this architecture matters
+
+- Features are easier to maintain.
+- Business logic is separated from UI.
+- DTOs do not leak into screens.
+- Repositories can be mocked or replaced in tests.
+- ViewModels focus on state management.
+- Local and remote data sources stay isolated.
+- New features can be added without breaking unrelated modules.
+
+## Tech Stack
+
+- **Language:** Kotlin
+- **UI:** Jetpack Compose
+- **Architecture:** Clean Architecture + feature-based modular structure
+- **Dependency Injection:** Hilt
+- **Networking:** Retrofit / GraphQL
+- **Backend integrations:** Shopify + Firebase
+- **Local persistence:** Room / DataStore
+- **Concurrency:** Kotlin Coroutines / Flow
+- **Image loading:** Coil
+- **Maps:** Map-based address selection flow
+- **Theme:** Light and dark mode
+
+## Modules
+
+### Main feature modules
+
+```text
+addresses
+ai_integration
+ai_widget
+brand
+currency
+favorite
+forgetpassword
+home
+home_widget
+login
+map
+on_boarding
+orderdetails
+orderhistory
+payment
+product_details
+product_reviews
+profile
+register
+search
+settings
+shopping_cart
+splash.presentation
+```
+
+## Screenshots
+
+### Home - Light Mode
+
+![Home Light](mockups/02-home-light-mockup.png)
+
+### Home - Dark Mode
+
+![Home Dark](mockups/07-home-dark-mockup.png)
+
+### More Screens
+
+| Screen | Preview |
+|---|---|
+| Onboarding | ![Onboarding](mockups/01-onboarding-mockup.png) |
+| Saved / Wishlist | ![Saved](mockups/03-saved-mockup.png) |
+| Product Details | ![Product Details](mockups/04-product-details-mockup.png) |
+| Carto AI | ![Carto AI](mockups/05-carto-ai-mockup.png) |
+| Brand Page | ![Brand Page](mockups/06-brand-page-mockup.png) |
+| Cart | ![Cart](mockups/08-cart-mockup.png) |
+| Map / Address | ![Map Address](mockups/09-map-address-mockup.png) |
+| Profile | ![Profile](mockups/10-profile-mockup.png) |
+
+## Setup
+
+```bash
+git clone <your-repository-url>
+cd carto
+```
+
+Open the project in **Android Studio**, sync Gradle, then run it on an emulator or a real Android device.
+
+## Repository Redirection
+
+This repository is for the **Carto Android mobile application**.
+
+If you also maintain the **Shopify dashboard / importer / catalog backend**, keep it in a separate repository and add its link here.
+
+Suggested repository links:
+
+```text
+Mobile App: Carto Android Client
+Dashboard / Backend: Carto Shopify Dashboard
+```
+
+Replace these placeholders with your real repository URLs before publishing.
+
+## License
+
+This project is licensed under the **MIT License**.
+
+See the [LICENSE](LICENSE) file for details.
