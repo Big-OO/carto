@@ -5,11 +5,9 @@ Carto is a modern native Android e-commerce application built for fashion shoppi
 <p align="center">
   <img src="promo/11-carto-intro-poster.png" alt="Carto app intro poster" width="850"/>
 </p>
->>>>>>> 8a52d8997525547b27563fa69fd081edc114099d
 
 ## Quick Navigation
 
-<<<<<<< HEAD
 **Carto** is a modern, high-performance native Android e-commerce application. It integrates directly with the Shopify ecosystem via REST and GraphQL APIs to deliver a seamless shopping experience. Designed with a mobile-first philosophy, Carto features a rich design system, smooth Jetpack Compose transitions, robust local-first database caching, and a state-of-the-art **AI Shopping Assistant** capable of executing shopping operations directly in the app.
 
 ---
