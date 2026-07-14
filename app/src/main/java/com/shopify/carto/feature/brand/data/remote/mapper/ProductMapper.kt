@@ -1,0 +1,14 @@
+package com.shopify.carto.feature.brand.data.remote.mapper
+
+import com.shopify.carto.feature.brand.data.remote.dto.ProductDto
+import com.shopify.carto.feature.brand.domain.model.Product
+
+fun ProductDto.toDomain(): Product {
+    return Product(
+        id = id,
+        title = title,
+        imageUrl = images.firstOrNull()?.src.orEmpty(),
+        productType = product_type,
+        price = variants.firstOrNull()?.price.orEmpty()
+    )
+}

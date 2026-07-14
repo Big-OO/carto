@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppFunctionAppMetadata xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions"
+    appfn:description="
+        Carto is a Shopify-powered e-commerce application that helps users shop
+        using natural language. Users can search products, browse collections,
+        view product details, manage their shopping cart, add or remove wishlist
+        items, update cart quantities, apply discount codes, review their orders,
+        and complete checkout. The app also provides personalized product
+        recommendations, supports multiple currencies, and allows users to manage their shopping experience through conversational
+        requests." />

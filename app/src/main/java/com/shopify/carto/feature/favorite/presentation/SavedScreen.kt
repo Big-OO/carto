@@ -1,0 +1,117 @@
+package com.shopify.carto.feature.favorite.presentation
+
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.shopify.carto.core.components.ProductCard
+import com.shopify.carto.feature.favorite.presentation.components.FavoriteProductCardPlaceholder
+import com.shopify.carto.feature.home.presentation.screens.EmptyCategoryView
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
+import com.shopify.carto.R
+import com.shopify.carto.feature.favorite.domain.model.FavoriteProduct
+import com.shopify.carto.core.utils.ConfirmationDialog
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SavedScreen(
+    onProductClick: (Long) -> Unit,
+    viewModel: SavedViewModel = hiltViewModel(),
+) {
+    val favorites by viewModel.favorites.collectAsStateWithLifecycle()
+    val isInitialLoading by viewModel.isInitialLoading.collectAsStateWithLifecycle()
+    var productPendingRemoval by remember { mutableStateOf<FavoriteProduct?>(null) }
+
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            CenterAlignedTopAppBar(title = { Text(
+                stringResource(id = R.string.savedNavTitle),
+            ) })
+        },
+    ) { padding ->
+        val isLoading = favorites.isEmpty() && isInitialLoading
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentAlignment = Alignment.Center
+        ) {
+            if (isLoading) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(6) {
+                        FavoriteProductCardPlaceholder()
+                    }
+                }
+            } else if (favorites.isEmpty()) {
+                EmptyCategoryView(
+                    mainMsg = stringResource(id = R.string.savedEmptyTitle),
+                    subMsg = stringResource(id = R.string.savedEmptySubtitle),
+                    image = Icons.Default.Favorite,
+                )
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(favorites, key = { it.productId }) { product ->
+                        ProductCard(
+                            name = product.name,
+                            price = product.price,
+                            imageUrl = product.imageUrl,
+                            isFavorite = true,
+                            onClick = { onProductClick(product.productId) },
+                            onFavoriteClick = { productPendingRemoval = product },
+                        )
+                    }
+                }
+            }
+        }
+        productPendingRemoval?.let { product ->
+            ConfirmationDialog(
+                title = stringResource(id = R.string.removeFavoriteTitle),
+                message = stringResource(id = R.string.removeFavoriteMessage),
+                confirmText = stringResource(id = R.string.removeFavoriteConfirm),
+                cancelText = stringResource(id = R.string.removeFavoriteCancel),
+                onConfirm = {
+                    viewModel.removeFavorite(product)
+                    productPendingRemoval = null
+                },
+                onDismiss = { productPendingRemoval = null },
+            )
+        }
+    }
+}

@@ -1,0 +1,430 @@
+<resources>
+    <!--   ِApp Navigation Titles  -->
+    <string name="homeNavTitle">الرئيسية</string>
+    <string name="savedNavTitle">المحفوظات</string>
+    <string name="cartNavTitle">العربه</string>
+    <string name="accountNavTitle">الحساب</string>
+
+    <string name="commonRetry">إعادة المحاولة</string>
+    <string name="commonSeeAll">عرض الكل</string>
+    <string name="commonSearch">بحث</string>
+    <string name="commonCancel">إلغاء</string>
+    <string name="commonBack">رجوع</string>
+    <string name="commonLoginRequiredFavorite">يرجى تسجيل الدخول لإضافة العناصر إلى المفضلة.</string>
+
+    <!-- HOME SCREEN -->
+    <string name="homeDiscoverTitle">اكتشف</string>
+    <string name="homeCategoriesTitle">الأقسام</string>
+    <string name="homeProductsTitle">جميع المنتجات</string>
+    <string name="homeBrandsTitle">جميع الماركات</string>
+    <string name="homeCouponCopyCode">نسخ الكود</string>
+    <string name="homeCouponCodeCopied">تم نسخ كود الخصم.</string>
+    <string name="homeCouponPercentageOff">خصم %1$s%% على طلبك</string>
+    <string name="homeCouponFixedAmountOff">خصم %1$s على طلبك</string>
+
+    <!--   Saved SCREEN   -->
+    <string name="savedScreenTitle">المحفوظة</string>
+    <string name="savedEmptyTitle">لا توجد مفضلة بعد</string>
+    <string name="savedEmptySubtitle">اضغط على القلب على أي منتج لحفظه هنا.</string>
+
+    <!--   Search SCREEN   -->
+    <string name="searchScreenTitle">Search</string>
+    <string name="searchHintTitle">ابحث عن ملابس…</string>
+
+    <!-- ERRORS  -->
+    <string name="errorNoInternetTitle">لا يوجد اتصال بالإنترنت</string>
+    <string name="errorNoInternetMessage">يرجى التحقق من اتصال الواي فاي أو بيانات الجوال والمحاولة مرة أخرى.</string>
+    <string name="errorTimeoutTitle">انتهت مهلة الطلب</string>
+    <string name="errorTimeoutMessage">يستغرق الخادم وقتًا طويلاً للاستجابة. يرجى المحاولة مرة أخرى.</string>
+    <string name="errorServerTitle">حدث خطأ ما</string>
+    <string name="errorServerMessage">خوادمنا تواجه مشكلة حاليًا. يرجى المحاولة مرة أخرى بعد قليل.</string>
+    <string name="errorNotFoundTitle">لا يوجد شيء هنا</string>
+    <string name="errorNotFoundMessage">لم نتمكن من العثور على ما كنت تبحث عنه.</string>
+    <string name="errorUnknownTitle">خطأ غير متوقع</string>
+    <string name="errorUnknownMessage">حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.</string>
+
+    <!--   ALL CATEGORIES SCREEN   -->
+    <string name="categoriesScreenTitle">الأقسام</string>
+    <string name="categoriesSearchHint">ابحث في الأقسام</string>
+    <string name="categoriesEmptySearchTitle">لم يتم العثور على أقسام</string>
+    <string name="categoriesEmptySearchSubtitle">جرّب كلمة بحث أخرى.</string>
+    <string name="categoriesEmptyDataTitle">لا توجد أقسام متاحة</string>
+    <string name="categoriesEmptyDataSubtitle">تحقق لاحقًا من الأقسام الجديدة.</string>
+
+    <!--   ALL PRODUCTS SCREEN  -->
+    <string name="productsScreenTitle">المنتجات</string>
+    <string name="productsSearchHint">ابحث عن منتجات…</string>
+    <string name="productsEmptySearchTitle">لم يتم العثور على منتجات</string>
+    <string name="productsEmptySearchSubtitle">جرّب كلمة بحث أخرى.</string>
+    <string name="productsEmptyDataTitle">لا توجد منتجات متاحة</string>
+    <string name="productsEmptyDataSubtitle">تحقق لاحقًا من المنتجات الجديدة.</string>
+
+    <!--   ALL BRANDS SCREEN  -->
+    <string name="brandsScreenTitle">الماركات</string>
+    <string name="brandsSearchHint">ابحث عن ماركات…</string>
+    <string name="brandsEmptySearchTitle">لم يتم العثور على ماركات</string>
+    <string name="brandsEmptySearchSubtitle">جرّب كلمة بحث أخرى.</string>
+    <string name="brandsEmptyDataTitle">لا توجد ماركات متاحة</string>
+    <string name="brandsEmptyDataSubtitle">تحقق لاحقًا من الماركات الجديدة.</string>
+
+    <!--   SETTINGS   -->
+    <string name="settings">الإعدادات</string>
+    <string name="settingsAccountSectionTitle">إعدادات الحساب</string>
+    <string name="settingsSavedLocations">العناوين المحفوظة</string>
+    <string name="settingsOrderHistory">سجل الطلبات</string>
+    <string name="settingsPaymentMethods">طرق الدفع</string>
+    <string name="settingsMarketPreferenceSectionTitle">تفضيلات السوق</string>
+    <string name="settingsCurrency">العملة</string>
+    <string name="settingsApplicationSectionTitle">إعدادات التطبيق</string>
+    <string name="settingsTheme">المظهر</string>
+    <string name="settingsLanguage">اللغة</string>
+    <string name="app_name">Carto</string>
+    <string name="login_with_google">تسجيل الدخول باستخدام جوجل</string>
+    <string name="don_t_have_an_account">"ليس لديك حساب؟ "</string>
+    <string name="join">انضم الآن</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="reset_your_password">إعادة تعيين كلمة المرور</string>
+    <string name="forgot_your_password">"هل نسيت كلمة المرور؟ "</string>
+    <string name="password">كلمة المرور</string>
+    <string name="it_s_great_to_see_you_again">سعداء برؤيتك مرة أخرى.</string>
+    <string name="login_to_your_account">سجّل الدخول إلى حسابك</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="login_as_guest">المتابعة كزائر</string>
+
+    <!--   Account SCREEN   -->
+    <string name="accountUpdateProfileTitle">تحديث البروفايل</string>
+    <string name="accountFullNameTitle">الاسم الكامل</string>
+    <string name="accountEditProfileBtnTitle">تعديل البروفايل</string>
+    <string name="accountSettingsBtnTitle">الإعدادات</string>
+    <string name="accountEmailAddressTitle">عنوان الايميل</string>
+    <string name="accountPhoneNumberTitle">رقم التلفون</string>
+    <string name="accountTotalOrdersTitle">عدد الطلبات</string>
+    <string name="accountTotalSpentTitle">الصرف الكلي</string>
+    <string name="accountLogoutBtnTitle">تسجيل خروج</string>
+    <string name="accountNotProvidedPhoneTitle">غير متوفر</string>
+    <string name="accountCancelTitle">إلغاء</string>
+    <string name="accountSaveChangesTitle">حفظ التغييرات</string>
+    <string name="accountSaveChangesLoadingTitle">جارٍ حفظ التحديثات…</string>
+    <string name="accountEnterYourFullNamePlaceHolder">أدخل اسمك الكامل</string>
+    <string name="accountErrorMsgWhenLT3WordsTitle">يجب أن يكون الاسم على الأقل 3 أحرف</string>
+    <string name="accountErrorMsgWhenFASNameAreMissingTitle">من فضلك أدخل الاسم الاول و الاخير</string>
+
+    <!-- Register Screen -->
+    <string name="register_title">إنشاء حساب</string>
+    <string name="register_subtitle">لنقم بإنشاء حسابك.</string>
+    <string name="register_full_name_label">الاسم الكامل</string>
+    <string name="register_email_label">البريد الإلكتروني</string>
+    <string name="register_phone_number_label">رقم التليفون</string>
+    <string name="register_password_label">كلمة المرور</string>
+    <string name="register_password_rules">يجب أن تتكون كلمة المرور من 8 أحرف على الأقل، وأن تتضمن حرفًا كبيرًا، وحرفًا صغيرًا، ورقمًا، ورمزًا خاصًا.</string>
+    <string name="register_create_account_btn">إنشاء حساب</string>
+    <string name="register_create_account_btn_loading">إنشاء حساب…</string>
+    <string name="register_already_have_an_account">هل لديك حساب بالفعل\؟ </string>
+    <string name="register_login_btn">تسجيل الدخول</string>
+
+    <!-- Addresses Screen -->
+    <string name="addresses_title">العناوين</string>
+    <string name="addresses_new_address_title">عنوان جديد</string>
+    <string name="addresses_saved_address_title">العناوين المحفوظة</string>
+    <string name="addresses_empty_addresses">لا توجد عناوين محفوظة حتى الآن.</string>
+    <string name="addresses_add_new_address">إضافة عنوان جديد</string>
+    <string name="addresses_apply_default">تطبيق</string>
+    <string name="addresses_default_badge">افتراضي</string>
+    <string name="addresses_back_content_description">رجوع</string>
+
+    <string name="addresses_location_title">الموقع</string>
+    <string name="addresses_address_details_title">تفاصيل العنوان</string>
+    <string name="addresses_address_nickname_label">اسم العنوان</string>
+    <string name="addresses_address_nickname_placeholder">المنزل، العمل، الشقة…</string>
+    <string name="addresses_full_address_label">العنوان الكامل</string>
+    <string name="addresses_full_address_placeholder">اكتب عنوانك الكامل…</string>
+    <string name="addresses_city_label">المدينة</string>
+    <string name="addresses_city_placeholder">القاهرة</string>
+    <string name="addresses_province_label">المحافظة</string>
+    <string name="addresses_province_placeholder">القاهرة</string>
+    <string name="addresses_country_label">الدولة</string>
+    <string name="addresses_country_placeholder">مصر</string>
+    <string name="addresses_zip_label">الرمز البريدي</string>
+    <string name="addresses_zip_placeholder">11511</string>
+    <string name="addresses_make_default_address">اجعل هذا العنوان هو العنوان الافتراضي</string>
+    <string name="addresses_add_button">إضافة</string>
+
+    <string name="addresses_success_dialog_title">تهانينا!</string>
+    <string name="addresses_success_dialog_message">تمت إضافة عنوانك الجديد بنجاح.</string>
+    <string name="addresses_success_dialog_button">شكرًا</string>
+
+    <string name="addresses_success_address_added">تمت إضافة العنوان بنجاح.</string>
+    <string name="addresses_success_default_address_updated">تم تحديث العنوان الافتراضي.</string>
+    <string name="addresses_error_missing_customer">يرجى تسجيل الدخول مرة أخرى لإدارة العناوين.</string>
+    <string name="addresses_error_validation">يرجى إكمال بيانات العنوان المطلوبة.</string>
+    <string name="addresses_error_not_found">لم نتمكن من العثور على هذا العنوان.</string>
+    <string name="addresses_error_network">تحقق من اتصالك بالإنترنت وحاول مرة أخرى.</string>
+    <string name="addresses_error_unauthorized">يرجى تسجيل الدخول مرة أخرى لإدارة العناوين.</string>
+    <string name="addresses_error_server">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="addresses_error_invalid_province">يرجى إدخال محافظة صحيحة.</string>
+    <string name="addresses_error_address_already_exists">هذا العنوان موجود بالفعل.</string>
+    <string name="addresses_error_invalid_country">يرجى إدخال دولة صحيحة.</string>
+    <string name="addresses_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="addresses_select_location_from_map_hint">اضغط لفتح الخريطة واختيار موقع التوصيل.</string>
+    <string name="addresses_success_address_removed">تم حذف العنوان بنجاح.</string>
+    <string name="addresses_remove_address">حذف</string>
+    <string name="addresses_select_location_from_map">اختر من الخريطة</string>
+    <string name="addresses_error_default_address_deletion">العنوان الاساسي لا يمكن مسحه</string>
+    <string name="addresses_remove_dialog_title">حذف العنوان؟</string>
+    <string name="addresses_remove_dialog_message">هل أنت متأكد أنك تريد حذف هذا العنوان؟</string>
+    <string name="addresses_swipe_or_long_press_remove">اسحب أو اضغط مطولًا للحذف</string>
+    <string name="addresses_select_address_on_map">أختار عنوانك عن طريق الخريطة</string>
+
+    <string name="map_back_content_description">رجوع</string>
+    <string name="map_my_location_content_description">موقعي الحالي</string>
+    <string name="map_use_this_location">استخدام هذا الموقع</string>
+    <string name="map_cancel">إلغاء</string>
+    <string name="map_open_app_settings">فتح الإعدادات</string>
+    <string name="map_open_location_settings">فتح إعدادات الموقع</string>
+    <string name="map_location_permission_dialog_title">مطلوب إذن الموقع</string>
+    <string name="map_location_permission_dialog_message">يرجى السماح بإذن الموقع من الإعدادات حتى نتمكن من تحديد موقعك الحالي.</string>
+    <string name="map_gps_dialog_title">تشغيل الموقع</string>
+    <string name="map_gps_dialog_message">خدمات الموقع مغلقة. يرجى تفعيل GPS للحصول على موقعك الحالي.</string>
+    <string name="map_error_location_unavailable">لم نتمكن من تحديد موقعك. حدد نقطة يدويًا أو حاول مرة أخرى.</string>
+    <string name="map_error_location_selected_missing_details">تم تحديد الموقع. أضف تفاصيل العنوان الناقصة يدويًا.</string>
+    <string name="map_error_search_failed">لم نتمكن من البحث عن هذا العنوان. حاول مرة أخرى.</string>
+    <string name="map_error_address_resolve_failed">لم نتمكن من قراءة هذا العنوان. يرجى إكماله يدويًا.</string>
+    <string name="map_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="map_search_placeholder">ابحث عن عنوان</string>
+    <string name="map_clear_search_content_description">مسح البحث</string>
+
+    <string name="splash_app_name">كارتو</string>
+    <string name="splash_logo_content_description">شعار كارتو</string>
+    <string name="register_phone_number_country_code">+٢٠</string>
+
+    <string name="snackbar_message_product_added_to_favorites_guest">من فضلك سجل دخول للاضافه في المحفوظات</string>
+    <string name="order_history_screen_title">My Orders</string>
+    <string name="order_history_no_orders_title">No %1$s Orders!</string>
+    <string name="order_history_no_orders_subtitle">You don\'t have any %1$s orders at this time.</string>
+
+
+    <string name="order_history_ongoing_tab">جارية</string>
+    <string name="order_history_completed_tab">مكتملة</string>
+    <string name="order_history_order_label">طلب %1$s</string>
+    <string name="order_history_see_details">عرض التفاصيل</string>
+    <string name="order_history_before_discount">قبل الخصم: %1$s</string>
+    <string name="order_history_back_content_description">رجوع</string>
+    <string name="order_history_notifications_content_description">الإشعارات</string>
+    <string name="order_history_error_missing_customer">يرجى تسجيل الدخول مرة أخرى لعرض طلباتك.</string>
+    <string name="order_history_error_configuration">إعدادات طلبات شوبيفاي غير مكتملة.</string>
+    <string name="order_history_error_unauthorized">يرجى تسجيل الدخول مرة أخرى لعرض طلباتك.</string>
+    <string name="order_history_error_network">تحقق من اتصالك بالإنترنت وحاول مرة أخرى.</string>
+    <string name="order_history_error_server">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="order_history_error_not_found">لم نتمكن من العثور على طلباتك.</string>
+    <string name="order_history_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="order_details_title">تفاصيل الطلب</string>
+    <string name="order_details_back_content_description">رجوع</string>
+    <string name="order_details_products_title">المنتجات</string>
+    <string name="order_details_payment_summary_title">ملخص الدفع</string>
+    <string name="order_details_extra_info_title">تفاصيل إضافية</string>
+    <string name="order_details_shipping_title">الشحن</string>
+    <string name="order_details_subtotal">المجموع الفرعي</string>
+    <string name="order_details_discount">الخصم</string>
+    <string name="order_details_shipping">الشحن</string>
+    <string name="order_details_tax">الضريبة</string>
+    <string name="order_details_total">الإجمالي</string>
+    <string name="order_details_payment_method">طريقة الدفع</string>
+    <string name="order_details_coupons">الكوبونات</string>
+    <string name="order_details_confirmation_number">رقم التأكيد</string>
+    <string name="order_details_lifecycle">حالة الطلب</string>
+    <string name="order_details_variant_and_quantity">%1$s · الكمية %2$s</string>
+    <string name="order_details_sku">SKU: %1$s</string>
+    <string name="order_details_cancel_order">إلغاء الطلب</string>
+    <string name="order_details_remove_from_history">إزالة من السجل</string>
+    <string name="order_details_cancel_dialog_title">إلغاء الطلب؟</string>
+    <string name="order_details_cancel_dialog_message">سيتم طلب إلغاء الطلب في شوبيفاي. لا يمكن التراجع عن هذا الإجراء من التطبيق.</string>
+    <string name="order_details_remove_dialog_title">إزالة الطلب؟</string>
+    <string name="order_details_remove_dialog_message">سيتم إخفاء الطلب من سجل التطبيق فقط، ولن يتم حذفه من شوبيفاي.</string>
+    <string name="order_details_confirm_negative_action">تأكيد</string>
+    <string name="order_details_order_cancelled_success">تم إلغاء الطلب بنجاح.</string>
+    <string name="order_details_order_removed_success">تمت إزالة الطلب من السجل.</string>
+    <string name="order_details_error_configuration">إعدادات طلبات شوبيفاي غير مكتملة.</string>
+    <string name="order_details_error_unauthorized">يرجى تسجيل الدخول مرة أخرى لعرض هذا الطلب.</string>
+    <string name="order_details_error_network">تحقق من اتصالك بالإنترنت وحاول مرة أخرى.</string>
+    <string name="order_details_error_server">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="order_details_error_not_found">لم نتمكن من العثور على هذا الطلب.</string>
+    <string name="order_details_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقًا.</string>
+    <string name="accountMyOrdersTitle">طلباتي</string>
+
+    <!-- Notification -->
+    <string name="notification_default_title">كارتو مستنيك</string>
+    <string name="notification_default_subtitle">افتح التطبيق واكتشف ستايلات جديدة اليوم.</string>
+
+    <string name="notification_cart_title">خلّي اختياراتك ليك</string>
+    <string name="notification_cart_subtitle">كمّل الشراء الآن قبل ما منتجاتك المفضلة تخلص.</string>
+
+    <string-array name="notification_general_titles">
+        <item>لسه بتفكر؟</item>
+        <item>وصلت ستايلات جديدة</item>
+        <item>تنبيه لوك جديد</item>
+        <item>إطلالتك الجاية هنا</item>
+        <item>الأكثر رواجًا الآن</item>
+        <item>قائمة المفضلة بتناديك</item>
+        <item>وصلت المنتجات الجديدة</item>
+        <item>جاهز للوك جديد؟</item>
+        <item>منتجك المفضل الجاي</item>
+    </string-array>
+
+    <string-array name="notification_general_subtitles">
+        <item>المنتج اللي عجبك لسه مستنيك.</item>
+        <item>اكتشف أحدث المنتجات المختارة ليك.</item>
+        <item>جدّد ستايلك مع أحدث كوليكشن.</item>
+        <item>اختار ستايلات تناسب ذوقك اليوم.</item>
+        <item>شوف المنتجات اللي الكل بيتصفحها دلوقتي.</item>
+        <item>بعض المنتجات المحفوظة عندك لسه مستنية.</item>
+        <item>كن أول واحد يشوف أحدث الستايلات.</item>
+        <item>في ستايلات جديدة مستنياك.</item>
+        <item>افتح التطبيق واكتشفه النهارده.</item>
+    </string-array>
+    <string name="error_product_not_found">المنتج غير موجود</string>
+    <string name="error_network_connection">لا يوجد اتصال بالانترنت</string>
+    <string name="error_server_down">خطأ في خادم الخدمة</string>
+    <string name="error_unknown">خطأ غير معروف</string>
+    <string name="login_required">من فضلك سجل دخول أولا</string>
+
+    <!-- cart screen -->
+
+    <string name="cartMyCart">سلة التسوق</string>
+    <string name="cartRemoveItem">إزالة العنصر</string>
+    <string name="cartRemoveItemConfirmation">هل أنت متأكد أنك تريد إزالة هذا العنصر من سلة التسوق؟</string>
+    <string name="cartRemove">إزالة</string>
+    <string name="cartCancel">إلغاء</string>
+    <string name="cartSubTotal">المجموع الفرعي</string>
+    <string name="cartShippingFee">رسوم الشحن</string>
+    <string name="cartTotal">الإجمالي</string>
+    <string name="cartGoToCheckout">الانتقال إلى الدفع</string>
+    <string name="cartEmptyTitle">سلة التسوق فارغة</string>
+    <string name="cartEmptyDescription">عند إضافة المنتجات، ستظهر هنا.</string>
+
+    <!-- product details screen -->
+
+    <string name="productDetailsRemoveFromCart">إزالة من سلة التسوق</string>
+    <string name="productDetailsRemoveFromCartConfirmation">هل أنت متأكد أنك تريد إزالة هذا العنصر من سلة التسوق؟</string>
+    <string name="productDetailsTryAgain">حاول مرة أخرى</string>
+    <string name="productDetailsPrice">السعر</string>
+    <string name="productDetailsAddToCart">أضف إلى سلة التسوق</string>
+    <string name="productDetailsInCart">في سلة التسوق</string>
+    <string name="productDetailsOutOfStock">نفدت الكمية</string>
+
+    <!-- Ads sections -->
+
+    <string name="homeAdBigSaleTitle">تخفيضات كبرى</string>
+    <string name="homeAdBigSaleSubtitle">خصم يصل إلى 30٪</string>
+    <string name="homeAdBigSaleButton">تسوّق الآن</string>
+
+    <string name="homeAdNewArrivalsTitle">وصلت منتجات جديدة</string>
+    <string name="homeAdNewArrivalsSubtitle">منتجات جديدة ومميزة</string>
+    <string name="homeAdNewArrivalsButton">استكشف</string>
+
+    <string name="homeAdFreeDeliveryTitle">توصيل مجاني</string>
+    <string name="homeAdFreeDeliverySubtitle">للطلبات التي تزيد عن 50 دولارًا</string>
+    <string name="homeAdFreeDeliveryButton">احصل عليها</string>
+
+    <!-- Profile Guest Screen -->
+    <string name="profileGuestIconContentDescription">جلسة ضيف</string>
+    <string name="profileGuestTitle">الوصول إلى ملفك الشخصي</string>
+    <string name="profileGuestDescription">
+    أنت تتصفح التطبيق كضيف حالياً. يرجى تسجيل الدخول أو إنشاء حساب لعرض بيانات ملفك الشخصي، وسجل طلباتك، والعناوين المحفوظة.
+</string>
+    <string name="profileGuestLoginButton">تسجيل الدخول</string>
+    <string name="profileGuestSomethingWentWrong">حدث خطأ ما</string>
+    <string name="profileGuestRetry">إعادة المحاولة</string>
+
+    <string name="removeFavoriteTitle">إزالة العنصر؟</string>
+    <string name="removeFavoriteMessage">هل أنت متأكد أنك تريد إزالة هذا العنصر من المفضلة؟</string>
+    <string name="removeFavoriteConfirm">نعم، إزالة</string>
+    <string name="removeFavoriteCancel">لا، احتفظ به</string>
+
+    <!-- AI Chat Screen -->
+    <string name="ai_welcome_title">مرحباً بك في كارتو AI</string>
+    <string name="ai_welcome_subtitle">اسألني عن المنتجات، الموضة، تنسيق الملابس، المقارنات، أو نصائح التسوق!</string>
+    <string name="ai_try_asking">جرب أن تسأل:</string>
+    <string name="ai_suggestion_wear">ماذا يجب أن أرتدي اليوم؟ 👕</string>
+    <string name="ai_suggestion_shoes">اعرض أفضل أحذية الجري 👟</string>
+    <string name="ai_suggestion_compare">قارن بين نايكي وأديداس ⚔️</string>
+    <string name="ai_suggestion_cart">اعرض تفاصيل عربة التسوق الخاصة بي 🛒</string>
+    <string name="ai_chat_header_title">كارتو AI</string>
+    <string name="ai_chat_header_subtitle">مساعد التسوق الذكي الخاص بك</string>
+    <string name="ai_recording">جاري التسجيل…</string>
+    <string name="ai_listening">🎙 جاري الاستماع…</string>
+    <string name="ai_message_placeholder">اكتب رسالة إلى كارتو AI…</string>
+    <string name="ai_copied_toast">تم النسخ</string>
+    <string name="ai_welcome_assistant_message">مرحباً! أنا مساعد التسوق الذكي الخاص بك. اسألني عن أي شيء يخص البحث عن المنتجات، مقارنة الأسعار، إدارة العربة أو قائمة الأمنيات، أو تنسيق الملابس!</string>
+
+    <!-- Search -->
+    <string name="search_initial_title">ابدأ البحث</string>
+    <string name="search_initial_subtitle">اكتب اسم المنتج للحصول على اقتراحات سريعة، ثم افتح تفاصيل المنتج.</string>
+    <string name="search_history_title">عمليات البحث الأخيرة</string>
+    <string name="search_suggestion_subtitle">اضغط لعرض تفاصيل المنتج</string>
+    <string name="search_empty_title">لا توجد نتائج</string>
+    <string name="search_empty_subtitle">جرّب كلمة مشابهة أو ابحث بكلمة أعم.</string>
+    <string name="search_error_network">تحقق من اتصال الإنترنت وحاول مرة أخرى.</string>
+    <string name="search_error_unauthorized">لم نتمكن من تحميل المنتجات الآن. حاول لاحقاً.</string>
+    <string name="search_error_server">المتجر مشغول الآن. حاول لاحقاً.</string>
+    <string name="search_error_unknown">حدث خطأ ما. حاول مرة أخرى لاحقاً.</string>
+    <string name="search_back_content_description">رجوع</string>
+
+    <!-- Home Screen Glance Widget -->
+    <string name="home_profile_widget_description">ويدجت ملف العميل في كارتو</string>
+    <string name="home_profile_widget_loading">جاري تحميل الملف…</string>
+    <string name="home_profile_widget_customer_id">العميل #%s</string>
+    <string name="home_profile_widget_orders">الطلبات</string>
+    <string name="home_profile_widget_total_paid">إجمالي المدفوع</string>
+    <string name="home_profile_widget_footer">افتح كارتو لآخر التحديثات</string>
+    <string name="home_profile_widget_guest_title">ملف كارتو</string>
+    <string name="home_profile_widget_guest_message">سجّل الدخول لعرض إحصائياتك هنا.</string>
+    <string name="home_profile_widget_unavailable_title">الملف غير متاح</string>
+    <string name="home_profile_widget_unavailable_message">افتح التطبيق مرة واحدة لتحديث بياناتك.</string>
+
+
+    <!-- Carto AI Glance Widget -->
+    <string name="carto_ai_widget_title">اسأل كارتو AI</string>
+    <string name="carto_ai_widget_subtitle">افتح المساعد واسأل عن أي شيء</string>
+    <string name="carto_ai_widget_record">تسجيل</string>
+    <string name="carto_ai_widget_description">ويدجت كارتو AI السريع</string>
+    <string name="carto_ai_widget_ask_title">اسأل كارتو AI</string>
+    <string name="carto_ai_widget_ask_subtitle">افتح المساعد واسأل عن أي شيء</string>
+    <string name="carto_ai_widget_record_title">تسجيل</string>
+    <string name="carto_ai_widget_record_subtitle">ابدأ محادثة صوتية</string>
+    <!-- Checkout Screen -->
+    <string name="checkout_title">الدفع</string>
+    <string name="checkout_delivery_address">عنوان التوصيل</string>
+    <string name="checkout_change">تغيير</string>
+    <string name="checkout_no_address">لم يتم اختيار عنوان</string>
+    <string name="checkout_customer_info">بيانات العميل</string>
+    <string name="checkout_first_name">الاسم الأول</string>
+    <string name="checkout_last_name">اسم العائلة</string>
+    <string name="checkout_email">البريد الإلكتروني</string>
+    <string name="checkout_phone">رقم الهاتف</string>
+    <string name="checkout_order_summary">ملخص الطلب</string>
+    <string name="checkout_payment_method">طريقة الدفع</string>
+    <string name="checkout_pay_card">الدفع بالبطاقة</string>
+    <string name="checkout_pay_wallet">الدفع بالمحفظة الرقمية</string>
+    <string name="checkout_pay_cod">تأكيد الطلب (الدفع عند الاستلام)</string>
+    <string name="checkout_processing">جارٍ معالجة طلبك…</string>
+    <string name="checkout_subtotal">المجموع الجزئي</string>
+    <string name="checkout_shipping">الشحن</string>
+    <string name="checkout_total">الإجمالي</string>
+    <string name="checkout_promo_code">كود الخصم</string>
+    <string name="checkout_apply">تطبيق</string>
+    <string name="checkout_discount">الخصم</string>
+    <string name="checkout_error_validation">يرجى ملء جميع الحقول المطلوبة.</string>
+    <string name="checkout_error_generic">حدث خطأ ما. يرجى المحاولة مجدداً.</string>
+    <string name="checkout_promo_placeholder">أدخل كود الخصم</string>
+
+    <!-- Product Reviews Screen -->
+    <string name="product_reviews_title">التقييمات</string>
+    <string name="product_reviews_count">%1$d تقييم</string>
+
+    <!-- Settings - Payment Methods Bottom Sheet -->
+    <string name="settings_default_payment_method">طريقة الدفع الافتراضية</string>
+    <string name="settings_payment_card">بطاقة</string>
+    <string name="settings_payment_digital_wallet">محفظة رقمية</string>
+    <string name="settings_payment_cod">الدفع عند الاستلام</string>
+
+</resources>

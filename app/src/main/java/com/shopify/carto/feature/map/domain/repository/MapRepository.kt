@@ -1,0 +1,12 @@
+package com.shopify.carto.feature.map.domain.repository
+
+import com.shopify.carto.feature.map.domain.model.MapAddress
+import com.shopify.carto.feature.map.domain.model.MapPoint
+import com.shopify.carto.feature.map.domain.model.MapResult
+import com.shopify.carto.feature.map.domain.model.MapSearchSuggestion
+
+interface MapRepository {
+    suspend fun getCurrentLocation(): MapResult<MapPoint>
+    suspend fun searchPlaces(query: String): MapResult<List<MapSearchSuggestion>>
+    suspend fun reverseGeocode(point: MapPoint): MapResult<MapAddress>
+}
