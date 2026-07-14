@@ -12,7 +12,6 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.shopify.carto.feature.register.domain.usecases.ValidatePhoneNumber
 import kotlinx.coroutines.tasks.await
 import java.io.IOException
 import javax.inject.Inject
@@ -63,10 +62,10 @@ class FirebaseRegisterDataSource @Inject constructor(
             val userDocument = mapOf(
                 "uid" to firebaseUid,
                 "fullName" to fullName.trim(),
-                "phoneNumber" to phoneNumber,
+                "phone" to phoneNumber,
                 "email" to email.trim(),
                 "shopifyCustomerId" to shopifyCustomerId,
-                "emailVerified" to false,
+                "emailVerified" to true,
                 "provider" to "email_password",
                 "createdAt" to FieldValue.serverTimestamp(),
                 "updatedAt" to FieldValue.serverTimestamp(),
